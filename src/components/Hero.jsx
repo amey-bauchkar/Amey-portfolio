@@ -3,7 +3,15 @@ import { Link } from 'react-router-dom';
 const Hero = ({ onOpenCv }) => {
   return (
     <section id="home" className="hero-section">
-      <div className="hero-bg" aria-hidden="true"></div>
+      <video 
+        className="hero-bg" 
+        src="/convert_the_above_video_into_c.mp4" 
+        autoPlay 
+        loop 
+        muted 
+        playsInline 
+        aria-hidden="true"
+      ></video>
       <div className="hero-overlay" aria-hidden="true"></div>
 
       <div className="hero-content">
