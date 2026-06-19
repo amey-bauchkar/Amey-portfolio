@@ -32,15 +32,16 @@ const CanvasSequence = () => {
     updateCanvasSize();
     window.addEventListener('resize', updateCanvasSize);
     
-    const frameCount = 300; // Adjust this based on your exported frames count
+    const frameCount = 240; // Original 24fps video (24fps * 10s) without AI interpolation.
     const currentFrame = index => `/frames/frame_${(index + 1).toString().padStart(4, '0')}.jpg`;
     
     const images = new Array(frameCount).fill(null);
     const sequence = { frame: 0 };
     
-    // Preload only the first few frames immediately so the browser isn't overwhelmed
-    for (let i = 0; i < 15; i++) {
+    // With 600 interpolated frames (~42MB total), we can preload them!
+    for (let i = 0; i < frameCount; i++) {
       const img = new Image();
+      // Load image asynchronously in the background
       img.src = currentFrame(i);
       images[i] = img;
     }
@@ -50,17 +51,6 @@ const CanvasSequence = () => {
     // Use requestAnimationFrame for incredibly robust rendering. 
     function renderLoop() {
       const frameIndex = Math.round(sequence.frame);
-      
-      // Lazy-load frames: Keep a buffer of 25 frames ahead of the current scroll position.
-      // This prevents the browser from dropping connections and stopping frame loads.
-      const maxPreload = Math.min(frameIndex + 25, frameCount);
-      for (let i = frameIndex; i < maxPreload; i++) {
-        if (!images[i]) {
-          const img = new Image();
-          img.src = currentFrame(i);
-          images[i] = img;
-        }
-      }
 
       if (images[frameIndex]) {
         const img = images[frameIndex];
