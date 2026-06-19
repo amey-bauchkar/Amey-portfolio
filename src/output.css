@@ -446,6 +446,9 @@
   .h-\[500vh\] {
     height: 500vh;
   }
+  .h-\[800vh\] {
+    height: 800vh;
+  }
   .h-auto {
     height: auto;
   }
@@ -818,6 +821,18 @@
   }
   .bg-black {
     background-color: var(--color-black);
+  }
+  .bg-black\/10 {
+    background-color: color-mix(in srgb, #000 10%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-black) 10%, transparent);
+    }
+  }
+  .bg-black\/40 {
+    background-color: color-mix(in srgb, #000 40%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-black) 40%, transparent);
+    }
   }
   .bg-black\/90 {
     background-color: color-mix(in srgb, #000 90%, transparent);

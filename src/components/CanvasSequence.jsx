@@ -12,30 +12,56 @@ const CanvasSequence = () => {
     if (!canvas) return;
     const context = canvas.getContext('2d');
     
-    // Set internal resolution of the canvas (16:9 cinematic)
-    canvas.width = 1920;
-    canvas.height = 1080;
+    let lastDrawnFrame = -1;
     
-    const frameCount = 150; // Adjust this based on your exported frames count
+    const updateCanvasSize = () => {
+      // Removed devicePixelRatio multiplier. Drawing 300 frames to an 8K canvas causes massive VRAM 
+      // spikes, crashes the 2D context (which makes frames stop loading), and causes extreme lag.
+      // Standard CSS pixel resolution is much more stable and hardware-accelerated.
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      
+      // Enable high-quality image smoothing to mitigate low-resolution source frames
+      context.imageSmoothingEnabled = true;
+      context.imageSmoothingQuality = 'high';
+      
+      // Force redraw on resize
+      lastDrawnFrame = -1;
+    };
+    
+    updateCanvasSize();
+    window.addEventListener('resize', updateCanvasSize);
+    
+    const frameCount = 300; // Adjust this based on your exported frames count
     const currentFrame = index => `/frames/frame_${(index + 1).toString().padStart(4, '0')}.jpg`;
     
-    const images = [];
+    const images = new Array(frameCount).fill(null);
     const sequence = { frame: 0 };
     
-    // Preload frames
-    for (let i = 0; i < frameCount; i++) {
+    // Preload only the first few frames immediately so the browser isn't overwhelmed
+    for (let i = 0; i < 15; i++) {
       const img = new Image();
       img.src = currentFrame(i);
-      images.push(img);
+      images[i] = img;
     }
     
-    let lastDrawnFrame = -1;
     let animationFrameId;
 
     // Use requestAnimationFrame for incredibly robust rendering. 
-    // This solves the issue where an image might finish loading *after* the scrub event fired.
     function renderLoop() {
       const frameIndex = Math.round(sequence.frame);
+      
+      // Lazy-load frames: Keep a buffer of 25 frames ahead of the current scroll position.
+      // This prevents the browser from dropping connections and stopping frame loads.
+      const maxPreload = Math.min(frameIndex + 25, frameCount);
+      for (let i = frameIndex; i < maxPreload; i++) {
+        if (!images[i]) {
+          const img = new Image();
+          img.src = currentFrame(i);
+          images[i] = img;
+        }
+      }
+
       if (images[frameIndex]) {
         const img = images[frameIndex];
         
@@ -71,7 +97,9 @@ const CanvasSequence = () => {
           trigger: '#canvas-container',
           start: 'top top',
           end: 'bottom bottom',
-          scrub: 0.5,
+          // Use true instead of 0.5 so that GSAP instantly matches Lenis's smooth scrolling 
+          // without adding double-delay which makes it feel disconnected
+          scrub: true,
         }
       });
       // Force GSAP to recalculate positions because we initialized this asynchronously
@@ -79,6 +107,7 @@ const CanvasSequence = () => {
     }, 200);
     
     return () => {
+      window.removeEventListener('resize', updateCanvasSize);
       clearTimeout(timeout);
       cancelAnimationFrame(animationFrameId);
       if (st) st.kill();
@@ -86,15 +115,16 @@ const CanvasSequence = () => {
   }, []);
 
   return (
-    <div className="sticky top-0 left-0 w-full h-screen overflow-hidden cinematic-bg z-0 flex items-center justify-center">
+    <div className="sticky top-0 left-0 w-full h-screen overflow-hidden cinematic-bg z-0 flex items-center justify-center bg-black">
       <canvas 
         ref={canvasRef} 
         className="w-full h-full object-cover max-w-none opacity-90 transition-opacity duration-1000"
       />
-      {/* Fallback gradients to blend the edges perfectly into #050505 */}
-      <div className="absolute inset-0 z-[-1] cinematic-radial-bg"></div>
-      <div className="absolute inset-0 bg-gradient-to-b from-cinematic-bg via-transparent to-cinematic-bg z-10 pointer-events-none opacity-80"></div>
-      <div className="absolute inset-0 bg-gradient-to-r from-cinematic-bg via-transparent to-cinematic-bg z-10 pointer-events-none opacity-80"></div>
+      {/* Same gradient overlay used on the home page for text readability */}
+      <div className="hero-overlay pointer-events-none" aria-hidden="true"></div>
+      
+      {/* Extra uniform darkness because About page has text on the right side too */}
+      <div className="absolute inset-0 bg-black/10 pointer-events-none z-10"></div>
     </div>
   );
 };
