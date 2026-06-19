@@ -9,6 +9,12 @@
   --color-border: #2a2a2a;
   --color-text-primary: #ffffff;
   --color-text-secondary: #a3a3a3;
+  
+  --color-cinematic-bg: #050505;
+  --color-cinematic-secondary: #0A0A0C;
+  --color-cinematic-amber: #FFB067;
+  --color-cinematic-amber-dark: #FF8C00;
+  --color-cinematic-cyan: #00D6FF;
 
   --font-inter: "Inter", sans-serif;
   --font-outfit: "Outfit", sans-serif;
@@ -464,4 +470,46 @@ a, button, .project-card { user-select: none; -webkit-user-select: none; }
   .hero-scroll-indicator {
     display: none;
   }
+}
+
+/* ===== CINEMATIC ABOUT PAGE STYLES ===== */
+.cinematic-bg {
+  background-color: var(--color-cinematic-bg);
+}
+
+.cinematic-glass {
+  background: rgba(5, 5, 5, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.cinematic-gradient-text {
+  background: linear-gradient(to bottom, #ffffff 40%, var(--color-cinematic-amber) 120%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.cinematic-glow {
+  text-shadow: 0 4px 16px rgba(255, 176, 103, 0.15);
+}
+
+.cinematic-button {
+  background: transparent;
+  color: #fff;
+  border: 1px solid rgba(255, 176, 103, 0.3);
+  background-image: linear-gradient(to bottom right, rgba(255, 176, 103, 0.1), rgba(255, 140, 0, 0.05));
+  box-shadow: 0 4px 20px rgba(255, 176, 103, 0.05);
+  transition: all 0.3s ease;
+}
+
+.cinematic-button:hover {
+  border-color: rgba(255, 176, 103, 0.6);
+  background-image: linear-gradient(to bottom right, rgba(255, 176, 103, 0.2), rgba(255, 140, 0, 0.1));
+  box-shadow: 0 4px 20px rgba(255, 176, 103, 0.15);
+}
+
+.cinematic-radial-bg {
+  background: radial-gradient(circle at center, rgba(255, 176, 103, 0.03) 0%, var(--color-cinematic-bg) 60%);
 }

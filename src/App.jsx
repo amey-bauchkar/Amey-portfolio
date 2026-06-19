@@ -33,6 +33,7 @@ function App() {
   useGSAP(() => {
     // Initialize Lenis
     const lenis = new Lenis();
+    window.lenis = lenis;
 
     lenis.on('scroll', ScrollTrigger.update);
 
@@ -45,6 +46,7 @@ function App() {
 
     return () => {
       lenis.destroy();
+      delete window.lenis;
       gsap.ticker.remove(update);
     };
   }, []);
@@ -77,12 +79,20 @@ function App() {
       // Handle hash scrolling if present
       if (location.hash) {
         const id = location.hash.substring(1);
-        const element = document.getElementById(id);
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth' });
+        if (window.lenis) {
+          window.lenis.scrollTo(`#${id}`);
+        } else {
+          const element = document.getElementById(id);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+          }
         }
       } else {
-        window.scrollTo(0, 0);
+        if (window.lenis) {
+          window.lenis.scrollTo(0, { immediate: true });
+        } else {
+          window.scrollTo(0, 0);
+        }
       }
     }, 100);
 
@@ -95,7 +105,7 @@ function App() {
   };
 
   return (
-    <div ref={appRef} className="font-sans text-text-primary bg-bg min-h-screen selection:bg-accent selection:text-white overflow-x-hidden">
+    <div ref={appRef} className="font-sans text-text-primary bg-bg min-h-screen selection:bg-accent selection:text-white overflow-x-clip">
       <Navbar onOpenCv={() => setIsCvModalOpen(true)} />
       
       <main>
