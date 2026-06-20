@@ -1,49 +1,117 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { projectsData } from '../data/projectsData';
+import ProjectsCanvasSequence from './ProjectsCanvasSequence';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 const Projects = ({ onOpenProject }) => {
-  return (
-    <section id="projects" className="relative py-32 bg-bg bg-grid border-t border-border/50 z-10">
-      <div className="max-w-7xl mx-auto px-6 md:px-12">
-        
-        <div className="mb-12 md:mb-16 anim-hidden animate-fade-in-up">
-          <div className="inline-flex items-center gap-2 mb-3">
-            <span className="w-8 h-0.5 bg-accent"></span>
-            <span className="text-accent text-sm font-bold tracking-wider uppercase">Portfolio</span>
-          </div>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-text-primary">Featured Projects</h2>
-        </div>
+  const containerRef = useRef(null);
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {projectsData.map((project) => (
-            <div 
-              key={project.id}
-              className={`project-card group relative bg-card border border-border rounded-2xl overflow-hidden hover:border-accent/50 transition-all duration-500 hover:-translate-y-2 hover:shadow-xl hover:shadow-accent/5 anim-hidden animate-fade-in-up ${project.delay}`}
-              onClick={() => onOpenProject(project)}
-            >
-              <div className="relative h-56 sm:h-64 overflow-hidden bg-[#2a2a2a]">
-                <img 
-                  src={`/${project.image}`} 
-                  alt={project.title} 
-                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent opacity-90 z-10"></div>
+  useEffect(() => {
+    const cards = document.querySelectorAll('.project-glass-card');
+    const triggers = [];
+    
+    cards.forEach((card) => {
+      const st = gsap.fromTo(card, 
+        { opacity: 0, y: 100, scale: 0.95 },
+        { 
+          opacity: 1, 
+          y: 0, 
+          scale: 1,
+          duration: 1,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: card,
+            start: "top 80%",
+            end: "bottom 20%",
+            toggleActions: "play reverse play reverse"
+          }
+        }
+      );
+      triggers.push(st.scrollTrigger);
+    });
+
+    return () => {
+      triggers.forEach(t => t && t.kill());
+    };
+  }, []);
+
+  return (
+    <section id="projects-canvas-container" ref={containerRef} className="relative w-full h-[920vh] bg-[#0f0f0f]">
+      {/* Sticky background sequence */}
+      <ProjectsCanvasSequence />
+      
+      {/* Scrollable content overlay */}
+      <div className="absolute top-0 left-0 w-full h-full z-20 pointer-events-none flex flex-col">
+        
+        {/* Intro Space */}
+        <div className="h-[120vh] flex items-center justify-end px-6 md:px-12 lg:px-24">
+            <div className="text-right max-w-lg">
+              <div className="inline-flex items-center justify-end gap-3 mb-6">
+                <span className="text-accent text-sm sm:text-base font-bold tracking-[0.2em] uppercase">Portfolio</span>
+                <span className="w-12 h-0.5 bg-accent"></span>
               </div>
-              <div className="p-6 sm:p-8 relative z-20">
-                <h3 className="text-xl sm:text-2xl font-bold text-text-primary mb-3 group-hover:text-accent transition-colors duration-300">{project.title}</h3>
-                <p className="text-text-secondary text-sm sm:text-base mb-6 line-clamp-2">{project.description}</p>
-                <div className="flex flex-wrap gap-2 mb-8">
-                  {project.tags.map(tag => (
-                    <span key={tag} className="text-xs font-semibold px-3 py-1 bg-accent/10 text-accent rounded-md">{tag}</span>
-                  ))}
-                </div>
-                <div className="flex items-center gap-4">
-                  <span className="flex items-center gap-2 text-accent text-sm font-semibold transition-colors"><i className="fas fa-expand"></i> View Details</span>
-                </div>
+              <h2 className="text-5xl md:text-7xl font-extrabold text-white mb-6 drop-shadow-2xl">My Archive</h2>
+              <p className="text-gray-300 text-lg md:text-xl drop-shadow-md font-light leading-relaxed">
+                A collection of things I've engineered, built, and brought to life.
+              </p>
+              <div className="mt-16 animate-bounce opacity-50">
+                <i className="fas fa-chevron-down text-white text-2xl"></i>
               </div>
             </div>
-          ))}
         </div>
+
+        {/* Projects Sections */}
+        {projectsData.map((project, index) => (
+          <div key={project.id} className="h-[150vh] flex flex-col justify-center px-6 md:px-12 lg:px-24">
+            <div className="w-full flex justify-center md:justify-end">
+              
+              <div 
+                className="project-glass-card pointer-events-auto group w-full md:w-[500px] lg:w-[550px] xl:w-[600px] bg-black/40 backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden hover:border-accent/40 transition-colors duration-700 shadow-2xl"
+              >
+                <div className="relative h-56 sm:h-72 overflow-hidden bg-[#111]">
+                  <img 
+                    src={`/${project.image}`} 
+                    alt={project.title} 
+                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000 opacity-70 group-hover:opacity-100" 
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent z-10"></div>
+                  
+                  {/* Subtle index number */}
+                  <div className="absolute top-6 left-6 z-20">
+                    <span className="text-white/20 font-black text-5xl">0{index + 1}</span>
+                  </div>
+                </div>
+                
+                <div className="p-8 sm:p-10 relative z-20 bg-gradient-to-b from-black/80 to-black/95">
+                  <h3 className="text-3xl sm:text-4xl font-bold text-white mb-4 group-hover:text-accent transition-colors duration-500">{project.title}</h3>
+                  <p className="text-gray-400 text-base sm:text-lg mb-8 leading-relaxed font-light">{project.description}</p>
+                  
+                  <div className="flex flex-wrap gap-3 mb-10">
+                    {project.tags.map(tag => (
+                      <span key={tag} className="text-xs sm:text-sm font-medium px-4 py-2 bg-white/5 border border-white/10 text-gray-300 rounded-lg">{tag}</span>
+                    ))}
+                  </div>
+                  
+                  <button 
+                    onClick={() => onOpenProject(project)}
+                    className="w-full py-4 rounded-xl bg-white/5 hover:bg-accent/20 border border-white/10 hover:border-accent/50 text-white font-medium tracking-wide transition-all duration-300 flex items-center justify-center gap-3 group-hover:shadow-[0_0_30px_rgba(239,68,68,0.15)]"
+                  >
+                    <i className="fas fa-expand text-accent"></i> 
+                    <span>View Details</span>
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        ))}
+        
+        {/* Padding at bottom so the last project scrolls up completely before the next section appears */}
+        <div className="h-[50vh]"></div>
+        
       </div>
     </section>
   );
