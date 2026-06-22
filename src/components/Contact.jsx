@@ -179,38 +179,47 @@ const Contact = () => {
             >
               <i className="fas fa-times text-2xl"></i>
             </button>
-            
-            <form onSubmit={handleFormSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="flex flex-col gap-2">
-                  <label className="text-white/60 text-sm font-inter">Your Name</label>
-                  <input required type="text" name="name" placeholder="John Doe" className="bg-[#0f0f0f] border border-white/5 text-white p-4 rounded-xl focus:border-accent focus:ring-1 focus:ring-accent transition-all outline-none font-inter" />
+
+            <div className="mb-8 flex items-center gap-5">
+              <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-white/10 flex-shrink-0 shadow-lg">
+                <img src="/amey-photo.png" alt="Amey Bauchkar" className="w-full h-full object-cover object-center" />
+              </div>
+              <div>
+                <h3 className="text-3xl font-semibold text-white tracking-tight mb-1">Let's Connect</h3>
+                <p className="text-white/50 text-sm font-inter">Send me a message and I'll get back to you shortly.</p>
+              </div>
+            </div>
+              <form onSubmit={handleFormSubmit} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="flex flex-col gap-2">
+                    <label className="text-white/60 text-sm font-inter">Your Name</label>
+                    <input required type="text" name="name" placeholder="John Doe" className="bg-[#0f0f0f] border border-white/5 text-white p-4 rounded-xl focus:border-accent focus:ring-1 focus:ring-accent transition-all outline-none font-inter" />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label className="text-white/60 text-sm font-inter">Your Email</label>
+                    <input required type="email" name="email" placeholder="john@example.com" className="bg-[#0f0f0f] border border-white/5 text-white p-4 rounded-xl focus:border-accent focus:ring-1 focus:ring-accent transition-all outline-none font-inter" />
+                  </div>
                 </div>
+                
                 <div className="flex flex-col gap-2">
-                  <label className="text-white/60 text-sm font-inter">Your Email</label>
-                  <input required type="email" name="email" placeholder="john@example.com" className="bg-[#0f0f0f] border border-white/5 text-white p-4 rounded-xl focus:border-accent focus:ring-1 focus:ring-accent transition-all outline-none font-inter" />
+                  <label className="text-white/60 text-sm font-inter">Subject</label>
+                  <input required type="text" name="subject" placeholder="Project Collaboration" className="bg-[#0f0f0f] border border-white/5 text-white p-4 rounded-xl focus:border-accent focus:ring-1 focus:ring-accent transition-all outline-none font-inter" />
                 </div>
-              </div>
-              
-              <div className="flex flex-col gap-2">
-                <label className="text-white/60 text-sm font-inter">Subject</label>
-                <input required type="text" name="subject" placeholder="Project Collaboration" className="bg-[#0f0f0f] border border-white/5 text-white p-4 rounded-xl focus:border-accent focus:ring-1 focus:ring-accent transition-all outline-none font-inter" />
-              </div>
-              
-              <div className="flex flex-col gap-2">
-                <label className="text-white/60 text-sm font-inter">Message</label>
-                <textarea required name="message" rows="5" placeholder="Tell me about your project..." className="bg-[#0f0f0f] border border-white/5 text-white p-4 rounded-xl focus:border-accent focus:ring-1 focus:ring-accent transition-all outline-none font-inter resize-none"></textarea>
-              </div>
-              
-              <button disabled={formStatus === 'submitting'} type="submit" className="w-full bg-[#f97316] hover:bg-[#ea580c] text-white font-bold py-4 rounded-xl transition-all flex items-center justify-center gap-3 disabled:opacity-70 disabled:cursor-not-allowed text-lg">
-                {formStatus === 'submitting' ? 'Sending...' : formStatus === 'success' ? 'Message Sent!' : 'Send Message'}
-                {formStatus !== 'submitting' && formStatus !== 'success' && <i className="fas fa-paper-plane"></i>}
-              </button>
-              
-              {formStatus === 'error' && (
-                <p className="text-red-500 text-center text-sm font-inter mt-2">Something went wrong. Please check your API key and try again.</p>
-              )}
-            </form>
+                
+                <div className="flex flex-col gap-2">
+                  <label className="text-white/60 text-sm font-inter">Message</label>
+                  <textarea required name="message" rows="5" placeholder="Tell me about your project..." className="bg-[#0f0f0f] border border-white/5 text-white p-4 rounded-xl focus:border-accent focus:ring-1 focus:ring-accent transition-all outline-none font-inter resize-none"></textarea>
+                </div>
+                
+                <button disabled={formStatus === 'submitting'} type="submit" className="w-full bg-[#f97316] hover:bg-[#ea580c] text-white font-bold py-4 rounded-xl transition-all flex items-center justify-center gap-3 disabled:opacity-70 disabled:cursor-not-allowed text-lg">
+                  {formStatus === 'submitting' ? 'Sending...' : formStatus === 'success' ? 'Message Sent!' : 'Send Message'}
+                  {formStatus !== 'submitting' && formStatus !== 'success' && <i className="fas fa-paper-plane"></i>}
+                </button>
+                
+                {formStatus === 'error' && (
+                  <p className="text-red-500 text-center text-sm font-inter mt-2">Something went wrong. Please check your API key and try again.</p>
+                )}
+              </form>
           </div>
         </div>
       )}
