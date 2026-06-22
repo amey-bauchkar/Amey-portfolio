@@ -15,17 +15,17 @@ const Contact = () => {
     
     cards.forEach((card) => {
       const st = gsap.fromTo(card, 
-        { opacity: 0, y: 120, filter: 'blur(12px)' },
+        { opacity: 0, y: 50, filter: 'blur(8px)' },
         { 
           opacity: 1, 
           y: 0, 
           filter: 'blur(0px)',
-          duration: 1.5,
-          ease: "power3.out",
+          duration: 0.7,
+          ease: "power2.out",
           scrollTrigger: {
             trigger: card,
-            start: "top 85%",
-            end: "bottom 15%",
+            start: "top 95%",
+            end: "bottom 10%",
             toggleActions: "play reverse play reverse"
           }
         }
@@ -71,7 +71,7 @@ const Contact = () => {
   };
 
   return (
-    <section id="contact-canvas-container" className="relative w-full h-[950vh] bg-[#0a0a0a]">
+    <section id="contact-canvas-container" className="relative w-full h-[800vh] bg-[#0a0a0a]">
       {/* Sticky background sequence */}
       <ContactCanvasSequence />
       
@@ -156,35 +156,7 @@ const Contact = () => {
             </div>
         </div>
 
-        {/* Links */}
-        <div className="h-[150vh] flex flex-col justify-center px-6 md:px-12 lg:px-24">
-            <div className="w-full flex justify-start">
-              <div className="relative pointer-events-auto group w-full md:w-[750px] flex flex-col gap-10 contact-glass-card bg-black/20 p-10 md:p-16 rounded-3xl backdrop-blur-lg border border-white/5 transition-all duration-700 hover:bg-black/30">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                  {/* Email */}
-                  <div className="group/link">
-                    <span className="block font-inter text-white/40 mb-3 text-xs tracking-[0.2em] uppercase transition-colors group-hover/link:text-accent">Email</span>
-                    <a href="mailto:bauchkaramey1306@gmail.com" className="text-white text-xl md:text-2xl font-light tracking-tight hover:text-accent transition-colors break-all">bauchkaramey1306@gmail.com</a>
-                  </div>
-                  {/* LinkedIn */}
-                  <div className="group/link">
-                    <span className="block font-inter text-white/40 mb-3 text-xs tracking-[0.2em] uppercase transition-colors group-hover/link:text-accent">Network</span>
-                    <a href="https://www.linkedin.com/in/amey-bauchkar-3394453ba/" target="_blank" rel="noreferrer" className="text-white text-xl md:text-2xl font-light tracking-tight hover:text-accent transition-colors">LinkedIn Profile <i className="fas fa-external-link-alt text-xs ml-2 opacity-50"></i></a>
-                  </div>
-                  {/* GitHub */}
-                  <div className="group/link">
-                    <span className="block font-inter text-white/40 mb-3 text-xs tracking-[0.2em] uppercase transition-colors group-hover/link:text-accent">Code</span>
-                    <a href="https://github.com/amey-bauchkar" target="_blank" rel="noreferrer" className="text-white text-xl md:text-2xl font-light tracking-tight hover:text-accent transition-colors">GitHub Repositories <i className="fas fa-external-link-alt text-xs ml-2 opacity-50"></i></a>
-                  </div>
-                  {/* Location */}
-                  <div className="group/link">
-                    <span className="block font-inter text-white/40 mb-3 text-xs tracking-[0.2em] uppercase transition-colors group-hover/link:text-accent">Location</span>
-                    <span className="text-white text-xl md:text-2xl font-light tracking-tight">Mumbai, India</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-        </div>
+
 
         {/* Final Quote */}
         <div className="h-[200vh] flex flex-col justify-center items-center text-center px-6 md:px-12 lg:px-24">
