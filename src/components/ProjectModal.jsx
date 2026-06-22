@@ -9,9 +9,9 @@ const ProjectModal = ({ project, isOpen, onClose, onOpenCode }) => {
         <div className={`relative z-10 w-11/12 md:w-3/4 lg:w-2/3 max-w-5xl bg-card border border-border rounded-xl shadow-2xl shadow-accent/10 overflow-hidden flex flex-col max-h-[85vh] transition-transform duration-500 ease-in-out ${isOpen ? 'scale-100' : 'scale-95'}`}>
           <div className="flex-1 overflow-y-auto">
             {project.video ? (
-              <video src={`/${project.video}`} autoPlay muted loop className="w-full h-64 md:h-80 object-cover"></video>
+              <video src={`/${project.video}`} autoPlay muted loop className="w-full aspect-video object-cover"></video>
             ) : (
-              <img src={`/${project.image}`} alt={project.title} className="w-full h-64 md:h-80 object-cover" />
+              <img src={`/${project.image}`} alt={project.title} className="w-full h-auto max-h-[50vh] md:max-h-[60vh] object-contain bg-[#0a0a0a]" />
             )}
             
             <div className="p-8 md:p-12 relative">

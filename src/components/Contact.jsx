@@ -1,94 +1,247 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import ContactCanvasSequence from './ContactCanvasSequence';
+
+gsap.registerPlugin(ScrollTrigger);
 
 const Contact = () => {
-  return (
-    <section id="contact" className="relative py-24 bg-bg bg-grid border-t border-border/50 z-10">
-      <div className="absolute top-0 right-1/4 w-96 h-96 bg-accent/5 rounded-full blur-[120px] pointer-events-none"></div>
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [formStatus, setFormStatus] = useState('');
 
-      <div className="max-w-7xl mx-auto px-6 md:px-12">
-        <div className="mb-12 md:mb-16 anim-hidden animate-fade-in-up">
-          <div className="inline-flex items-center gap-2 mb-3">
-            <span className="w-8 h-0.5 bg-accent"></span>
-            <span className="text-accent text-sm font-bold tracking-wider uppercase">Get In Touch</span>
-          </div>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-text-primary">Let's build something together.</h2>
+  useEffect(() => {
+    const cards = document.querySelectorAll('.contact-glass-card');
+    const triggers = [];
+    
+    cards.forEach((card) => {
+      const st = gsap.fromTo(card, 
+        { opacity: 0, y: 120, filter: 'blur(12px)' },
+        { 
+          opacity: 1, 
+          y: 0, 
+          filter: 'blur(0px)',
+          duration: 1.5,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: card,
+            start: "top 85%",
+            end: "bottom 15%",
+            toggleActions: "play reverse play reverse"
+          }
+        }
+      );
+      triggers.push(st.scrollTrigger);
+    });
+
+    return () => {
+      triggers.forEach(t => t && t.kill());
+    };
+  }, []);
+
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+    setFormStatus('submitting');
+    
+    const formData = new FormData(e.target);
+    
+    // Replace with actual Web3Forms Access Key
+    formData.append("access_key", "b90e89ef-4876-42a1-9dd8-ab4a4f529560");
+    
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        body: formData
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        setFormStatus('success');
+        e.target.reset();
+        setTimeout(() => {
+          setIsFormOpen(false);
+          setFormStatus('');
+        }, 3000);
+      } else {
+        setFormStatus('error');
+      }
+    } catch (error) {
+      setFormStatus('error');
+    }
+  };
+
+  return (
+    <section id="contact-canvas-container" className="relative w-full h-[950vh] bg-[#0a0a0a]">
+      {/* Sticky background sequence */}
+      <ContactCanvasSequence />
+      
+      {/* Scrollable content overlay */}
+      <div className="absolute top-0 left-0 w-full h-full z-20 pointer-events-none flex flex-col font-outfit">
+        
+        {/* Intro Space */}
+        <div className="h-[150vh] flex items-center justify-end px-6 md:px-12 lg:px-24">
+            <div className="text-right max-w-3xl pointer-events-auto contact-glass-card">
+              <div className="inline-flex items-center justify-end gap-4 mb-6">
+                <span className="text-accent text-xs font-semibold tracking-[0.3em] uppercase font-inter">Initiate</span>
+                <span className="w-16 h-[1px] bg-accent/60"></span>
+              </div>
+              <h2 className="text-6xl md:text-8xl lg:text-[7rem] font-light text-white mb-6 leading-[1.05] tracking-tighter drop-shadow-2xl">
+                Let's create <br className="hidden md:block"/><span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-white/50">the future.</span>
+              </h2>
+              <p className="text-white/60 text-lg md:text-xl font-light max-w-xl ml-auto mt-8 font-inter leading-relaxed">
+                Whether it's an ambitious web application, an embedded hardware solution, or a combination of both—I'm ready to bring it to life.
+              </p>
+              <div className="mt-16 animate-bounce opacity-40">
+                <i className="fas fa-arrow-down text-white text-xl font-light"></i>
+              </div>
+            </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
-          <div className="anim-hidden animate-fade-in-up delay-100">
-            <p className="text-text-secondary text-lg leading-relaxed mb-8">
-              I'm always open to discussing hardware projects, web development opportunities, or creative collaborations. Feel free to reach out!
-            </p>
-            <div className="space-y-6">
-              <a href="https://mail.google.com/mail/?view=cm&fs=1&to=bauchkaramey1306@gmail.com" target="_blank" rel="noreferrer" className="group flex items-center gap-4 p-4 bg-card border border-border rounded-xl hover:border-accent/50 transition-all duration-300">
-                <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center text-accent text-xl group-hover:scale-110 transition-transform duration-300">
-                  <i className="fas fa-envelope"></i>
+        {/* Expertise Space */}
+        <div className="h-[150vh] flex items-center justify-start px-6 md:px-12 lg:px-24">
+            <div className="max-w-2xl pointer-events-auto contact-glass-card">
+              <div className="inline-flex items-center justify-start gap-4 mb-8">
+                <span className="w-16 h-[1px] bg-accent/60"></span>
+                <span className="text-accent text-xs font-semibold tracking-[0.3em] uppercase font-inter">Capabilities</span>
+              </div>
+              <div className="space-y-12">
+                <div className="group">
+                  <h3 className="text-3xl md:text-4xl font-semibold text-white tracking-tight mb-4 group-hover:text-accent transition-colors duration-500">Hardware & IoT</h3>
+                  <p className="text-white/70 font-inter font-light leading-relaxed text-lg">Designing embedded systems, robotics, and smart connected devices that bridge the physical and digital worlds.</p>
                 </div>
-                <div>
-                  <h4 className="text-sm font-semibold text-text-secondary mb-1">Email Me</h4>
-                  <p className="text-text-primary font-medium">bauchkaramey1306@gmail.com</p>
+                <div className="group">
+                  <h3 className="text-3xl md:text-4xl font-semibold text-white tracking-tight mb-4 group-hover:text-accent transition-colors duration-500">Web Development</h3>
+                  <p className="text-white/70 font-inter font-light leading-relaxed text-lg">Building performant, scalable, and beautifully interactive web applications from frontend to backend.</p>
                 </div>
-              </a>
-              <a href="tel:+918591094018" className="group flex items-center gap-4 p-4 bg-card border border-border rounded-xl hover:border-accent/50 transition-all duration-300">
-                <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center text-accent text-xl group-hover:scale-110 transition-transform duration-300">
-                  <i className="fas fa-phone"></i>
+                <div className="group">
+                  <h3 className="text-3xl md:text-4xl font-semibold text-white tracking-tight mb-4 group-hover:text-accent transition-colors duration-500">Creative Engineering</h3>
+                  <p className="text-white/70 font-inter font-light leading-relaxed text-lg">Blending logic with aesthetics. Writing code that not only works flawlessly but feels magical to interact with.</p>
                 </div>
-                <div>
-                  <h4 className="text-sm font-semibold text-text-secondary mb-1">Call Me</h4>
-                  <p className="text-text-primary font-medium">8591094018</p>
-                </div>
-              </a>
-              
-              <a href="https://www.instagram.com/13amey_/" target="_blank" rel="noreferrer" className="group flex items-center gap-4 p-4 bg-card border border-border rounded-xl hover:border-accent/50 transition-all duration-300">
-                <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center text-accent text-xl group-hover:scale-110 transition-transform duration-300">
-                  <i className="fab fa-instagram"></i>
-                </div>
-                <div>
-                  <h4 className="text-sm font-semibold text-text-secondary mb-1">Instagram</h4>
-                  <p className="text-text-primary font-medium">13amey_</p>
-                </div>
-              </a>
-
-              <a href="https://www.linkedin.com/in/amey-bauchkar-3394453ba/" target="_blank" rel="noreferrer" className="group flex items-center gap-4 p-4 bg-card border border-border rounded-xl hover:border-accent/50 transition-all duration-300">
-                <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center text-accent text-xl group-hover:scale-110 transition-transform duration-300">
-                  <i className="fab fa-linkedin-in"></i>
-                </div>
-                <div>
-                  <h4 className="text-sm font-semibold text-text-secondary mb-1">LinkedIn</h4>
-                  <p className="text-text-primary font-medium">Amey Bauchkar</p>
-                </div>
-              </a>
+              </div>
             </div>
-          </div>
+        </div>
 
-          <div className="bg-card border border-border rounded-2xl p-6 sm:p-8 anim-hidden animate-fade-in-up delay-200">
-            <form action="https://formspree.io/f/mykbzkpz" method="POST" className="space-y-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-text-secondary">Your Name</label>
-                  <input type="text" name="name" placeholder="John Doe" className="w-full bg-bg border border-border rounded-lg px-4 py-3 text-text-primary placeholder:text-text-secondary/50 focus:border-accent focus:ring-1 focus:ring-accent transition-all outline-none" required />
+        {/* Approach / Philosophy */}
+        <div className="h-[150vh] flex flex-col justify-center px-6 md:px-12 lg:px-24">
+            <div className="w-full flex justify-center md:justify-end">
+              <div className="max-w-2xl pointer-events-auto contact-glass-card text-right">
+                <div className="inline-flex items-center justify-end gap-4 mb-8">
+                  <span className="text-accent text-xs font-semibold tracking-[0.3em] uppercase font-inter">Approach</span>
+                  <span className="w-16 h-[1px] bg-accent/60"></span>
                 </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-text-secondary">Your Email</label>
-                  <input type="email" name="email" placeholder="john@example.com" className="w-full bg-bg border border-border rounded-lg px-4 py-3 text-text-primary placeholder:text-text-secondary/50 focus:border-accent focus:ring-1 focus:ring-accent transition-all outline-none" required />
+                <h3 className="text-4xl md:text-5xl font-semibold text-white tracking-tight mb-6">Detail obsessed.<br/>Performance driven.</h3>
+                <p className="text-white/70 font-inter font-light leading-relaxed text-lg ml-auto max-w-lg">
+                  Every line of code and every hardware prototype is built with a focus on scale, efficiency, and exceptional user experience. I don't just build to make it work; I build to make it last.
+                </p>
+              </div>
+            </div>
+        </div>
+
+        {/* Message */}
+        <div className="h-[150vh] flex flex-col justify-center px-6 md:px-12 lg:px-24">
+            <div className="w-full flex justify-center md:justify-end">
+              <div className="relative pointer-events-auto group w-full md:w-[650px] flex flex-col gap-8 contact-glass-card">
+                <div className="bg-black/30 p-10 md:p-14 rounded-3xl backdrop-blur-xl border border-white/5 shadow-2xl relative overflow-hidden transition-all duration-700 hover:bg-black/40 hover:border-white/10">
+                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-accent/0 via-accent/50 to-accent/0 opacity-50"></div>
+                  <h3 className="text-3xl md:text-4xl text-white font-medium mb-6 tracking-tight">Got a project in mind?</h3>
+                  <p className="text-white/80 text-lg md:text-xl font-light leading-relaxed font-inter mb-10">
+                    I am currently open to new opportunities, including freelance collaborations, internships, and full-time roles. Let's discuss how my cross-disciplinary skills can add value to your team.
+                  </p>
+                  <button onClick={() => setIsFormOpen(true)} className="inline-flex items-center gap-4 px-8 py-4 bg-white text-black font-semibold tracking-widest uppercase text-xs rounded-full hover:scale-[1.02] hover:bg-accent hover:text-white transition-all shadow-[0_0_40px_rgba(255,255,255,0.15)] group-hover:shadow-[0_0_40px_rgba(249,115,22,0.3)] duration-300">
+                    <span>Start a Conversation</span>
+                    <i className="fas fa-arrow-right"></i>
+                  </button>
                 </div>
               </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-text-secondary">Subject</label>
-                <input type="text" name="subject" placeholder="Project Collaboration" className="w-full bg-bg border border-border rounded-lg px-4 py-3 text-text-primary placeholder:text-text-secondary/50 focus:border-accent focus:ring-1 focus:ring-accent transition-all outline-none" required />
+            </div>
+        </div>
+
+        {/* Links */}
+        <div className="h-[150vh] flex flex-col justify-center px-6 md:px-12 lg:px-24">
+            <div className="w-full flex justify-start">
+              <div className="relative pointer-events-auto group w-full md:w-[750px] flex flex-col gap-10 contact-glass-card bg-black/20 p-10 md:p-16 rounded-3xl backdrop-blur-lg border border-white/5 transition-all duration-700 hover:bg-black/30">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                  {/* Email */}
+                  <div className="group/link">
+                    <span className="block font-inter text-white/40 mb-3 text-xs tracking-[0.2em] uppercase transition-colors group-hover/link:text-accent">Email</span>
+                    <a href="mailto:bauchkaramey1306@gmail.com" className="text-white text-xl md:text-2xl font-light tracking-tight hover:text-accent transition-colors break-all">bauchkaramey1306@gmail.com</a>
+                  </div>
+                  {/* LinkedIn */}
+                  <div className="group/link">
+                    <span className="block font-inter text-white/40 mb-3 text-xs tracking-[0.2em] uppercase transition-colors group-hover/link:text-accent">Network</span>
+                    <a href="https://www.linkedin.com/in/amey-bauchkar-3394453ba/" target="_blank" rel="noreferrer" className="text-white text-xl md:text-2xl font-light tracking-tight hover:text-accent transition-colors">LinkedIn Profile <i className="fas fa-external-link-alt text-xs ml-2 opacity-50"></i></a>
+                  </div>
+                  {/* GitHub */}
+                  <div className="group/link">
+                    <span className="block font-inter text-white/40 mb-3 text-xs tracking-[0.2em] uppercase transition-colors group-hover/link:text-accent">Code</span>
+                    <a href="https://github.com/amey-bauchkar" target="_blank" rel="noreferrer" className="text-white text-xl md:text-2xl font-light tracking-tight hover:text-accent transition-colors">GitHub Repositories <i className="fas fa-external-link-alt text-xs ml-2 opacity-50"></i></a>
+                  </div>
+                  {/* Location */}
+                  <div className="group/link">
+                    <span className="block font-inter text-white/40 mb-3 text-xs tracking-[0.2em] uppercase transition-colors group-hover/link:text-accent">Location</span>
+                    <span className="text-white text-xl md:text-2xl font-light tracking-tight">Mumbai, India</span>
+                  </div>
+                </div>
               </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-text-secondary">Message</label>
-                <textarea name="message" rows="4" placeholder="Tell me about your project..." className="w-full bg-bg border border-border rounded-lg px-4 py-3 text-text-primary placeholder:text-text-secondary/50 focus:border-accent focus:ring-1 focus:ring-accent transition-all outline-none resize-none" required></textarea>
+            </div>
+        </div>
+
+        {/* Final Quote */}
+        <div className="h-[200vh] flex flex-col justify-center items-center text-center px-6 md:px-12 lg:px-24">
+            <div className="w-full max-w-4xl mx-auto contact-glass-card">
+              <h2 className="text-5xl md:text-7xl lg:text-[6rem] font-light text-white tracking-tighter leading-[1.1] mix-blend-difference">
+                Stay curious.<br/>
+                Keep <span className="font-bold italic text-transparent bg-clip-text bg-gradient-to-r from-accent to-white">building.</span>
+              </h2>
+            </div>
+        </div>
+      </div>
+
+      {/* Contact Form Modal */}
+      {isFormOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm px-4" onClick={() => setIsFormOpen(false)}>
+          <div className="w-full max-w-2xl bg-[#151515] p-8 md:p-10 rounded-2xl border border-white/10 relative shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <button 
+              className="absolute top-6 right-6 text-white/50 hover:text-white transition-colors"
+              onClick={() => setIsFormOpen(false)}
+            >
+              <i className="fas fa-times text-2xl"></i>
+            </button>
+            
+            <form onSubmit={handleFormSubmit} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="flex flex-col gap-2">
+                  <label className="text-white/60 text-sm font-inter">Your Name</label>
+                  <input required type="text" name="name" placeholder="John Doe" className="bg-[#0f0f0f] border border-white/5 text-white p-4 rounded-xl focus:border-accent focus:ring-1 focus:ring-accent transition-all outline-none font-inter" />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label className="text-white/60 text-sm font-inter">Your Email</label>
+                  <input required type="email" name="email" placeholder="john@example.com" className="bg-[#0f0f0f] border border-white/5 text-white p-4 rounded-xl focus:border-accent focus:ring-1 focus:ring-accent transition-all outline-none font-inter" />
+                </div>
               </div>
-              <button type="submit" className="w-full bg-accent hover:bg-accent-hover text-white font-semibold py-3.5 rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-accent/25 hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2">
-                <span>Send Message</span>
-                <i className="fas fa-paper-plane"></i>
+              
+              <div className="flex flex-col gap-2">
+                <label className="text-white/60 text-sm font-inter">Subject</label>
+                <input required type="text" name="subject" placeholder="Project Collaboration" className="bg-[#0f0f0f] border border-white/5 text-white p-4 rounded-xl focus:border-accent focus:ring-1 focus:ring-accent transition-all outline-none font-inter" />
+              </div>
+              
+              <div className="flex flex-col gap-2">
+                <label className="text-white/60 text-sm font-inter">Message</label>
+                <textarea required name="message" rows="5" placeholder="Tell me about your project..." className="bg-[#0f0f0f] border border-white/5 text-white p-4 rounded-xl focus:border-accent focus:ring-1 focus:ring-accent transition-all outline-none font-inter resize-none"></textarea>
+              </div>
+              
+              <button disabled={formStatus === 'submitting'} type="submit" className="w-full bg-[#f97316] hover:bg-[#ea580c] text-white font-bold py-4 rounded-xl transition-all flex items-center justify-center gap-3 disabled:opacity-70 disabled:cursor-not-allowed text-lg">
+                {formStatus === 'submitting' ? 'Sending...' : formStatus === 'success' ? 'Message Sent!' : 'Send Message'}
+                {formStatus !== 'submitting' && formStatus !== 'success' && <i className="fas fa-paper-plane"></i>}
               </button>
+              
+              {formStatus === 'error' && (
+                <p className="text-red-500 text-center text-sm font-inter mt-2">Something went wrong. Please check your API key and try again.</p>
+              )}
             </form>
           </div>
         </div>
-      </div>
+      )}
     </section>
   );
 };

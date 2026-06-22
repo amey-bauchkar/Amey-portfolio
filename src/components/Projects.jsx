@@ -69,40 +69,64 @@ const Projects = ({ onOpenProject }) => {
             <div className="w-full flex justify-center md:justify-end">
               
               <div 
-                className="project-glass-card pointer-events-auto group w-full md:w-[500px] lg:w-[550px] xl:w-[600px] bg-black/40 backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden hover:border-accent/40 transition-colors duration-700 shadow-2xl"
+                className="relative pointer-events-auto group w-full md:w-[500px] lg:w-[600px] flex flex-col gap-6 md:gap-8"
               >
-                <div className="relative h-56 sm:h-72 overflow-hidden bg-[#111]">
+                {/* Cinematic Header (Number & Line) */}
+                <div className="flex items-end gap-6">
+                  <span className="text-6xl md:text-7xl font-light text-white/50 font-serif leading-none tracking-tighter transition-colors duration-700 group-hover:text-white/80 drop-shadow-lg">
+                    0{index + 1}
+                  </span>
+                  <div className="h-px bg-white/30 grow mb-3 sm:mb-4 relative overflow-hidden shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
+                    <div className="absolute top-0 left-0 h-full w-full bg-accent transform -translate-x-full group-hover:translate-x-0 transition-transform duration-[1s] ease-in-out"></div>
+                  </div>
+                </div>
+
+                {/* Cinematic Image Frame */}
+                <div className="relative w-full aspect-video md:aspect-[21/9] rounded-md overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.8)] group-hover:shadow-[0_0_50px_rgba(0,0,0,0.5)] transition-shadow duration-700 bg-[#0a0a0a]">
                   <img 
                     src={`/${project.image}`} 
-                    alt={project.title} 
-                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000 opacity-70 group-hover:opacity-100" 
+                    alt={project.title}
+                    className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-[2s] ease-out opacity-90 group-hover:opacity-100"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent z-10"></div>
-                  
-                  {/* Subtle index number */}
-                  <div className="absolute top-6 left-6 z-20">
-                    <span className="text-white/20 font-black text-5xl">0{index + 1}</span>
-                  </div>
+                  {/* Soft Vignette */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
+                  <div className="absolute inset-0 border border-white/10 rounded-md"></div>
                 </div>
-                
-                <div className="p-8 sm:p-10 relative z-20 bg-gradient-to-b from-black/80 to-black/95">
-                  <h3 className="text-3xl sm:text-4xl font-bold text-white mb-4 group-hover:text-accent transition-colors duration-500">{project.title}</h3>
-                  <p className="text-gray-400 text-base sm:text-lg mb-8 leading-relaxed font-light">{project.description}</p>
+
+                {/* Title and Description */}
+                <div className="flex flex-col gap-3 md:gap-4 pl-2 md:pl-4 border-l-2 border-white/20 group-hover:border-accent/80 transition-colors duration-700">
+                  <h3 className="text-3xl md:text-4xl font-extrabold text-white tracking-wide group-hover:text-accent transition-colors duration-500 drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)]">
+                    {project.title}
+                  </h3>
                   
-                  <div className="flex flex-wrap gap-3 mb-10">
-                    {project.tags.map(tag => (
-                      <span key={tag} className="text-xs sm:text-sm font-medium px-4 py-2 bg-white/5 border border-white/10 text-gray-300 rounded-lg">{tag}</span>
-                    ))}
-                  </div>
-                  
+                  <p className="text-gray-100 text-base md:text-lg font-normal leading-relaxed line-clamp-3 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+                    {project.description}
+                  </p>
+                </div>
+
+                {/* Tags */}
+                <div className="flex flex-wrap gap-2 pl-2 md:pl-4">
+                  {project.tags.map(tag => (
+                    <span key={tag} className="text-xs font-semibold px-4 py-1.5 bg-black/40 text-white rounded-full border border-white/20 shadow-[0_2px_4px_rgba(0,0,0,0.5)] group-hover:border-white/40 group-hover:bg-white/10 transition-all duration-500">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+
+                {/* Action Link */}
+                <div className="pt-2 pl-2 md:pl-4">
                   <button 
                     onClick={() => onOpenProject(project)}
-                    className="w-full py-4 rounded-xl bg-white/5 hover:bg-accent/20 border border-white/10 hover:border-accent/50 text-white font-medium tracking-wide transition-all duration-300 flex items-center justify-center gap-3 group-hover:shadow-[0_0_30px_rgba(239,68,68,0.15)]"
+                    className="inline-flex items-center gap-4 text-white hover:text-accent transition-colors duration-300 font-bold tracking-[0.2em] uppercase text-sm group/btn drop-shadow-md"
                   >
-                    <i className="fas fa-expand text-accent"></i> 
-                    <span>View Details</span>
+                    <span className="relative pb-1">
+                      Explore Work
+                      <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-accent transition-all duration-500 group-hover/btn:w-full"></span>
+                    </span>
+                    <i className="fas fa-long-arrow-alt-right transform group-hover/btn:translate-x-3 transition-transform duration-500 text-accent"></i>
                   </button>
                 </div>
+
               </div>
 
             </div>
