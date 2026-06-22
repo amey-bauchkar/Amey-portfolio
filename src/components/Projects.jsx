@@ -53,11 +53,11 @@ const Projects = ({ onOpenProject }) => {
                 <span className="text-accent text-sm sm:text-base font-bold tracking-[0.2em] uppercase">Portfolio</span>
                 <span className="w-12 h-0.5 bg-accent"></span>
               </div>
-              <h2 className="text-5xl md:text-7xl font-extrabold text-white mb-6 drop-shadow-2xl">My Archive</h2>
-              <p className="text-gray-300 text-lg md:text-xl drop-shadow-md font-light leading-relaxed">
+              <h2 className="text-4xl sm:text-5xl md:text-7xl font-extrabold text-white mb-6 drop-shadow-2xl">My Archive</h2>
+              <p className="text-gray-300 text-base sm:text-lg md:text-xl drop-shadow-md font-light leading-relaxed">
                 A collection of things I've engineered, built, and brought to life.
               </p>
-              <div className="mt-16 animate-bounce opacity-50">
+              <div className="mt-12 md:mt-16 animate-bounce opacity-50">
                 <i className="fas fa-chevron-down text-white text-2xl"></i>
               </div>
             </div>
@@ -69,14 +69,14 @@ const Projects = ({ onOpenProject }) => {
             <div className="w-full flex justify-center md:justify-end">
               
               <div 
-                className="relative pointer-events-auto group w-full md:w-[500px] lg:w-[600px] flex flex-col gap-6 md:gap-8"
+                className="relative pointer-events-auto group w-full max-w-[90vw] sm:max-w-md md:w-[500px] lg:w-[600px] flex flex-col gap-5 md:gap-8 mx-auto md:mx-0"
               >
                 {/* Cinematic Header (Number & Line) */}
-                <div className="flex items-end gap-6">
-                  <span className="text-6xl md:text-7xl font-light text-white/50 font-serif leading-none tracking-tighter transition-colors duration-700 group-hover:text-white/80 drop-shadow-lg">
+                <div className="flex items-end gap-4 md:gap-6">
+                  <span className="text-5xl md:text-7xl font-light text-white/50 font-serif leading-none tracking-tighter transition-colors duration-700 group-hover:text-white/80 drop-shadow-lg">
                     0{index + 1}
                   </span>
-                  <div className="h-px bg-white/30 grow mb-3 sm:mb-4 relative overflow-hidden shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
+                  <div className="h-px bg-white/30 grow mb-2 sm:mb-4 relative overflow-hidden shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
                     <div className="absolute top-0 left-0 h-full w-full bg-accent transform -translate-x-full group-hover:translate-x-0 transition-transform duration-[1s] ease-in-out"></div>
                   </div>
                 </div>
@@ -94,8 +94,8 @@ const Projects = ({ onOpenProject }) => {
                 </div>
 
                 {/* Title and Description */}
-                <div className="flex flex-col gap-3 md:gap-4 pl-2 md:pl-4 border-l-2 border-white/20 group-hover:border-accent/80 transition-colors duration-700">
-                  <h3 className="text-3xl md:text-4xl font-extrabold text-white tracking-wide group-hover:text-accent transition-colors duration-500 drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)]">
+                <div className="flex flex-col gap-2 md:gap-4 pl-2 md:pl-4 border-l-2 border-white/20 group-hover:border-accent/80 transition-colors duration-700">
+                  <h3 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white tracking-wide group-hover:text-accent transition-colors duration-500 drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)]">
                     {project.title}
                   </h3>
                   

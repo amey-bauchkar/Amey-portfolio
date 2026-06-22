@@ -422,15 +422,23 @@ a, button, .project-card { user-select: none; -webkit-user-select: none; }
   .hero-content {
     width: 100%;
     padding: 0 1.5rem;
+    top: 20%; /* Shift content up to leave room for bottom stats */
   }
   .hero-name-first, .hero-name-last {
-    font-size: clamp(2.8rem, 10vw, 4rem);
+    font-size: clamp(2.4rem, 9vw, 3.5rem);
+  }
+  .hero-subtitle-text {
+    font-size: 14px;
+    margin-bottom: 24px;
+  }
+  .hero-cta-row {
+    margin-bottom: 24px;
   }
   .hero-floating-stats {
     right: 0;
     left: 0;
     top: auto;
-    bottom: 32px;
+    bottom: 24px; /* Reduced from 32px */
     transform: none;
     flex-direction: row;
     justify-content: space-evenly;
@@ -444,7 +452,7 @@ a, button, .project-card { user-select: none; -webkit-user-select: none; }
   .hero-stat-item-wrap {
     align-items: center;
     border-right: 1px solid rgba(255, 255, 255, 0.15);
-    padding: 0 16px;
+    padding: 0 10px; /* Reduced from 16px */
     flex: 1;
     min-width: 0;
     background: transparent;
@@ -457,14 +465,14 @@ a, button, .project-card { user-select: none; -webkit-user-select: none; }
     transform: none;
   }
   .hero-stat-value {
-    font-size: 32px;
+    font-size: 28px; /* Reduced from 32px */
   }
   .hero-stat-value span {
-    font-size: 20px; /* Increased from 14px */
+    font-size: 16px; /* Reduced from 20px */
   }
   .hero-stat-label {
     font-size: 8px;
-    letter-spacing: 0.15em;
+    letter-spacing: 0.1em; /* Reduced from 0.15em */
     text-align: center;
   }
   .hero-scroll-indicator {

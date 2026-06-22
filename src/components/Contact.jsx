@@ -172,21 +172,21 @@ const Contact = () => {
       {/* Contact Form Modal */}
       {isFormOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm px-4" onClick={() => setIsFormOpen(false)}>
-          <div className="w-full max-w-2xl bg-[#151515] p-8 md:p-10 rounded-2xl border border-white/10 relative shadow-2xl" onClick={(e) => e.stopPropagation()}>
+          <div className="w-full max-w-2xl bg-[#151515] p-6 sm:p-8 md:p-10 rounded-2xl border border-white/10 relative shadow-2xl" onClick={(e) => e.stopPropagation()}>
             <button 
-              className="absolute top-6 right-6 text-white/50 hover:text-white transition-colors"
+              className="absolute top-4 right-4 sm:top-6 sm:right-6 text-white/50 hover:text-white transition-colors"
               onClick={() => setIsFormOpen(false)}
             >
-              <i className="fas fa-times text-2xl"></i>
+              <i className="fas fa-times text-xl sm:text-2xl"></i>
             </button>
 
-            <div className="mb-8 flex items-center gap-5">
-              <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-white/10 flex-shrink-0 shadow-lg">
+            <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5">
+              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden border-2 border-white/10 flex-shrink-0 shadow-lg">
                 <img src="/amey-photo.png" alt="Amey Bauchkar" className="w-full h-full object-cover object-center" />
               </div>
               <div>
-                <h3 className="text-3xl font-semibold text-white tracking-tight mb-1">Let's Connect</h3>
-                <p className="text-white/50 text-sm font-inter">Send me a message and I'll get back to you shortly.</p>
+                <h3 className="text-2xl sm:text-3xl font-semibold text-white tracking-tight mb-1">Let's Connect</h3>
+                <p className="text-white/50 text-xs sm:text-sm font-inter">Send me a message and I'll get back to you shortly.</p>
               </div>
             </div>
               <form onSubmit={handleFormSubmit} className="space-y-6">

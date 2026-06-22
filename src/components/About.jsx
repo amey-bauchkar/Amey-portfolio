@@ -2,7 +2,7 @@ import React from 'react';
 
 const About = () => {
   return (
-    <section id="about" className="relative min-h-screen flex items-center py-32 bg-bg z-10 border-t border-border/50">
+    <section id="about" className="relative min-h-screen flex items-center py-20 md:py-32 bg-bg z-10 border-t border-border/50">
       <div className="max-w-7xl mx-auto px-6 md:px-12 w-full">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-start">
           <div className="lg:col-span-5 reveal-up">
@@ -10,7 +10,7 @@ const About = () => {
               <span className="w-8 h-0.5 bg-accent"></span>
               <span className="text-accent text-sm font-bold tracking-wider uppercase">About Me</span>
             </div>
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-text-primary leading-tight tracking-tight uppercase" style={{ fontFamily: '"Outfit", sans-serif' }}>
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-text-primary leading-tight tracking-tight uppercase" style={{ fontFamily: '"Outfit", sans-serif' }}>
               I build<br/>what I<br/><span className="text-accent">design.</span>
             </h2>
           </div>

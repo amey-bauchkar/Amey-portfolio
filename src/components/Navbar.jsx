@@ -62,14 +62,14 @@ const Navbar = () => {
           </div>
         </div>
 
-        <div className={`mobile-menu md:hidden ${mobileMenuOpen ? 'open' : ''}`}>
-          <div className="flex flex-col gap-1 pb-6 pt-2">
-            <Link to="/" onClick={() => setMobileMenuOpen(false)} className="mobile-link px-4 py-3 rounded-lg text-text-secondary hover:text-accent hover:bg-card/50 transition-all duration-300 text-sm font-medium">Home</Link>
-            <Link to="/about" onClick={() => setMobileMenuOpen(false)} className="mobile-link px-4 py-3 rounded-lg text-text-secondary hover:text-accent hover:bg-card/50 transition-all duration-300 text-sm font-medium">About</Link>
-            <Link to="/projects" onClick={() => setMobileMenuOpen(false)} className="mobile-link px-4 py-3 rounded-lg text-text-secondary hover:text-accent hover:bg-card/50 transition-all duration-300 text-sm font-medium">Projects</Link>
-            <Link to="/skills" onClick={() => setMobileMenuOpen(false)} className="mobile-link px-4 py-3 rounded-lg text-text-secondary hover:text-accent hover:bg-card/50 transition-all duration-300 text-sm font-medium">Skills</Link>
-            <Link to="/contact" onClick={() => setMobileMenuOpen(false)} className="mobile-link px-4 py-3 rounded-lg text-text-secondary hover:text-accent hover:bg-card/50 transition-all duration-300 text-sm font-medium">Contact</Link>
-            <Link to="/contact" onClick={() => setMobileMenuOpen(false)} className="sm:hidden mx-4 mt-2 text-center bg-accent hover:bg-accent-hover text-white text-sm font-semibold px-5 py-2.5 rounded-md transition-all duration-300">
+        <div className={`mobile-menu md:hidden absolute left-0 right-0 top-full bg-[#0f0f0f]/95 backdrop-blur-md border-b border-white/10 shadow-2xl ${mobileMenuOpen ? 'open' : ''}`}>
+          <div className="flex flex-col gap-1 px-6 pb-6 pt-4">
+            <Link to="/" onClick={() => setMobileMenuOpen(false)} className="mobile-link px-4 py-3 rounded-lg text-text-secondary hover:text-white hover:bg-white/5 transition-all duration-300 text-sm font-medium">Home</Link>
+            <Link to="/about" onClick={() => setMobileMenuOpen(false)} className="mobile-link px-4 py-3 rounded-lg text-text-secondary hover:text-white hover:bg-white/5 transition-all duration-300 text-sm font-medium">About</Link>
+            <Link to="/projects" onClick={() => setMobileMenuOpen(false)} className="mobile-link px-4 py-3 rounded-lg text-text-secondary hover:text-white hover:bg-white/5 transition-all duration-300 text-sm font-medium">Projects</Link>
+            <Link to="/skills" onClick={() => setMobileMenuOpen(false)} className="mobile-link px-4 py-3 rounded-lg text-text-secondary hover:text-white hover:bg-white/5 transition-all duration-300 text-sm font-medium">Skills</Link>
+            <Link to="/contact" onClick={() => setMobileMenuOpen(false)} className="mobile-link px-4 py-3 rounded-lg text-text-secondary hover:text-white hover:bg-white/5 transition-all duration-300 text-sm font-medium">Contact</Link>
+            <Link to="/contact" onClick={() => setMobileMenuOpen(false)} className="sm:hidden mx-4 mt-4 text-center bg-accent hover:bg-accent-hover text-white text-sm font-semibold px-5 py-3 rounded-md transition-all duration-300 shadow-lg shadow-accent/20">
               Let's Talk
             </Link>
           </div>

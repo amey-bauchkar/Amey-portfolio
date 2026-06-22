@@ -2,11 +2,11 @@ import React from 'react';
 
 const Skills = () => {
   return (
-    <section id="skills" className="relative py-24 bg-bg bg-grid z-10">
+    <section id="skills" className="relative py-16 md:py-24 bg-bg bg-grid z-10">
       <div className="absolute top-1/3 -right-32 w-96 h-96 bg-accent/5 rounded-full blur-[120px] pointer-events-none"></div>
 
       <div className="max-w-7xl mx-auto px-6 md:px-12">
-        <div className="mb-12 md:mb-16 anim-hidden animate-fade-in-up">
+        <div className="mb-10 md:mb-16 anim-hidden animate-fade-in-up">
           <div className="inline-flex items-center gap-2 mb-3">
             <span className="w-8 h-0.5 bg-accent"></span>
             <span className="text-accent text-sm font-bold tracking-wider uppercase">My Expertise</span>
@@ -14,7 +14,7 @@ const Skills = () => {
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-text-primary">Skills & Technologies</h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
           
           <div className="bg-card border border-border rounded-2xl p-6 sm:p-8 hover:border-accent/50 transition-all duration-300 hover:-translate-y-1 anim-hidden animate-fade-in-up delay-100">
             <div className="flex items-center gap-4 mb-6">
