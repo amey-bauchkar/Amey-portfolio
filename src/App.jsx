@@ -111,7 +111,7 @@ function App() {
   return (
     <>
       {isInitialLoading && <Loader onComplete={() => setIsInitialLoading(false)} />}
-      {isInitialLoading && <PreloadContainer />}
+      <PreloadContainer />
       <div ref={appRef} className="font-sans text-text-primary bg-bg min-h-screen selection:bg-accent selection:text-white overflow-x-clip">
         <Navbar onOpenCv={() => setIsCvModalOpen(true)} />
       

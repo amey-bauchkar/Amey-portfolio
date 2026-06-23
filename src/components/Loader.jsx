@@ -8,94 +8,67 @@ const Loader = ({ onComplete }) => {
   
   const [assetsReady, setAssetsReady] = useState(false);
   const [minTimeElapsed, setMinTimeElapsed] = useState(false);
-  const progressRef = useRef(0);
+  const lastProgressRef = useRef(0);
 
-  // Minimum display time (3s) so the loader doesn't flash away
+  // Minimum display time so the loader doesn't flash away
   useEffect(() => {
     const timer = setTimeout(() => setMinTimeElapsed(true), 3000);
     return () => clearTimeout(timer);
   }, []);
 
-  // Update the counter display
-  const updateCounter = useCallback((value) => {
-    if (!counterRef.current) return;
-    progressRef.current = value;
-    gsap.to(counterRef.current, {
-      innerHTML: value,
-      duration: 0.3,
-      snap: "innerHTML",
-      ease: "power1.out"
-    });
-  }, []);
-
-  // Poll the DOM for all media elements loaded by the pre-rendered pages
+  // Track real preloading progress
   useEffect(() => {
     let isMounted = true;
     let pollInterval;
 
-    const checkAllMedia = () => {
-      // Grab every <img> and <video> element currently in the entire DOM
-      const allImages = Array.from(document.querySelectorAll('img'));
-      const allVideos = Array.from(document.querySelectorAll('video'));
+    const checkProgress = () => {
+      if (!isMounted) return;
 
-      const totalMedia = allImages.length + allVideos.length;
-      if (totalMedia === 0) return; // Components haven't mounted yet
+      const totalFrames = window.__framesToPreload || 0;
+      const loadedFrames = window.__framesPreloaded || 0;
 
-      let loadedCount = 0;
+      // Don't do anything until PreloadContainer has initialized
+      if (totalFrames === 0) return;
 
-      allImages.forEach(img => {
-        if (img.complete && img.naturalWidth > 0) loadedCount++;
-      });
+      // Calculate real progress (0-99, reserve 100 for the exit animation)
+      const rawProgress = Math.floor((loadedFrames / totalFrames) * 99);
+      // Only go up, never down
+      const progress = Math.max(lastProgressRef.current, rawProgress);
 
-      allVideos.forEach(vid => {
-        // readyState >= 3 means HAVE_FUTURE_DATA (enough to play)
-        if (vid.readyState >= 3) loadedCount++;
-      });
-
-      // Also check if canvas sequence frames are cached by looking for
-      // a global signal. We'll set this from within the preload container.
-      const framesLoaded = window.__framesPreloaded || 0;
-      const totalFrames = window.__framesToPreload || 1;
-      const frameProgress = Math.min(framesLoaded / totalFrames, 1);
-
-      // Weight: 30% DOM media, 70% canvas frames (they're the heavy part)
-      const mediaProgress = totalMedia > 0 ? loadedCount / totalMedia : 1;
-      const combinedProgress = Math.floor((mediaProgress * 0.3 + frameProgress * 0.7) * 99);
-
-      if (isMounted) {
-        updateCounter(Math.max(progressRef.current, combinedProgress));
+      if (progress !== lastProgressRef.current && counterRef.current) {
+        lastProgressRef.current = progress;
+        gsap.to(counterRef.current, {
+          innerHTML: progress,
+          duration: 0.4,
+          snap: "innerHTML",
+          ease: "power1.out"
+        });
       }
 
-      // Check if everything is truly done
-      const allMediaDone = loadedCount >= totalMedia;
-      const allFramesDone = framesLoaded >= totalFrames;
-
-      if (allMediaDone && allFramesDone && isMounted) {
+      // Check if ALL frames are loaded
+      if (loadedFrames >= totalFrames) {
         clearInterval(pollInterval);
         setAssetsReady(true);
       }
     };
 
-    // Start polling after a short delay to let pre-render container mount
-    const startDelay = setTimeout(() => {
-      pollInterval = setInterval(checkAllMedia, 500);
-    }, 500);
+    // Poll every 300ms
+    pollInterval = setInterval(checkProgress, 300);
 
-    // Safety fallback: 60 seconds max
+    // Safety fallback: 3 minutes for extremely slow connections
     const fallback = setTimeout(() => {
       if (isMounted) {
         clearInterval(pollInterval);
         setAssetsReady(true);
       }
-    }, 60000);
+    }, 180000);
 
     return () => {
       isMounted = false;
-      clearTimeout(startDelay);
       clearInterval(pollInterval);
       clearTimeout(fallback);
     };
-  }, [updateCounter]);
+  }, []);
 
   // Intro animation
   useGSAP(() => {
@@ -110,16 +83,13 @@ const Loader = ({ onComplete }) => {
     });
   }, { scope: containerRef });
 
-  // Exit animation — only when BOTH conditions are met
+  // Exit animation — only when BOTH conditions met
   useGSAP(() => {
     if (assetsReady && minTimeElapsed) {
       const exitTl = gsap.timeline({
         onComplete: () => {
           document.body.style.overflow = '';
           if (window.lenis) window.lenis.start();
-          // Clean up global trackers
-          delete window.__framesPreloaded;
-          delete window.__framesToPreload;
           if (onComplete) onComplete();
         }
       });
