@@ -1,66 +1,129 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 
 const Loader = ({ onComplete }) => {
   const containerRef = useRef(null);
   const counterRef = useRef(null);
-  const [progress, setProgress] = useState(0);
+  
+  const [assetsLoaded, setAssetsLoaded] = useState(false);
+  const [minTimeElapsed, setMinTimeElapsed] = useState(false);
+  const tlRef = useRef();
 
+  // Minimum time to show the cinematic loader (2.5s)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setMinTimeElapsed(true);
+    }, 2500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Wait for window load and all initial videos/images
+  useEffect(() => {
+    let isMounted = true;
+
+    const checkAssets = async () => {
+      // 1. Wait for window load event if document isn't complete yet
+      if (document.readyState !== 'complete') {
+        await new Promise(resolve => window.addEventListener('load', resolve, { once: true }));
+      }
+      
+      // 2. Query all media elements currently in the DOM
+      const mediaElements = [
+        ...Array.from(document.querySelectorAll('video')),
+        ...Array.from(document.querySelectorAll('img'))
+      ];
+      
+      const mediaPromises = mediaElements.map(el => {
+        if (el.tagName === 'IMG' && el.complete) return Promise.resolve();
+        if (el.tagName === 'VIDEO' && el.readyState >= 3) return Promise.resolve();
+        
+        return new Promise(resolve => {
+          const resolveHandler = () => resolve();
+          // For images
+          el.addEventListener('load', resolveHandler, { once: true });
+          // For videos
+          el.addEventListener('canplay', resolveHandler, { once: true });
+          el.addEventListener('loadeddata', resolveHandler, { once: true });
+          // Fallback on error to avoid infinite loading
+          el.addEventListener('error', resolveHandler, { once: true });
+        });
+      });
+
+      await Promise.all(mediaPromises);
+      if (isMounted) setAssetsLoaded(true);
+    };
+
+    checkAssets();
+    
+    // Safety fallback: if some assets take longer than 12 seconds, force exit to avoid hanging the site
+    const fallback = setTimeout(() => {
+      if (isMounted) setAssetsLoaded(true);
+    }, 12000);
+
+    return () => {
+      isMounted = false;
+      clearTimeout(fallback);
+    };
+  }, []);
+
+  // Initial intro animation
   useGSAP(() => {
-    // Prevent scrolling while loading
     document.body.style.overflow = 'hidden';
     if (window.lenis) window.lenis.stop();
 
-    const tl = gsap.timeline({
-      onComplete: () => {
-        document.body.style.overflow = '';
-        if (window.lenis) window.lenis.start();
-        if (onComplete) onComplete();
-      }
-    });
+    const tl = gsap.timeline();
+    tlRef.current = tl;
 
-    // Simulate loading progress
+    // Simulate progress up to 99% while we wait
     tl.to(counterRef.current, {
-      innerHTML: 100,
-      duration: 3,
+      innerHTML: 99,
+      duration: 2.5,
       snap: "innerHTML",
-      ease: "power3.inOut",
-      onUpdate: function() {
-        setProgress(Math.round(this.targets()[0].innerHTML));
-      }
+      ease: "power2.out"
     }, 0);
 
-    // Text reveal animation
     tl.fromTo('.loader-text', {
-      y: 50,
-      opacity: 0,
-      skewY: 5
+      y: 50, opacity: 0, skewY: 5
     }, {
-      y: 0,
-      opacity: 1,
-      skewY: 0,
-      duration: 1,
-      stagger: 0.2,
-      ease: "power3.out"
+      y: 0, opacity: 1, skewY: 0, duration: 1, stagger: 0.2, ease: "power3.out"
     }, 0.2);
 
-    // Scale down text slightly before exit
-    tl.to('.loader-content', {
-      scale: 0.95,
-      opacity: 0,
-      duration: 0.8,
-      ease: "power2.inOut"
-    }, 3);
-
-    // Slide up exit animation
-    tl.to(containerRef.current, {
-      y: "-100%",
-      duration: 1.2,
-      ease: "power4.inOut"
-    }, 3.2);
-
   }, { scope: containerRef });
+
+  // Outro animation triggered only when both minimum time passed AND assets loaded
+  useGSAP(() => {
+    if (assetsLoaded && minTimeElapsed && tlRef.current) {
+      const exitTl = gsap.timeline({
+        onComplete: () => {
+          document.body.style.overflow = '';
+          if (window.lenis) window.lenis.start();
+          if (onComplete) onComplete();
+        }
+      });
+
+      // Finish the counter to exactly 100
+      exitTl.to(counterRef.current, {
+        innerHTML: 100,
+        duration: 0.5,
+        snap: "innerHTML",
+        ease: "power1.out"
+      });
+
+      exitTl.to('.loader-content', {
+        scale: 0.95,
+        opacity: 0,
+        duration: 0.8,
+        ease: "power2.inOut"
+      }, "+=0.2");
+
+      exitTl.to(containerRef.current, {
+        y: "-100%",
+        duration: 1.2,
+        ease: "power4.inOut"
+      }, "-=0.4");
+    }
+  }, [assetsLoaded, minTimeElapsed]);
 
   return (
     <div 
