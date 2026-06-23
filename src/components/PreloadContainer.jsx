@@ -41,8 +41,20 @@ const PreloadContainer = () => {
     // Load a single frame and return a promise
     const loadFrame = (set, index) => {
       return new Promise((resolve) => {
-        const img = new Image();
         const url = `${set.path}${String(index + 1).padStart(4, '0')}.jpg`;
+
+        // For the very first 10 frames of each page, inject a <link rel="preload"> 
+        // to force the core browser engine to download them faster than JS execution
+        if (index < 10) {
+          const link = document.createElement('link');
+          link.rel = 'preload';
+          link.as = 'image';
+          link.href = url;
+          link.fetchPriority = 'high';
+          document.head.appendChild(link);
+        }
+
+        const img = new Image();
         
         img.onload = () => {
           window.__framesPreloaded++;
@@ -61,7 +73,9 @@ const PreloadContainer = () => {
     // Load all frames with controlled concurrency
     // Strategy: Round-robin across all 4 sets so each page gets frames progressively
     const loadAllFrames = async () => {
-      const BATCH_SIZE = 8; // 8 concurrent downloads at a time (safe for all browsers)
+      // Vercel uses HTTP/2 which allows multiplexing. We can safely bump this to 48 
+      // to completely saturate the user's internet bandwidth.
+      const BATCH_SIZE = 48; 
       const maxCount = Math.max(...frameSets.reduce((acc, s) => [...acc, s.count], []));
       
       for (let frameIdx = 0; frameIdx < maxCount; frameIdx += BATCH_SIZE) {
