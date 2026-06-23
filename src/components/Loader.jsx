@@ -18,48 +18,87 @@ const Loader = ({ onComplete }) => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Wait for window load and all initial videos/images
+  // Real Preloader Logic
   useEffect(() => {
     let isMounted = true;
 
-    const checkAssets = async () => {
-      // 1. Wait for window load event if document isn't complete yet
-      if (document.readyState !== 'complete') {
-        await new Promise(resolve => window.addEventListener('load', resolve, { once: true }));
+    const frameUrls = Array.from({ length: 240 }, (_, i) => \`/contact-frames/frame_\${String(i + 1).padStart(4, '0')}.jpg\`);
+    
+    const globalAssets = [
+      '/convert_the_above_video_into_c.mp4',
+      '/Demo.mp4',
+      '/aqualens-cover.png',
+      '/line-follower.jpg',
+      '/self-balancing.avif',
+      '/smart-dustbin.jpg',
+      '/crane-safety.jpg',
+      '/amey-photo.png',
+      '/Amey_Bauchkar_Resume.png',
+      ...frameUrls
+    ];
+
+    const totalAssets = globalAssets.length;
+    let loadedAssets = 0;
+
+    const updateProgress = () => {
+      if (!isMounted) return;
+      loadedAssets++;
+      const currentProgress = Math.floor((loadedAssets / totalAssets) * 99);
+      gsap.to(counterRef.current, {
+        innerHTML: currentProgress,
+        duration: 0.2,
+        snap: "innerHTML",
+        ease: "power1.out"
+      });
+    };
+
+    const preloadAsset = (url) => {
+      return new Promise((resolve) => {
+        if (url.endsWith('.mp4') || url.endsWith('.webm')) {
+          const video = document.createElement('video');
+          video.src = url;
+          video.preload = 'auto';
+          video.muted = true;
+          // Don't append to DOM to avoid layout shifts, just force load
+          const resolveHandler = () => {
+            updateProgress();
+            resolve();
+          };
+          video.addEventListener('canplaythrough', resolveHandler, { once: true });
+          video.addEventListener('error', resolveHandler, { once: true });
+          video.load();
+        } else {
+          const img = new Image();
+          img.src = url;
+          img.onload = () => {
+            updateProgress();
+            resolve();
+          };
+          img.onerror = () => {
+            updateProgress();
+            resolve();
+          };
+        }
+      });
+    };
+
+    const loadAll = async () => {
+      // Chunk requests slightly to not crash older browsers, though Promise.all is usually fine
+      const chunkSize = 20;
+      for (let i = 0; i < globalAssets.length; i += chunkSize) {
+        const chunk = globalAssets.slice(i, i + chunkSize);
+        await Promise.all(chunk.map(url => preloadAsset(url)));
       }
       
-      // 2. Query all media elements currently in the DOM
-      const mediaElements = [
-        ...Array.from(document.querySelectorAll('video')),
-        ...Array.from(document.querySelectorAll('img'))
-      ];
-      
-      const mediaPromises = mediaElements.map(el => {
-        if (el.tagName === 'IMG' && el.complete) return Promise.resolve();
-        if (el.tagName === 'VIDEO' && el.readyState >= 3) return Promise.resolve();
-        
-        return new Promise(resolve => {
-          const resolveHandler = () => resolve();
-          // For images
-          el.addEventListener('load', resolveHandler, { once: true });
-          // For videos
-          el.addEventListener('canplay', resolveHandler, { once: true });
-          el.addEventListener('loadeddata', resolveHandler, { once: true });
-          // Fallback on error to avoid infinite loading
-          el.addEventListener('error', resolveHandler, { once: true });
-        });
-      });
-
-      await Promise.all(mediaPromises);
       if (isMounted) setAssetsLoaded(true);
     };
 
-    checkAssets();
-    
-    // Safety fallback: if some assets take longer than 12 seconds, force exit to avoid hanging the site
+    loadAll();
+
+    // Fallback: 45 seconds max wait time
     const fallback = setTimeout(() => {
       if (isMounted) setAssetsLoaded(true);
-    }, 12000);
+    }, 45000);
 
     return () => {
       isMounted = false;
@@ -74,14 +113,6 @@ const Loader = ({ onComplete }) => {
 
     const tl = gsap.timeline();
     tlRef.current = tl;
-
-    // Simulate progress up to 99% while we wait
-    tl.to(counterRef.current, {
-      innerHTML: 99,
-      duration: 2.5,
-      snap: "innerHTML",
-      ease: "power2.out"
-    }, 0);
 
     tl.fromTo('.loader-text', {
       y: 50, opacity: 0, skewY: 5
