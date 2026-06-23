@@ -10,6 +10,7 @@ import Footer from './components/Footer';
 import ProjectModal from './components/ProjectModal';
 import CodeViewerModal from './components/CodeViewerModal';
 import CvModal from './components/CvModal';
+import Loader from './components/Loader';
 
 import HomePage from './pages/HomePage';
 import AboutPage from './pages/AboutPage';
@@ -22,6 +23,8 @@ gsap.registerPlugin(ScrollTrigger);
 function App() {
   const appRef = useRef(null);
   const location = useLocation();
+  
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
   
   // State for Modals
   const [activeProject, setActiveProject] = useState(null);
@@ -105,8 +108,10 @@ function App() {
   };
 
   return (
-    <div ref={appRef} className="font-sans text-text-primary bg-bg min-h-screen selection:bg-accent selection:text-white overflow-x-clip">
-      <Navbar onOpenCv={() => setIsCvModalOpen(true)} />
+    <>
+      {isInitialLoading && <Loader onComplete={() => setIsInitialLoading(false)} />}
+      <div ref={appRef} className="font-sans text-text-primary bg-bg min-h-screen selection:bg-accent selection:text-white overflow-x-clip">
+        <Navbar onOpenCv={() => setIsCvModalOpen(true)} />
       
       <main>
         <Routes>
@@ -137,6 +142,7 @@ function App() {
         onClose={() => setIsCvModalOpen(false)} 
       />
     </div>
+    </>
   );
 }
 
