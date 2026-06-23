@@ -22,7 +22,7 @@ const Loader = ({ onComplete }) => {
   useEffect(() => {
     let isMounted = true;
 
-    const frameUrls = Array.from({ length: 240 }, (_, i) => \`/contact-frames/frame_\${String(i + 1).padStart(4, '0')}.jpg\`);
+    const frameUrls = Array.from({ length: 240 }, (_, i) => `/contact-frames/frame_${String(i + 1).padStart(4, '0')}.jpg`);
     
     const globalAssets = [
       '/convert_the_above_video_into_c.mp4',
