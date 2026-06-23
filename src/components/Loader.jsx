@@ -24,16 +24,8 @@ const Loader = ({ onComplete }) => {
     const checkProgress = () => {
       if (!isMounted) return;
 
-      const totalFrames = window.__framesToPreload || 0;
-      const loadedFrames = window.__framesPreloaded || 0;
-
-      // Don't do anything until PreloadContainer has initialized
-      if (totalFrames === 0) return;
-
-      // Calculate real progress (0-99, reserve 100 for the exit animation)
-      const rawProgress = Math.floor((loadedFrames / totalFrames) * 99);
-      // Only go up, never down
-      const progress = Math.max(lastProgressRef.current, rawProgress);
+      // Now reads the precise byte-progress directly
+      const progress = window.__preloadProgress || 0;
 
       if (progress !== lastProgressRef.current && counterRef.current) {
         lastProgressRef.current = progress;
@@ -45,8 +37,8 @@ const Loader = ({ onComplete }) => {
         });
       }
 
-      // Check if ALL frames are loaded
-      if (loadedFrames >= totalFrames) {
+      // Check if EVERYTHING is unzipped and ready
+      if (progress >= 100) {
         clearInterval(pollInterval);
         setAssetsReady(true);
       }

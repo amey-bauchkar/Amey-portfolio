@@ -1,17 +1,12 @@
 import React, { useEffect } from 'react';
+import * as fflate from 'fflate';
 
 /**
- * PreloadContainer
+ * PreloadContainer (Binary ZIP Mode)
  * 
- * Preloads ALL heavy assets with CONTROLLED concurrency to avoid overwhelming
- * the browser's connection limit (~6 per domain). Loads frames in small batches
- * of 8, waits for each batch to finish, then loads the next batch.
- * 
- * Image objects are stored permanently on window.__cachedFrames so canvas
- * sequence components reuse them directly — zero re-downloading.
- * 
- * This component should NEVER be unmounted so frames that haven't finished
- * loading continue downloading in the background.
+ * Downloads 4 zip files using XHR to track precise byte progress.
+ * Unzips in memory and creates Blob URLs.
+ * Bypasses 960 HTTP requests, dramatically improving speed in Incognito.
  */
 
 const PreloadContainer = () => {
@@ -21,82 +16,91 @@ const PreloadContainer = () => {
     if (window.__preloadStarted) return;
     window.__preloadStarted = true;
 
-    const frameSets = [
-      { key: 'frames',          count: 240, path: '/frames/frame_' },
-      { key: 'projects-frames', count: 240, path: '/projects-frames/frame_' },
-      { key: 'workshop-frames', count: 240, path: '/workshop-frames/frame_' },
-      { key: 'contact-frames',  count: 240, path: '/contact-frames/frame_' },
+    const zipAssets = [
+      { key: 'frames',          url: '/frames.zip',          expectedSize: 17277506 },
+      { key: 'projects-frames', url: '/projects-frames.zip', expectedSize: 27243606 },
+      { key: 'workshop-frames', url: '/workshop-frames.zip', expectedSize: 47386201 },
+      { key: 'contact-frames',  url: '/contact-frames.zip',  expectedSize: 25519194 },
     ];
 
-    const totalFrames = frameSets.reduce((sum, s) => sum + s.count, 0);
-    window.__framesToPreload = totalFrames;
-    window.__framesPreloaded = 0;
-    window.__cachedFrames = {};
+    window.__cachedFrames = {
+      'frames': new Array(240).fill(null),
+      'projects-frames': new Array(240).fill(null),
+      'workshop-frames': new Array(240).fill(null),
+      'contact-frames': new Array(240).fill(null),
+    };
 
-    // Pre-create all Image object arrays
-    frameSets.forEach(set => {
-      window.__cachedFrames[set.key] = new Array(set.count).fill(null);
-    });
+    window.__totalBytesToLoad = zipAssets.reduce((sum, a) => sum + a.expectedSize, 0);
+    window.__preloadProgress = 0;
+    
+    let loadedBytesPerFile = {
+      'frames': 0,
+      'projects-frames': 0,
+      'workshop-frames': 0,
+      'contact-frames': 0,
+    };
 
-    // Load a single frame and return a promise
-    const loadFrame = (set, index) => {
+    const loadZip = (asset) => {
       return new Promise((resolve) => {
-        const url = `${set.path}${String(index + 1).padStart(4, '0')}.jpg`;
-
-        // For the very first 10 frames of each page, inject a <link rel="preload"> 
-        // to force the core browser engine to download them faster than JS execution
-        if (index < 10) {
-          const link = document.createElement('link');
-          link.rel = 'preload';
-          link.as = 'image';
-          link.href = url;
-          link.fetchPriority = 'high';
-          document.head.appendChild(link);
-        }
-
-        const img = new Image();
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', asset.url, true);
+        xhr.responseType = 'arraybuffer';
         
-        img.onload = () => {
-          window.__framesPreloaded++;
-          resolve();
+        xhr.onprogress = (event) => {
+          if (event.lengthComputable) {
+            loadedBytesPerFile[asset.key] = event.loaded;
+            const currentTotal = Object.values(loadedBytesPerFile).reduce((a, b) => a + b, 0);
+            const progress = Math.min(99, Math.floor((currentTotal / window.__totalBytesToLoad) * 100));
+            // Ensure progress never goes backwards
+            window.__preloadProgress = Math.max(window.__preloadProgress, progress);
+          }
         };
-        img.onerror = () => {
-          window.__framesPreloaded++;
-          resolve();
+
+        xhr.onload = () => {
+          if (xhr.status === 200 || xhr.status === 304) {
+            const buffer = new Uint8Array(xhr.response);
+            
+            // Unzip asynchronously to not block the main UI thread
+            fflate.unzip(buffer, (err, unzipped) => {
+              if (err) {
+                console.error('Error unzipping', asset.key, err);
+                resolve();
+                return;
+              }
+
+              // Process each file inside the zip
+              for (const [filename, fileData] of Object.entries(unzipped)) {
+                if (filename.endsWith('.jpg')) {
+                  // extract index from "frame_0001.jpg"
+                  const match = filename.match(/frame_(\d+)\.jpg/);
+                  if (match) {
+                    const idx = parseInt(match[1], 10) - 1;
+                    const blob = new Blob([fileData], { type: 'image/jpeg' });
+                    const url = URL.createObjectURL(blob);
+                    
+                    const img = new Image();
+                    img.src = url;
+                    window.__cachedFrames[asset.key][idx] = img;
+                  }
+                }
+              }
+              resolve();
+            });
+          } else {
+            resolve();
+          }
         };
-        
-        img.src = url;
-        window.__cachedFrames[set.key][index] = img;
+
+        xhr.onerror = () => resolve(); // Ignore errors to prevent infinite hang
+        xhr.send();
       });
     };
 
-    // Load all frames with controlled concurrency
-    // Strategy: Round-robin across all 4 sets so each page gets frames progressively
-    const loadAllFrames = async () => {
-      // Vercel uses HTTP/2 which allows multiplexing. We can safely bump this to 48 
-      // to completely saturate the user's internet bandwidth.
-      const BATCH_SIZE = 48; 
-      const maxCount = Math.max(...frameSets.reduce((acc, s) => [...acc, s.count], []));
-      
-      for (let frameIdx = 0; frameIdx < maxCount; frameIdx += BATCH_SIZE) {
-        const batch = [];
-        
-        for (let b = 0; b < BATCH_SIZE && (frameIdx + b) < maxCount; b++) {
-          const idx = frameIdx + b;
-          // For each frame index, load that frame from ALL sets that have it
-          frameSets.forEach(set => {
-            if (idx < set.count) {
-              batch.push(loadFrame(set, idx));
-            }
-          });
-        }
-        
-        // Wait for entire batch before starting next batch
-        await Promise.all(batch);
-      }
-    };
-
-    loadAllFrames();
+    // We can load all 4 Zips concurrently, HTTP/2 multiplexing + TCP scaling will maximize bandwidth
+    Promise.all(zipAssets.map(loadZip)).then(() => {
+      // Mark as 100% when everything is downloaded and unzipped
+      window.__preloadProgress = 100;
+    });
 
     // Also preload videos by fetching them into browser cache
     const videoUrls = [
@@ -115,7 +119,7 @@ const PreloadContainer = () => {
       window.__cachedVideos.push(video);
     });
 
-    // Also preload key images
+    // Also preload key images natively
     const imageUrls = [
       '/aqualens-cover.png',
       '/line-follower.jpg',
