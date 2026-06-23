@@ -159,6 +159,14 @@ const Loader = ({ onComplete }) => {
               </h2>
               <span className="text-3xl sm:text-5xl font-bold text-accent">%</span>
             </div>
+
+            {/* Fullscreen hint */}
+            <div className="loader-text flex items-center justify-center gap-3 mt-6 opacity-60">
+              <i className="fas fa-expand text-accent text-sm animate-pulse"></i>
+              <p className="text-[10px] sm:text-xs tracking-[0.25em] text-text-secondary normal-case font-inter">
+                Go fullscreen for the best experience
+              </p>
+            </div>
           </div>
         </div>
 
