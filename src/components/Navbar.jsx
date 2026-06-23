@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -17,6 +17,16 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const navLinkClass = ({ isActive }) =>
+    `relative text-sm font-medium transition-colors duration-300 group ${
+      isActive ? 'text-accent' : 'text-text-secondary hover:text-accent'
+    }`;
+
+  const navLineClass = ({ isActive }) =>
+    `absolute -bottom-1 left-0 h-0.5 bg-accent transition-all duration-300 rounded-full ${
+      isActive ? 'w-full' : 'w-0 group-hover:w-full'
+    }`;
+
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-transparent animate-slide-down">
       <div className="max-w-7xl mx-auto px-6 md:px-12">
@@ -26,26 +36,46 @@ const Navbar = () => {
           </Link>
 
           <div className="hidden md:flex items-center gap-8">
-            <Link to="/" className="relative text-sm font-medium text-text-secondary hover:text-accent transition-colors duration-300 group">
-              Home
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full rounded-full"></span>
-            </Link>
-            <Link to="/about" className="relative text-sm font-medium text-text-secondary hover:text-accent transition-colors duration-300 group">
-              About
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full rounded-full"></span>
-            </Link>
-            <Link to="/projects" className="relative text-sm font-medium text-text-secondary hover:text-accent transition-colors duration-300 group">
-              Projects
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full rounded-full"></span>
-            </Link>
-            <Link to="/skills" className="relative text-sm font-medium text-text-secondary hover:text-accent transition-colors duration-300 group">
-              Skills
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full rounded-full"></span>
-            </Link>
-            <Link to="/contact" className="relative text-sm font-medium text-text-secondary hover:text-accent transition-colors duration-300 group">
-              Contact
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full rounded-full"></span>
-            </Link>
+            <NavLink to="/" className={navLinkClass}>
+              {({ isActive }) => (
+                <>
+                  Home
+                  <span className={navLineClass({ isActive })}></span>
+                </>
+              )}
+            </NavLink>
+            <NavLink to="/about" className={navLinkClass}>
+              {({ isActive }) => (
+                <>
+                  About
+                  <span className={navLineClass({ isActive })}></span>
+                </>
+              )}
+            </NavLink>
+            <NavLink to="/projects" className={navLinkClass}>
+              {({ isActive }) => (
+                <>
+                  Projects
+                  <span className={navLineClass({ isActive })}></span>
+                </>
+              )}
+            </NavLink>
+            <NavLink to="/skills" className={navLinkClass}>
+              {({ isActive }) => (
+                <>
+                  Skills
+                  <span className={navLineClass({ isActive })}></span>
+                </>
+              )}
+            </NavLink>
+            <NavLink to="/contact" className={navLinkClass}>
+              {({ isActive }) => (
+                <>
+                  Contact
+                  <span className={navLineClass({ isActive })}></span>
+                </>
+              )}
+            </NavLink>
           </div>
 
           <div className="flex items-center gap-4">
@@ -64,11 +94,11 @@ const Navbar = () => {
 
         <div className={`mobile-menu md:hidden absolute left-0 right-0 top-full bg-[#0f0f0f]/95 backdrop-blur-md border-b border-white/10 shadow-2xl ${mobileMenuOpen ? 'open' : ''}`}>
           <div className="flex flex-col gap-1 px-6 pb-6 pt-4">
-            <Link to="/" onClick={() => setMobileMenuOpen(false)} className="mobile-link px-4 py-3 rounded-lg text-text-secondary hover:text-white hover:bg-white/5 transition-all duration-300 text-sm font-medium">Home</Link>
-            <Link to="/about" onClick={() => setMobileMenuOpen(false)} className="mobile-link px-4 py-3 rounded-lg text-text-secondary hover:text-white hover:bg-white/5 transition-all duration-300 text-sm font-medium">About</Link>
-            <Link to="/projects" onClick={() => setMobileMenuOpen(false)} className="mobile-link px-4 py-3 rounded-lg text-text-secondary hover:text-white hover:bg-white/5 transition-all duration-300 text-sm font-medium">Projects</Link>
-            <Link to="/skills" onClick={() => setMobileMenuOpen(false)} className="mobile-link px-4 py-3 rounded-lg text-text-secondary hover:text-white hover:bg-white/5 transition-all duration-300 text-sm font-medium">Skills</Link>
-            <Link to="/contact" onClick={() => setMobileMenuOpen(false)} className="mobile-link px-4 py-3 rounded-lg text-text-secondary hover:text-white hover:bg-white/5 transition-all duration-300 text-sm font-medium">Contact</Link>
+            <NavLink to="/" onClick={() => setMobileMenuOpen(false)} className={({ isActive }) => `mobile-link px-4 py-3 rounded-lg hover:text-white hover:bg-white/5 transition-all duration-300 text-sm font-medium ${isActive ? 'text-accent bg-white/5' : 'text-text-secondary'}`}>Home</NavLink>
+            <NavLink to="/about" onClick={() => setMobileMenuOpen(false)} className={({ isActive }) => `mobile-link px-4 py-3 rounded-lg hover:text-white hover:bg-white/5 transition-all duration-300 text-sm font-medium ${isActive ? 'text-accent bg-white/5' : 'text-text-secondary'}`}>About</NavLink>
+            <NavLink to="/projects" onClick={() => setMobileMenuOpen(false)} className={({ isActive }) => `mobile-link px-4 py-3 rounded-lg hover:text-white hover:bg-white/5 transition-all duration-300 text-sm font-medium ${isActive ? 'text-accent bg-white/5' : 'text-text-secondary'}`}>Projects</NavLink>
+            <NavLink to="/skills" onClick={() => setMobileMenuOpen(false)} className={({ isActive }) => `mobile-link px-4 py-3 rounded-lg hover:text-white hover:bg-white/5 transition-all duration-300 text-sm font-medium ${isActive ? 'text-accent bg-white/5' : 'text-text-secondary'}`}>Skills</NavLink>
+            <NavLink to="/contact" onClick={() => setMobileMenuOpen(false)} className={({ isActive }) => `mobile-link px-4 py-3 rounded-lg hover:text-white hover:bg-white/5 transition-all duration-300 text-sm font-medium ${isActive ? 'text-accent bg-white/5' : 'text-text-secondary'}`}>Contact</NavLink>
             <Link to="/contact" onClick={() => setMobileMenuOpen(false)} className="sm:hidden mx-4 mt-4 text-center bg-accent hover:bg-accent-hover text-white text-sm font-semibold px-5 py-3 rounded-md transition-all duration-300 shadow-lg shadow-accent/20">
               Let's Talk
             </Link>

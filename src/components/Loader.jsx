@@ -105,8 +105,11 @@ const Loader = ({ onComplete }) => {
       ref={containerRef} 
       className="fixed inset-0 z-[9999] bg-bg flex flex-col justify-between p-8 text-text-primary uppercase overflow-hidden"
       style={{ willChange: 'transform' }}
+      role="alert"
+      aria-live="polite"
+      aria-busy={!assetsReady}
     >
-      <div className="loader-content flex-grow flex flex-col justify-between h-full">
+      <div className="loader-content flex-grow flex flex-col justify-between h-full relative">
         <div className="flex justify-between items-start overflow-hidden">
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tighter loader-text">Amey</h1>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tighter loader-text">Portfolio</h1>
