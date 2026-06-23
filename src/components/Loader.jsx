@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 
@@ -6,155 +6,137 @@ const Loader = ({ onComplete }) => {
   const containerRef = useRef(null);
   const counterRef = useRef(null);
   
-  const [assetsLoaded, setAssetsLoaded] = useState(false);
+  const [assetsReady, setAssetsReady] = useState(false);
   const [minTimeElapsed, setMinTimeElapsed] = useState(false);
-  const tlRef = useRef();
+  const progressRef = useRef(0);
 
-  // Minimum time to show the cinematic loader (2.5s)
+  // Minimum display time (3s) so the loader doesn't flash away
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setMinTimeElapsed(true);
-    }, 2500);
+    const timer = setTimeout(() => setMinTimeElapsed(true), 3000);
     return () => clearTimeout(timer);
   }, []);
 
-  // Real Preloader Logic
+  // Update the counter display
+  const updateCounter = useCallback((value) => {
+    if (!counterRef.current) return;
+    progressRef.current = value;
+    gsap.to(counterRef.current, {
+      innerHTML: value,
+      duration: 0.3,
+      snap: "innerHTML",
+      ease: "power1.out"
+    });
+  }, []);
+
+  // Poll the DOM for all media elements loaded by the pre-rendered pages
   useEffect(() => {
     let isMounted = true;
+    let pollInterval;
 
-    const frameUrls = Array.from({ length: 240 }, (_, i) => `/contact-frames/frame_${String(i + 1).padStart(4, '0')}.jpg`);
-    
-    const globalAssets = [
-      '/convert_the_above_video_into_c.mp4',
-      '/Demo.mp4',
-      '/aqualens-cover.png',
-      '/line-follower.jpg',
-      '/self-balancing.avif',
-      '/smart-dustbin.jpg',
-      '/crane-safety.jpg',
-      '/amey-photo.png',
-      '/Amey_Bauchkar_Resume.png',
-      ...frameUrls
-    ];
+    const checkAllMedia = () => {
+      // Grab every <img> and <video> element currently in the entire DOM
+      const allImages = Array.from(document.querySelectorAll('img'));
+      const allVideos = Array.from(document.querySelectorAll('video'));
 
-    const totalAssets = globalAssets.length;
-    let loadedAssets = 0;
+      const totalMedia = allImages.length + allVideos.length;
+      if (totalMedia === 0) return; // Components haven't mounted yet
 
-    const updateProgress = () => {
-      if (!isMounted) return;
-      loadedAssets++;
-      const currentProgress = Math.floor((loadedAssets / totalAssets) * 99);
-      gsap.to(counterRef.current, {
-        innerHTML: currentProgress,
-        duration: 0.2,
-        snap: "innerHTML",
-        ease: "power1.out"
+      let loadedCount = 0;
+
+      allImages.forEach(img => {
+        if (img.complete && img.naturalWidth > 0) loadedCount++;
       });
-    };
 
-    const preloadAsset = (url) => {
-      return new Promise((resolve) => {
-        if (url.endsWith('.mp4') || url.endsWith('.webm')) {
-          const video = document.createElement('video');
-          video.src = url;
-          video.preload = 'auto';
-          video.muted = true;
-          // Don't append to DOM to avoid layout shifts, just force load
-          const resolveHandler = () => {
-            updateProgress();
-            resolve();
-          };
-          video.addEventListener('canplaythrough', resolveHandler, { once: true });
-          video.addEventListener('error', resolveHandler, { once: true });
-          video.load();
-        } else {
-          const img = new Image();
-          img.src = url;
-          img.onload = () => {
-            updateProgress();
-            resolve();
-          };
-          img.onerror = () => {
-            updateProgress();
-            resolve();
-          };
-        }
+      allVideos.forEach(vid => {
+        // readyState >= 3 means HAVE_FUTURE_DATA (enough to play)
+        if (vid.readyState >= 3) loadedCount++;
       });
-    };
 
-    const loadAll = async () => {
-      // Chunk requests slightly to not crash older browsers, though Promise.all is usually fine
-      const chunkSize = 20;
-      for (let i = 0; i < globalAssets.length; i += chunkSize) {
-        const chunk = globalAssets.slice(i, i + chunkSize);
-        await Promise.all(chunk.map(url => preloadAsset(url)));
+      // Also check if canvas sequence frames are cached by looking for
+      // a global signal. We'll set this from within the preload container.
+      const framesLoaded = window.__framesPreloaded || 0;
+      const totalFrames = window.__framesToPreload || 1;
+      const frameProgress = Math.min(framesLoaded / totalFrames, 1);
+
+      // Weight: 30% DOM media, 70% canvas frames (they're the heavy part)
+      const mediaProgress = totalMedia > 0 ? loadedCount / totalMedia : 1;
+      const combinedProgress = Math.floor((mediaProgress * 0.3 + frameProgress * 0.7) * 99);
+
+      if (isMounted) {
+        updateCounter(Math.max(progressRef.current, combinedProgress));
       }
-      
-      if (isMounted) setAssetsLoaded(true);
+
+      // Check if everything is truly done
+      const allMediaDone = loadedCount >= totalMedia;
+      const allFramesDone = framesLoaded >= totalFrames;
+
+      if (allMediaDone && allFramesDone && isMounted) {
+        clearInterval(pollInterval);
+        setAssetsReady(true);
+      }
     };
 
-    loadAll();
+    // Start polling after a short delay to let pre-render container mount
+    const startDelay = setTimeout(() => {
+      pollInterval = setInterval(checkAllMedia, 500);
+    }, 500);
 
-    // Fallback: 45 seconds max wait time
+    // Safety fallback: 60 seconds max
     const fallback = setTimeout(() => {
-      if (isMounted) setAssetsLoaded(true);
-    }, 45000);
+      if (isMounted) {
+        clearInterval(pollInterval);
+        setAssetsReady(true);
+      }
+    }, 60000);
 
     return () => {
       isMounted = false;
+      clearTimeout(startDelay);
+      clearInterval(pollInterval);
       clearTimeout(fallback);
     };
-  }, []);
+  }, [updateCounter]);
 
-  // Initial intro animation
+  // Intro animation
   useGSAP(() => {
     document.body.style.overflow = 'hidden';
     if (window.lenis) window.lenis.stop();
 
-    const tl = gsap.timeline();
-    tlRef.current = tl;
-
-    tl.fromTo('.loader-text', {
+    gsap.fromTo('.loader-text', {
       y: 50, opacity: 0, skewY: 5
     }, {
-      y: 0, opacity: 1, skewY: 0, duration: 1, stagger: 0.2, ease: "power3.out"
-    }, 0.2);
-
+      y: 0, opacity: 1, skewY: 0, duration: 1, stagger: 0.2, ease: "power3.out",
+      delay: 0.2
+    });
   }, { scope: containerRef });
 
-  // Outro animation triggered only when both minimum time passed AND assets loaded
+  // Exit animation — only when BOTH conditions are met
   useGSAP(() => {
-    if (assetsLoaded && minTimeElapsed && tlRef.current) {
+    if (assetsReady && minTimeElapsed) {
       const exitTl = gsap.timeline({
         onComplete: () => {
           document.body.style.overflow = '';
           if (window.lenis) window.lenis.start();
+          // Clean up global trackers
+          delete window.__framesPreloaded;
+          delete window.__framesToPreload;
           if (onComplete) onComplete();
         }
       });
 
-      // Finish the counter to exactly 100
       exitTl.to(counterRef.current, {
-        innerHTML: 100,
-        duration: 0.5,
-        snap: "innerHTML",
-        ease: "power1.out"
+        innerHTML: 100, duration: 0.5, snap: "innerHTML", ease: "power1.out"
       });
 
       exitTl.to('.loader-content', {
-        scale: 0.95,
-        opacity: 0,
-        duration: 0.8,
-        ease: "power2.inOut"
+        scale: 0.95, opacity: 0, duration: 0.8, ease: "power2.inOut"
       }, "+=0.2");
 
       exitTl.to(containerRef.current, {
-        y: "-100%",
-        duration: 1.2,
-        ease: "power4.inOut"
+        y: "-100%", duration: 1.2, ease: "power4.inOut"
       }, "-=0.4");
     }
-  }, [assetsLoaded, minTimeElapsed]);
+  }, [assetsReady, minTimeElapsed]);
 
   return (
     <div 

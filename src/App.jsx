@@ -11,6 +11,7 @@ import ProjectModal from './components/ProjectModal';
 import CodeViewerModal from './components/CodeViewerModal';
 import CvModal from './components/CvModal';
 import Loader from './components/Loader';
+import PreloadContainer from './components/PreloadContainer';
 
 import HomePage from './pages/HomePage';
 import AboutPage from './pages/AboutPage';
@@ -110,6 +111,7 @@ function App() {
   return (
     <>
       {isInitialLoading && <Loader onComplete={() => setIsInitialLoading(false)} />}
+      {isInitialLoading && <PreloadContainer />}
       <div ref={appRef} className="font-sans text-text-primary bg-bg min-h-screen selection:bg-accent selection:text-white overflow-x-clip">
         <Navbar onOpenCv={() => setIsCvModalOpen(true)} />
       
