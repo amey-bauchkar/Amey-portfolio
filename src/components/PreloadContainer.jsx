@@ -3,95 +3,87 @@ import React, { useEffect } from 'react';
 /**
  * PreloadContainer
  * 
- * This component renders ALL page components simultaneously in a hidden container
- * during the loading phase. This forces React to mount every component, which triggers
- * their useEffect hooks, which starts downloading all their assets (canvas frames,
- * videos, images) in the background.
+ * Preloads ALL heavy assets (960 canvas frames + videos + images) and stores
+ * the actual Image objects on `window.__cachedFrames` so canvas sequence components
+ * can reuse them directly instead of creating new Image objects.
  * 
- * Additionally, it preloads all 4 sets of 240 canvas frames (960 total) and tracks
- * progress via window.__framesPreloaded / window.__framesToPreload globals that the
- * Loader component polls.
+ * This guarantees zero black screens on any page — the frames are already
+ * loaded in memory when the user navigates.
  */
-
-import HomePage from '../pages/HomePage';
-import AboutPage from '../pages/AboutPage';
-import ProjectsPage from '../pages/ProjectsPage';
-import SkillsPage from '../pages/SkillsPage';
-import ContactPage from '../pages/ContactPage';
 
 const PreloadContainer = () => {
 
-  // Preload all canvas sequence frames into browser cache
   useEffect(() => {
-    const frameSets = [
-      { path: '/frames/frame_', count: 240 },           // About page (CanvasSequence)
-      { path: '/projects-frames/frame_', count: 240 },   // Projects page
-      { path: '/workshop-frames/frame_', count: 240 },   // Skills/Workshop page
-      { path: '/contact-frames/frame_', count: 240 },    // Contact page
-    ];
+    const frameSets = {
+      'frames':           { count: 240, path: '/frames/frame_' },
+      'projects-frames':  { count: 240, path: '/projects-frames/frame_' },
+      'workshop-frames':  { count: 240, path: '/workshop-frames/frame_' },
+      'contact-frames':   { count: 240, path: '/contact-frames/frame_' },
+    };
 
-    const totalFrames = frameSets.reduce((sum, s) => sum + s.count, 0);
+    // Calculate total
+    const totalFrames = Object.values(frameSets).reduce((sum, s) => sum + s.count, 0);
     window.__framesToPreload = totalFrames;
     window.__framesPreloaded = 0;
 
-    const preloadFrame = (url) => {
-      return new Promise((resolve) => {
+    // Initialize the cache object
+    if (!window.__cachedFrames) {
+      window.__cachedFrames = {};
+    }
+
+    // For each frame set, create an array of Image objects and start loading
+    Object.entries(frameSets).forEach(([key, set]) => {
+      const images = new Array(set.count).fill(null);
+      window.__cachedFrames[key] = images;
+
+      for (let i = 0; i < set.count; i++) {
         const img = new Image();
+        const url = `${set.path}${String(i + 1).padStart(4, '0')}.jpg`;
+        
         img.onload = () => {
           window.__framesPreloaded = (window.__framesPreloaded || 0) + 1;
-          resolve();
         };
         img.onerror = () => {
           window.__framesPreloaded = (window.__framesPreloaded || 0) + 1;
-          resolve();
         };
+        
         img.src = url;
-      });
-    };
+        images[i] = img;
+      }
+    });
 
-    const loadAllFrames = async () => {
-      // Load all frame sets concurrently, each set in chunks of 30
-      const allPromises = frameSets.map(async (set) => {
-        const chunkSize = 30;
-        for (let i = 0; i < set.count; i += chunkSize) {
-          const chunk = [];
-          for (let j = i; j < Math.min(i + chunkSize, set.count); j++) {
-            const url = `${set.path}${String(j + 1).padStart(4, '0')}.jpg`;
-            chunk.push(preloadFrame(url));
-          }
-          await Promise.all(chunk);
-        }
-      });
+    // Also preload videos and key images
+    const mediaAssets = [
+      '/convert_the_above_video_into_c.mp4',
+      '/Demo.mp4',
+      '/aqualens-cover.png',
+      '/line-follower.jpg',
+      '/self-balancing.avif',
+      '/smart-dustbin.jpg',
+      '/crane-safety.jpg',
+      '/amey-photo.png',
+      '/Amey_Bauchkar_Resume.png',
+    ];
 
-      await Promise.all(allPromises);
-    };
+    mediaAssets.forEach(url => {
+      if (url.endsWith('.mp4') || url.endsWith('.webm')) {
+        const video = document.createElement('video');
+        video.src = url;
+        video.preload = 'auto';
+        video.muted = true;
+        video.load();
+      } else {
+        const img = new Image();
+        img.src = url;
+      }
+    });
 
-    loadAllFrames();
+    // Don't clean up — these Image objects MUST stay in memory permanently
+    // so the canvas components can reuse them
   }, []);
 
-  return (
-    <div
-      aria-hidden="true"
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100vw',
-        height: '100vh',
-        overflow: 'hidden',
-        visibility: 'hidden',
-        pointerEvents: 'none',
-        zIndex: -1,
-      }}
-    >
-      {/* Render all pages so their components mount and assets start loading */}
-      <HomePage onOpenCv={() => {}} />
-      <AboutPage />
-      <ProjectsPage onOpenProject={() => {}} />
-      <SkillsPage />
-      <ContactPage />
-    </div>
-  );
+  // Render nothing — this component only preloads assets
+  return null;
 };
 
 export default PreloadContainer;

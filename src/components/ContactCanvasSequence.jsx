@@ -31,25 +31,29 @@ const ContactCanvasSequence = () => {
     const frameCount = 240; // Total number of frames extracted
     const imagePath = (index) => `/contact-frames/frame_${String(index + 1).padStart(4, '0')}.jpg`;
 
-    const images = new Array(frameCount).fill(null);
+    // Use pre-cached frames from the global preloader if available
+    const cached = window.__cachedFrames && window.__cachedFrames['contact-frames'];
+    const images = cached || new Array(frameCount).fill(null);
     const sequence = { frame: 0 };
 
-    // Preload images
-    for (let i = 0; i < frameCount; i++) {
-      images[i] = new Image();
-    }
-    
-    // Load first 10 frames immediately for fast visual feedback
-    for (let i = 0; i < 10; i++) {
-      images[i].src = imagePath(i);
-    }
-    
-    // Defer loading the rest so it doesn't block other assets on initial load
-    setTimeout(() => {
-      for (let i = 10; i < frameCount; i++) {
+    // Only create new Image objects if pre-cached ones aren't available
+    if (!cached) {
+      for (let i = 0; i < frameCount; i++) {
+        images[i] = new Image();
+      }
+      
+      // Load first 10 frames immediately for fast visual feedback
+      for (let i = 0; i < 10; i++) {
         images[i].src = imagePath(i);
       }
-    }, 500);
+      
+      // Defer loading the rest so it doesn't block other assets on initial load
+      setTimeout(() => {
+        for (let i = 10; i < frameCount; i++) {
+          images[i].src = imagePath(i);
+        }
+      }, 500);
+    }
 
     let animationFrameId;
 

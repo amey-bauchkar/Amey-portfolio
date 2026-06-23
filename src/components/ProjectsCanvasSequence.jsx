@@ -30,14 +30,18 @@ const ProjectsCanvasSequence = () => {
     const frameCount = 240; // vid 3.mp4 frames
     const currentFrame = index => `/projects-frames/frame_${(index + 1).toString().padStart(4, '0')}.jpg`;
     
-    const images = new Array(frameCount).fill(null);
+    // Use pre-cached frames from the global preloader if available
+    const cached = window.__cachedFrames && window.__cachedFrames['projects-frames'];
+    const images = cached || new Array(frameCount).fill(null);
     const sequence = { frame: 0 };
     
-    // Preload frames
-    for (let i = 0; i < frameCount; i++) {
-      const img = new Image();
-      img.src = currentFrame(i);
-      images[i] = img;
+    // Only create new Image objects if pre-cached ones aren't available
+    if (!cached) {
+      for (let i = 0; i < frameCount; i++) {
+        const img = new Image();
+        img.src = currentFrame(i);
+        images[i] = img;
+      }
     }
     
     let animationFrameId;

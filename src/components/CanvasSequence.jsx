@@ -35,15 +35,18 @@ const CanvasSequence = () => {
     const frameCount = 240; // Original 24fps video (24fps * 10s) without AI interpolation.
     const currentFrame = index => `/frames/frame_${(index + 1).toString().padStart(4, '0')}.jpg`;
     
-    const images = new Array(frameCount).fill(null);
+    // Use pre-cached frames from the global preloader if available
+    const cached = window.__cachedFrames && window.__cachedFrames['frames'];
+    const images = cached || new Array(frameCount).fill(null);
     const sequence = { frame: 0 };
     
-    // With 600 interpolated frames (~42MB total), we can preload them!
-    for (let i = 0; i < frameCount; i++) {
-      const img = new Image();
-      // Load image asynchronously in the background
-      img.src = currentFrame(i);
-      images[i] = img;
+    // Only create new Image objects if pre-cached ones aren't available
+    if (!cached) {
+      for (let i = 0; i < frameCount; i++) {
+        const img = new Image();
+        img.src = currentFrame(i);
+        images[i] = img;
+      }
     }
     
     let animationFrameId;
