@@ -114,7 +114,7 @@ function App() {
       <RotateDeviceOverlay />
       {isInitialLoading && <Loader onComplete={() => setIsInitialLoading(false)} />}
       <PreloadContainer />
-      <div ref={appRef} className="font-sans text-text-primary bg-bg min-h-screen selection:bg-accent selection:text-white overflow-x-clip">
+      <div ref={appRef} className={`font-sans text-text-primary bg-bg min-h-screen selection:bg-accent selection:text-white overflow-x-clip transition-opacity duration-700 ${isInitialLoading ? 'opacity-0' : 'opacity-100'}`}>
         <Navbar onOpenCv={() => setIsCvModalOpen(true)} />
       
       <main>

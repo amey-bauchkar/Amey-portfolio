@@ -97,7 +97,7 @@ const Workshop = () => {
 
         {/* Workshop Sections */}
         {workshopData.map((item, index) => (
-          <div key={item.id} className="min-h-[150vh] flex flex-col justify-center relative overflow-hidden py-24 sm:py-0">
+          <div key={item.id} className="min-h-[100vh] lg:min-h-[150vh] flex flex-col justify-center relative overflow-hidden py-12 lg:py-0">
             
             {/* Massive Watermark Number */}
             <div className="absolute right-[-5%] top-1/2 -translate-y-1/2 text-[30vh] md:text-[45vh] font-serif italic text-white/[0.03] pointer-events-none select-none z-0">
@@ -106,7 +106,7 @@ const Workshop = () => {
 
             <div className="w-full flex justify-end px-6 md:px-12 lg:px-24">
               
-              <div className="workshop-text-block relative pointer-events-auto w-full md:w-[600px] flex items-center z-10 pt-16 sm:pt-0">
+              <div className="workshop-text-block relative pointer-events-auto w-full md:w-[600px] flex items-center z-10 pt-8 sm:pt-0">
                 
                 {/* Rotated Category Text (Far Right) */}
                 <div className="hidden lg:block absolute -right-16 top-1/2 -translate-y-1/2 origin-center rotate-90 text-accent/80 tracking-[0.5em] text-sm font-mono uppercase whitespace-nowrap drop-shadow-lg">
@@ -115,21 +115,21 @@ const Workshop = () => {
 
                 {/* Editorial Content Block */}
                 <div className="w-full lg:pr-12">
-                  <h3 className="text-2xl sm:text-3xl lg:text-6xl xl:text-7xl font-serif text-white mb-6 sm:mb-8 leading-[1.1] drop-shadow-2xl">
+                  <h3 className="text-3xl sm:text-4xl lg:text-6xl xl:text-7xl font-serif text-white mb-4 sm:mb-6 leading-[1.1] drop-shadow-2xl">
                     {item.title}
                   </h3>
                   
-                  <div className="w-16 sm:w-24 h-px bg-accent/50 mb-6 sm:mb-8 shadow-[0_0_10px_rgba(255,165,0,0.5)]"></div>
+                  <div className="w-16 sm:w-24 h-px bg-accent/50 mb-4 sm:mb-6 shadow-[0_0_10px_rgba(255,165,0,0.5)]"></div>
                   
-                  <p className="text-gray-200 text-xs sm:text-sm lg:text-lg font-light leading-relaxed sm:leading-loose mb-8 sm:mb-12 drop-shadow-lg">
+                  <p className="text-gray-200 text-sm sm:text-base lg:text-lg font-light leading-relaxed mb-6 sm:mb-8 drop-shadow-lg">
                     {item.description}
                   </p>
                   
                   {/* Vertical Tech Stack List */}
-                  <div className="flex flex-col gap-3 sm:gap-4 border-l border-white/10 pl-4 sm:pl-6">
+                  <div className="flex flex-col gap-2 sm:gap-3 border-l border-white/10 pl-4 sm:pl-6">
                     <span className="text-[10px] text-white/30 uppercase tracking-[0.3em] font-bold mb-1">Core Stack</span>
                     {item.tags.map(tag => (
-                      <span key={tag} className="text-xs sm:text-sm md:text-base font-mono text-accent/90 tracking-widest uppercase drop-shadow-md">
+                      <span key={tag} className="text-sm sm:text-base md:text-lg font-mono text-accent/90 tracking-widest uppercase drop-shadow-md">
                         {tag}
                       </span>
                     ))}
