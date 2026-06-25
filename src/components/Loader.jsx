@@ -119,7 +119,7 @@ const Loader = ({ onComplete }) => {
           <div className="text-center space-y-4">
             <p className="loader-text text-sm sm:text-base tracking-[0.3em] text-text-secondary font-medium">Loading Experience</p>
             <div className="loader-text flex items-baseline justify-center">
-              <h2 className="text-8xl sm:text-9xl md:text-[10rem] font-black tracking-tighter" ref={counterRef}>
+              <h2 className="text-7xl sm:text-8xl md:text-9xl font-black tracking-tighter" ref={counterRef}>
                 0
               </h2>
               <span className="text-3xl sm:text-5xl font-bold text-accent">%</span>

@@ -65,7 +65,7 @@ const Projects = ({ onOpenProject }) => {
 
         {/* Projects Sections */}
         {projectsData.map((project, index) => (
-          <div key={project.id} className="h-[150vh] flex flex-col justify-center px-6 md:px-12 lg:px-24">
+          <div key={project.id} className="min-h-[150vh] flex flex-col justify-center px-6 md:px-12 lg:px-24 py-24 sm:py-0">
             <div className="w-full flex justify-center md:justify-end">
               
               <div 
@@ -82,7 +82,7 @@ const Projects = ({ onOpenProject }) => {
                 </div>
 
                 {/* Cinematic Image Frame */}
-                <div className="relative w-full aspect-video md:aspect-[21/9] rounded-md overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.8)] group-hover:shadow-[0_0_50px_rgba(0,0,0,0.5)] transition-shadow duration-700 bg-[#0a0a0a]">
+                <div className="relative w-full aspect-video md:aspect-[21/9] max-h-[35vh] sm:max-h-[45vh] md:max-h-none rounded-md overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.8)] group-hover:shadow-[0_0_50px_rgba(0,0,0,0.5)] transition-shadow duration-700 bg-[#0a0a0a]">
                   <img 
                     src={`/${project.image}`} 
                     alt={project.title}
