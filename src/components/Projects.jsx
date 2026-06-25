@@ -66,10 +66,10 @@ const Projects = ({ onOpenProject }) => {
         {/* Projects Sections */}
         {projectsData.map((project, index) => (
           <div key={project.id} className="min-h-[150vh] flex flex-col justify-center px-6 md:px-12 lg:px-24 py-24 sm:py-0">
-            <div className="w-full flex justify-center md:justify-end">
+            <div className="w-full flex justify-end">
               
               <div 
-                className="relative pointer-events-auto group w-[85vw] sm:w-[50vw] md:w-[45vw] lg:w-[600px] flex flex-col gap-4 sm:gap-5 md:gap-8 mr-0"
+                className="relative pointer-events-auto group w-[60vw] sm:w-[45vw] md:w-[45vw] lg:w-[600px] flex flex-col gap-4 sm:gap-5 md:gap-8 mr-0"
               >
                 {/* Cinematic Header (Number & Line) */}
                 <div className="flex items-end gap-4 md:gap-6">

@@ -576,6 +576,9 @@
   .w-96 {
     width: calc(var(--spacing) * 96);
   }
+  .w-\[60vw\] {
+    width: 60vw;
+  }
   .w-\[85vw\] {
     width: 85vw;
   }
@@ -2196,6 +2199,11 @@
   .sm\:w-24 {
     @media (width >= 40rem) {
       width: calc(var(--spacing) * 24);
+    }
+  }
+  .sm\:w-\[45vw\] {
+    @media (width >= 40rem) {
+      width: 45vw;
     }
   }
   .sm\:w-\[50vw\] {
