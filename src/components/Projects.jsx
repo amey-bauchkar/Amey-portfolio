@@ -69,7 +69,7 @@ const Projects = ({ onOpenProject }) => {
             <div className="w-full flex justify-center md:justify-end">
               
               <div 
-                className="relative pointer-events-auto group w-full max-w-[75vw] sm:max-w-sm md:w-[500px] lg:w-[600px] flex flex-col gap-4 sm:gap-5 md:gap-8 mr-0"
+                className="relative pointer-events-auto group w-[85vw] sm:w-[50vw] md:w-[45vw] lg:w-[600px] flex flex-col gap-4 sm:gap-5 md:gap-8 mr-0"
               >
                 {/* Cinematic Header (Number & Line) */}
                 <div className="flex items-end gap-4 md:gap-6">

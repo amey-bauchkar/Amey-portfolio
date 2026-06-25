@@ -115,13 +115,13 @@ const Workshop = () => {
 
                 {/* Editorial Content Block */}
                 <div className="w-full lg:pr-12">
-                  <h3 className="text-3xl sm:text-4xl md:text-6xl font-serif text-white mb-6 sm:mb-8 leading-[1.1] drop-shadow-2xl">
+                  <h3 className="text-2xl sm:text-3xl lg:text-6xl xl:text-7xl font-serif text-white mb-6 sm:mb-8 leading-[1.1] drop-shadow-2xl">
                     {item.title}
                   </h3>
                   
                   <div className="w-16 sm:w-24 h-px bg-accent/50 mb-6 sm:mb-8 shadow-[0_0_10px_rgba(255,165,0,0.5)]"></div>
                   
-                  <p className="text-gray-200 text-sm sm:text-base md:text-lg font-light leading-relaxed sm:leading-loose mb-8 sm:mb-12 drop-shadow-lg">
+                  <p className="text-gray-200 text-xs sm:text-sm lg:text-lg font-light leading-relaxed sm:leading-loose mb-8 sm:mb-12 drop-shadow-lg">
                     {item.description}
                   </p>
                   

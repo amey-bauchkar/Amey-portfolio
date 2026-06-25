@@ -28,7 +28,7 @@ const AboutPage = () => {
               <span className="text-sm font-mono tracking-[0.25em] text-white/70 uppercase mb-8 block">
                 01 // Origin
               </span>
-              <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold tracking-tighter mb-8 text-white leading-[1.05] max-w-3xl">
+              <h1 className="text-3xl sm:text-4xl lg:text-7xl xl:text-8xl font-bold tracking-tighter mb-8 text-white leading-[1.05] max-w-3xl">
                 It always starts<br className="hidden md:block" /> with a screen.
               </h1>
               <p className="text-sm sm:text-base md:text-xl text-white/60 leading-relaxed max-w-lg font-light">
@@ -50,7 +50,7 @@ const AboutPage = () => {
               <span className="text-sm font-mono tracking-[0.25em] text-white/70 uppercase mb-8 block">
                 02 // Physicality
               </span>
-              <h2 className="text-3xl sm:text-5xl md:text-7xl font-bold tracking-tighter mb-8 text-white leading-[1.05] max-w-3xl">
+              <h2 className="text-2xl sm:text-3xl lg:text-6xl xl:text-7xl font-bold tracking-tighter mb-8 text-white leading-[1.05] max-w-3xl">
                 Then I stepped<br className="hidden md:block" /> beyond the screen.
               </h2>
               <p className="text-sm sm:text-base md:text-xl text-white/60 leading-relaxed max-w-lg font-light">
@@ -73,7 +73,7 @@ const AboutPage = () => {
               <span className="text-sm font-mono tracking-[0.25em] text-white/70 uppercase mb-8 block">
                 03 // Precision
               </span>
-              <h2 className="text-3xl sm:text-5xl md:text-7xl font-bold tracking-tighter mb-8 text-white leading-[1.05] max-w-3xl">
+              <h2 className="text-2xl sm:text-3xl lg:text-6xl xl:text-7xl font-bold tracking-tighter mb-8 text-white leading-[1.05] max-w-3xl">
                 Hardware doesn't<br className="hidden md:block" /> have an undo button.
               </h2>
               <p className="text-sm sm:text-base md:text-xl text-white/60 leading-relaxed max-w-lg font-light">
@@ -90,7 +90,7 @@ const AboutPage = () => {
               <span className="text-sm font-mono tracking-[0.25em] text-white/70 uppercase mb-8 block">
                 04 // Evolution
               </span>
-              <h2 className="text-3xl sm:text-5xl md:text-7xl font-bold tracking-tighter mb-8 text-white leading-[1.05] max-w-3xl">
+              <h2 className="text-2xl sm:text-3xl lg:text-6xl xl:text-7xl font-bold tracking-tighter mb-8 text-white leading-[1.05] max-w-3xl">
                 Learning became<br className="hidden md:block" /> building.
               </h2>
               <p className="text-sm sm:text-base md:text-xl text-white/60 leading-relaxed max-w-lg font-light">
@@ -107,7 +107,7 @@ const AboutPage = () => {
               <span className="text-sm font-mono tracking-[0.25em] text-white/70 uppercase mb-8 block">
                 05 // Industry
               </span>
-              <h2 className="text-3xl sm:text-5xl md:text-7xl font-bold tracking-tighter mb-8 text-white leading-[1.05] max-w-3xl">
+              <h2 className="text-2xl sm:text-3xl lg:text-6xl xl:text-7xl font-bold tracking-tighter mb-8 text-white leading-[1.05] max-w-3xl">
                 Then came the<br className="hidden md:block" /> real world.
               </h2>
               <p className="text-sm sm:text-base md:text-xl text-white/60 leading-relaxed max-w-lg font-light">
@@ -130,7 +130,7 @@ const AboutPage = () => {
               <span className="text-sm font-mono tracking-[0.25em] text-white/70 uppercase mb-8 block">
                 06 // Crucible
               </span>
-              <h2 className="text-3xl sm:text-5xl md:text-7xl font-bold tracking-tighter mb-8 text-white leading-[1.05] max-w-3xl">
+              <h2 className="text-2xl sm:text-3xl lg:text-6xl xl:text-7xl font-bold tracking-tighter mb-8 text-white leading-[1.05] max-w-3xl">
                 Built under<br className="hidden md:block" /> pressure.
               </h2>
               <p className="text-sm sm:text-base md:text-xl text-white/60 leading-relaxed max-w-lg font-light">
@@ -153,7 +153,7 @@ const AboutPage = () => {
               <span className="text-sm font-mono tracking-[0.25em] text-white/70 uppercase mb-8 block">
                 07 // Synthesis
               </span>
-              <h2 className="text-3xl sm:text-5xl md:text-7xl font-bold tracking-tighter mb-8 text-white leading-[1.05] max-w-3xl">
+              <h2 className="text-2xl sm:text-3xl lg:text-6xl xl:text-7xl font-bold tracking-tighter mb-8 text-white leading-[1.05] max-w-3xl">
                 Now I build<br className="hidden md:block" /> End-to-End.
               </h2>
               <p className="text-sm sm:text-base md:text-xl text-white/60 leading-relaxed max-w-lg font-light">
@@ -176,7 +176,7 @@ const AboutPage = () => {
               <span className="text-sm font-mono tracking-[0.25em] text-cinematic-amber uppercase mb-8 block">
                 08 // The Future
               </span>
-              <h2 className="text-4xl sm:text-6xl md:text-8xl lg:text-[7rem] font-extrabold tracking-tighter mb-8 text-white leading-[0.9] uppercase">
+              <h2 className="text-3xl sm:text-4xl lg:text-7xl xl:text-[7rem] font-extrabold tracking-tighter mb-8 text-white leading-[0.9] uppercase">
                 Still learning.<br/>
                 Still building.<br/>
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/30">Still becoming.</span>
