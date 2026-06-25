@@ -422,6 +422,11 @@ a, button, .project-card { user-select: none; -webkit-user-select: none; }
 }
 
 @media (max-width: 768px) {
+  .hero-section {
+    min-height: 100dvh;
+    height: 100dvh;
+    overflow: hidden;
+  }
   .hero-overlay {
     background: linear-gradient(
       180deg,
@@ -434,17 +439,18 @@ a, button, .project-card { user-select: none; -webkit-user-select: none; }
   .hero-content {
     width: 100%;
     padding: 0 1.5rem;
-    top: 20%; /* Shift content up to leave room for bottom stats */
+    top: 45%;
+    transform: translateY(-50%);
   }
   .hero-name-first, .hero-name-last {
     font-size: clamp(2.4rem, 9vw, 3.5rem);
   }
   .hero-subtitle-text {
     font-size: 14px;
-    margin-bottom: 24px;
+    margin-bottom: 16px;
   }
   .hero-cta-row {
-    margin-bottom: 24px;
+    margin-bottom: 16px;
   }
   .hero-floating-stats {
     right: 0;
