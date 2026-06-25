@@ -28,10 +28,10 @@ const AboutPage = () => {
               <span className="text-sm font-mono tracking-[0.25em] text-white/70 uppercase mb-8 block">
                 01 // Origin
               </span>
-              <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tighter mb-8 text-white leading-[1.05] max-w-3xl">
+              <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold tracking-tighter mb-8 text-white leading-[1.05] max-w-3xl">
                 It always starts<br className="hidden md:block" /> with a screen.
               </h1>
-              <p className="text-base md:text-xl text-white/60 leading-relaxed max-w-lg font-light">
+              <p className="text-sm sm:text-base md:text-xl text-white/60 leading-relaxed max-w-lg font-light">
                 Late nights. A desk lamp. Endless curiosity. What started as experimenting with code quickly became an obsession with understanding how things work and building things that matter.
               </p>
               <div className="mt-12 pt-6 border-t border-white/10 max-w-lg w-full flex justify-start">
@@ -50,10 +50,10 @@ const AboutPage = () => {
               <span className="text-sm font-mono tracking-[0.25em] text-white/70 uppercase mb-8 block">
                 02 // Physicality
               </span>
-              <h2 className="text-5xl md:text-7xl font-bold tracking-tighter mb-8 text-white leading-[1.05] max-w-3xl">
+              <h2 className="text-3xl sm:text-5xl md:text-7xl font-bold tracking-tighter mb-8 text-white leading-[1.05] max-w-3xl">
                 Then I stepped<br className="hidden md:block" /> beyond the screen.
               </h2>
-              <p className="text-base md:text-xl text-white/60 leading-relaxed max-w-lg font-light">
+              <p className="text-sm sm:text-base md:text-xl text-white/60 leading-relaxed max-w-lg font-light">
                 Software taught me logic. Hardware taught me responsibility. I became fascinated by the connection between the digital and physical worlds. That curiosity led me to build <span className="text-white font-medium">Robots</span> and <span className="text-white font-medium">IoT Systems</span> that transformed lines of code into real-world actions.
               </p>
               <div className="mt-12 pt-6 border-t border-white/10 max-w-lg w-full flex justify-end">
@@ -73,10 +73,10 @@ const AboutPage = () => {
               <span className="text-sm font-mono tracking-[0.25em] text-white/70 uppercase mb-8 block">
                 03 // Precision
               </span>
-              <h2 className="text-5xl md:text-7xl font-bold tracking-tighter mb-8 text-white leading-[1.05] max-w-3xl">
+              <h2 className="text-3xl sm:text-5xl md:text-7xl font-bold tracking-tighter mb-8 text-white leading-[1.05] max-w-3xl">
                 Hardware doesn't<br className="hidden md:block" /> have an undo button.
               </h2>
-              <p className="text-base md:text-xl text-white/60 leading-relaxed max-w-lg font-light">
+              <p className="text-sm sm:text-base md:text-xl text-white/60 leading-relaxed max-w-lg font-light">
                 Every wire matters. Every connection has consequences. When a circuit fails, there is no quick fix — you learn to diagnose problems, iterate, and engineer better solutions. Those lessons continue to shape my approach today.
               </p>
             </div>
@@ -90,10 +90,10 @@ const AboutPage = () => {
               <span className="text-sm font-mono tracking-[0.25em] text-white/70 uppercase mb-8 block">
                 04 // Evolution
               </span>
-              <h2 className="text-5xl md:text-7xl font-bold tracking-tighter mb-8 text-white leading-[1.05] max-w-3xl">
+              <h2 className="text-3xl sm:text-5xl md:text-7xl font-bold tracking-tighter mb-8 text-white leading-[1.05] max-w-3xl">
                 Learning became<br className="hidden md:block" /> building.
               </h2>
-              <p className="text-base md:text-xl text-white/60 leading-relaxed max-w-lg font-light">
+              <p className="text-sm sm:text-base md:text-xl text-white/60 leading-relaxed max-w-lg font-light">
                 Over the years, each project taught me something new. Whether designing autonomous systems or full-stack web applications, every build was an opportunity to solve problems and expand my skills.
               </p>
             </div>
@@ -107,10 +107,10 @@ const AboutPage = () => {
               <span className="text-sm font-mono tracking-[0.25em] text-white/70 uppercase mb-8 block">
                 05 // Industry
               </span>
-              <h2 className="text-5xl md:text-7xl font-bold tracking-tighter mb-8 text-white leading-[1.05] max-w-3xl">
+              <h2 className="text-3xl sm:text-5xl md:text-7xl font-bold tracking-tighter mb-8 text-white leading-[1.05] max-w-3xl">
                 Then came the<br className="hidden md:block" /> real world.
               </h2>
-              <p className="text-base md:text-xl text-white/60 leading-relaxed max-w-lg font-light">
+              <p className="text-sm sm:text-base md:text-xl text-white/60 leading-relaxed max-w-lg font-light">
                 Today, I contribute to real-world products. Working on production-grade projects has shown me how ideas evolve into solutions used by actual users. It's where theory meets execution and learning becomes responsibility.
               </p>
               <div className="mt-12 pt-6 border-t border-white/10 max-w-lg w-full flex justify-start">
@@ -130,10 +130,10 @@ const AboutPage = () => {
               <span className="text-sm font-mono tracking-[0.25em] text-white/70 uppercase mb-8 block">
                 06 // Crucible
               </span>
-              <h2 className="text-5xl md:text-7xl font-bold tracking-tighter mb-8 text-white leading-[1.05] max-w-3xl">
+              <h2 className="text-3xl sm:text-5xl md:text-7xl font-bold tracking-tighter mb-8 text-white leading-[1.05] max-w-3xl">
                 Built under<br className="hidden md:block" /> pressure.
               </h2>
-              <p className="text-base md:text-xl text-white/60 leading-relaxed max-w-lg font-light">
+              <p className="text-sm sm:text-base md:text-xl text-white/60 leading-relaxed max-w-lg font-light">
                 Classrooms teach theory. <span className="text-white font-medium">Hackathons</span> teach execution. Collaborating to transform ambitious ideas into working prototypes under tight deadlines strengthened my ability to build quickly without compromising quality.
               </p>
               <div className="mt-12 pt-6 border-t border-white/10 max-w-lg w-full flex justify-end">
@@ -153,10 +153,10 @@ const AboutPage = () => {
               <span className="text-sm font-mono tracking-[0.25em] text-white/70 uppercase mb-8 block">
                 07 // Synthesis
               </span>
-              <h2 className="text-5xl md:text-7xl font-bold tracking-tighter mb-8 text-white leading-[1.05] max-w-3xl">
+              <h2 className="text-3xl sm:text-5xl md:text-7xl font-bold tracking-tighter mb-8 text-white leading-[1.05] max-w-3xl">
                 Now I build<br className="hidden md:block" /> End-to-End.
               </h2>
-              <p className="text-base md:text-xl text-white/60 leading-relaxed max-w-lg font-light">
+              <p className="text-sm sm:text-base md:text-xl text-white/60 leading-relaxed max-w-lg font-light">
                 I build across the entire stack. The line between hardware and software isn't a boundary — it's where the most exciting innovation happens. I am driven by one goal: Build technology that solves meaningful problems.
               </p>
               <div className="mt-12 pt-6 border-t border-white/10 max-w-lg w-full flex justify-start">
@@ -176,7 +176,7 @@ const AboutPage = () => {
               <span className="text-sm font-mono tracking-[0.25em] text-cinematic-amber uppercase mb-8 block">
                 08 // The Future
               </span>
-              <h2 className="text-5xl md:text-8xl lg:text-[7rem] font-extrabold tracking-tighter mb-8 text-white leading-[0.9] uppercase">
+              <h2 className="text-4xl sm:text-6xl md:text-8xl lg:text-[7rem] font-extrabold tracking-tighter mb-8 text-white leading-[0.9] uppercase">
                 Still learning.<br/>
                 Still building.<br/>
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/30">Still becoming.</span>

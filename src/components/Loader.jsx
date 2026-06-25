@@ -103,7 +103,7 @@ const Loader = ({ onComplete }) => {
   return (
     <div 
       ref={containerRef} 
-      className="fixed inset-0 z-[9999] bg-bg flex flex-col justify-between p-8 text-text-primary uppercase overflow-hidden"
+      className="fixed inset-0 z-[9999] bg-black flex flex-col justify-between p-8 text-text-primary uppercase overflow-hidden"
       style={{ willChange: 'transform' }}
       role="alert"
       aria-live="polite"

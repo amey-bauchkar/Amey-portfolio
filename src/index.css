@@ -424,9 +424,11 @@ a, button, .project-card { user-select: none; -webkit-user-select: none; }
 @media (max-width: 768px) {
   .hero-overlay {
     background: linear-gradient(
-      98deg,
-      rgba(0,0,0,0.88) 0%,
-      rgba(0,0,0,0.88) 100%
+      180deg,
+      rgba(0,0,0,0.6) 0%,
+      rgba(0,0,0,0.2) 30%,
+      rgba(0,0,0,0.2) 60%,
+      rgba(0,0,0,0.85) 100%
     );
   }
   .hero-content {
