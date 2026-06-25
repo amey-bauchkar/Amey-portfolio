@@ -58,6 +58,15 @@
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(8px); }
   }
+  @keyframes rotate-phone {
+    0% { transform: rotate(0deg); }
+    50% { transform: rotate(-90deg); }
+    100% { transform: rotate(-90deg); }
+  }
+}
+
+.animate-rotate-phone {
+  animation: rotate-phone 2s ease-in-out infinite alternate;
 }
 
 /* Global Styles */

@@ -12,6 +12,7 @@ import CodeViewerModal from './components/CodeViewerModal';
 import CvModal from './components/CvModal';
 import Loader from './components/Loader';
 import PreloadContainer from './components/PreloadContainer';
+import RotateDeviceOverlay from './components/RotateDeviceOverlay';
 
 import HomePage from './pages/HomePage';
 import AboutPage from './pages/AboutPage';
@@ -110,6 +111,7 @@ function App() {
 
   return (
     <>
+      <RotateDeviceOverlay />
       {isInitialLoading && <Loader onComplete={() => setIsInitialLoading(false)} />}
       <PreloadContainer />
       <div ref={appRef} className="font-sans text-text-primary bg-bg min-h-screen selection:bg-accent selection:text-white overflow-x-clip">
