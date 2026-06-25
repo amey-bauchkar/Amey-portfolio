@@ -172,7 +172,7 @@ const Contact = () => {
       {/* Contact Form Modal */}
       {isFormOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm px-4" onClick={() => setIsFormOpen(false)}>
-          <div className="w-full max-w-2xl bg-[#151515] p-6 sm:p-8 md:p-10 rounded-2xl border border-white/10 relative shadow-2xl max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+          <div className="w-full max-w-2xl bg-[#151515] p-6 sm:p-8 md:p-10 rounded-2xl border border-white/10 relative shadow-2xl" onClick={(e) => e.stopPropagation()}>
             <button 
               className="absolute top-4 right-4 sm:top-6 sm:right-6 text-white/50 hover:text-white transition-colors"
               onClick={() => setIsFormOpen(false)}
