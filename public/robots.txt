@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://amey-portfolio-umber.vercel.app/sitemap.xml
+Sitemap: https://13amey.vercel.app/sitemap.xml
