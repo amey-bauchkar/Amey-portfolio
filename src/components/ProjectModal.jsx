@@ -15,8 +15,8 @@ const ProjectModal = ({ project, isOpen, onClose, onOpenCode }) => {
             )}
             
             <div className="p-8 md:p-12 relative">
-              <button onClick={onClose} className="absolute top-6 right-6 w-10 h-10 bg-bg/50 hover:bg-accent text-white rounded-full flex items-center justify-center transition-colors">
-                <i className="fas fa-times"></i>
+              <button onClick={onClose} className="absolute top-6 right-6 w-10 h-10 bg-bg/50 hover:bg-accent text-white rounded-full flex items-center justify-center transition-colors" aria-label="Close Project Modal">
+                <i className="fas fa-times text-xl"></i>
               </button>
               
               <div className="inline-flex items-center gap-2 mb-4">

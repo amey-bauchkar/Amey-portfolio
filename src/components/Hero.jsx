@@ -17,10 +17,10 @@ const Hero = ({ onOpenCv }) => {
       <div className="hero-content">
 
 
-        <div className="hero-name-block anim-hidden animate-fade-in-up delay-300">
-          <p className="hero-name-first">Amey</p>
-          <p className="hero-name-last">Bauchkar</p>
-        </div>
+        <h1 className="hero-name-block anim-hidden animate-fade-in-up delay-300">
+          <span className="hero-name-first block">Amey</span>
+          <span className="hero-name-last block">Bauchkar</span>
+        </h1>
 
         <div className="hero-pills anim-hidden animate-fade-in-up delay-400">
           <div className="hero-pill">⚡ Hardware Dev</div>

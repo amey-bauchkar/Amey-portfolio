@@ -176,6 +176,7 @@ const Contact = () => {
             <button 
               className="absolute top-4 right-4 sm:top-6 sm:right-6 text-white/50 hover:text-white transition-colors"
               onClick={() => setIsFormOpen(false)}
+              aria-label="Close Contact Form"
             >
               <i className="fas fa-times text-xl sm:text-2xl"></i>
             </button>

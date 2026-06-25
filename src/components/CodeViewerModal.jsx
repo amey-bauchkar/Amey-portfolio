@@ -29,7 +29,7 @@ const CodeViewerModal = ({ project, isOpen, onClose }) => {
               <button onClick={handleCopy} className="text-text-secondary hover:text-white transition-colors flex items-center gap-2 text-sm font-medium">
                 {copied ? <><i className="fas fa-check text-green-400"></i> Copied!</> : <><i className="far fa-copy"></i> Copy</>}
               </button>
-              <button onClick={onClose} className="w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center text-text-secondary hover:text-white transition-colors">
+              <button onClick={onClose} className="w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center text-text-secondary hover:text-white transition-colors" aria-label="Close Code Viewer">
                 <i className="fas fa-times"></i>
               </button>
             </div>

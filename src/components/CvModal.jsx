@@ -14,7 +14,7 @@ const CvModal = ({ isOpen, onClose }) => {
             <a href="/Amey_Bauchkar_Resume.png" download className="text-text-secondary hover:text-accent transition-colors flex items-center gap-2 text-sm font-semibold">
               <i className="fas fa-download"></i> Download
             </a>
-            <button onClick={onClose} className="w-8 h-8 rounded-full bg-bg border border-border hover:border-accent/50 text-text-secondary hover:text-white flex items-center justify-center transition-all">
+            <button onClick={onClose} className="w-8 h-8 rounded-full bg-bg border border-border hover:border-accent/50 text-text-secondary hover:text-white flex items-center justify-center transition-all" aria-label="Close CV Modal">
               <i className="fas fa-times"></i>
             </button>
           </div>

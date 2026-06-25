@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://amey-portfolio-umber.vercel.app/sitemap.xml

@@ -115,7 +115,8 @@ const ContactCanvasSequence = () => {
         className="w-full h-full object-cover max-w-none opacity-100 transition-opacity duration-1000"
       />
       
-
+      {/* Right-side gradient for text readability */}
+      <div className="absolute inset-0 bg-gradient-to-l from-black/80 via-black/40 to-transparent pointer-events-none z-10"></div>
     </div>
   );
 };
