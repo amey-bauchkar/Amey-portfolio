@@ -7,6 +7,7 @@ import Lenis from '@studio-freight/lenis';
 
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import ScrollToTop from './components/ScrollToTop';
 import ProjectModal from './components/ProjectModal';
 import CodeViewerModal from './components/CodeViewerModal';
 import CvModal from './components/CvModal';
@@ -128,6 +129,7 @@ function App() {
       </main>
       
       <Footer />
+      <ScrollToTop />
 
       {/* Modals */}
       <ProjectModal 
