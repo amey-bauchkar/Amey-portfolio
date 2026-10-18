@@ -121,6 +121,10 @@ const PreloadContainer = () => {
 
     // Also preload key images natively
     const imageUrls = [
+      '/prakalp-drishti.png',
+      '/depthwizard.png',
+      '/varsha.png',
+      '/mandimitra.png',
       '/aqualens-cover.png',
       '/line-follower.jpg',
       '/self-balancing.avif',

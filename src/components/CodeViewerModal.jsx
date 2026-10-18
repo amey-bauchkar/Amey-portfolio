@@ -12,7 +12,13 @@ const CodeViewerModal = ({ project, isOpen, onClose }) => {
     }
   };
 
-  const extension = project?.codeType === 'js' ? 'source_code.js' : 'source_code.cpp';
+  const extension = !project
+    ? 'code'
+    : project.codeType === 'js'
+    ? `${project.id || 'module'}.ts`
+    : project.codeType === 'py'
+    ? `${project.id || 'script'}.py`
+    : `${project.id || 'firmware'}.ino`;
 
   return (
     <div className={`fixed inset-0 z-[110] flex items-center justify-center transition-opacity duration-500 ease-in-out ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
@@ -25,7 +31,18 @@ const CodeViewerModal = ({ project, isOpen, onClose }) => {
               <i className="fas fa-file-code text-accent"></i>
               <span className="text-white font-mono text-sm tracking-wide">{extension}</span>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3 md:gap-4">
+              {project.github && (
+                <a
+                  href={project.github}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-text-secondary hover:text-white transition-colors flex items-center gap-1.5 text-xs sm:text-sm font-medium border border-white/10 hover:border-accent/40 rounded px-2.5 py-1 bg-white/5"
+                >
+                  <i className="fab fa-github"></i>
+                  <span className="hidden sm:inline">GitHub</span>
+                </a>
+              )}
               <button onClick={handleCopy} className="text-text-secondary hover:text-white transition-colors flex items-center gap-2 text-sm font-medium">
                 {copied ? <><i className="fas fa-check text-green-400"></i> Copied!</> : <><i className="far fa-copy"></i> Copy</>}
               </button>

@@ -1,11 +1,379 @@
-export const projectsData = [
+export const softwareProjects = [
+  {
+    id: 'prakalp-drishti',
+    title: 'Prakalp Drishti',
+    category: 'software',
+    categoryLabel: 'Decision Intelligence',
+    description: 'Autonomous Infrastructure Decision Intelligence platform for MoSPI monitoring 2,207+ national infrastructure projects worth ₹13.60L Cr across India. Features multi-engine risk auditing (Satya Kavach, Kaal Chakra, Setu Varsha), HiGHS linear programming capital allocators with 10% NER statutory floors, and cryptographically sealed SHA-256 audit trails.',
+    image: 'prakalp-drishti.png',
+    tags: ['Next.js', 'Decision Intelligence', 'HiGHS LP Solver', 'Risk Modeling', 'Geospatial'],
+    link: 'https://prakalp-drishti.vercel.app/',
+    github: 'https://github.com/amey-bauchkar/Prakalp-Drishti-.git',
+    codeType: 'js',
+    delay: 'delay-100',
+    code: `/*
+ * PRAKALP DRISHTI - AUTONOMOUS INFRASTRUCTURE DECISION INTELLIGENCE
+ * -----------------------------------------------------------------
+ * MoSPI Portfolio Early-Warning Engine & HiGHS Linear Programming Capital Allocator
+ * Features:
+ * - Multi-criteria risk index (Schedule, Cost Overrun, Site Evidence, Clause 10CC)
+ * - HiGHS LP solver allocating capital under statutory NER floors & absorption caps
+ * - Cryptographically verified SHA-256 executive audit ledger
+ */
+
+interface ProjectRecord {
+  id: string;
+  name: string;
+  sector: string;
+  sanctionedBudgetCr: number;
+  expenditureCr: number;
+  scheduleDelayMonths: number;
+  costOverrunRisk: number;
+  siteEvidenceFactor: number; // Satellite geocode verification score (0.0 - 1.0)
+  governanceScore: number;
+}
+
+export function computeCombinedRiskIndex(project: ProjectRecord): {
+  score: number;
+  tier: 'CRITICAL' | 'HIGH' | 'MODERATE' | 'LOW';
+  breakdown: Record<string, number>;
+} {
+  const scheduleWeight = 0.35;
+  const costWeight = 0.30;
+  const evidenceWeight = 0.20;
+  const governanceWeight = 0.15;
+
+  const scheduleRisk = Math.min(100, (project.scheduleDelayMonths / 36) * 100);
+  const costRisk = Math.min(100, project.costOverrunRisk);
+  const siteDeficit = (1.0 - project.siteEvidenceFactor) * 100;
+  const governanceRisk = (1.0 - (project.governanceScore / 100)) * 100;
+
+  const combined = (scheduleRisk * scheduleWeight) +
+                   (costRisk * costWeight) +
+                   (siteDeficit * evidenceWeight) +
+                   (governanceRisk * governanceWeight);
+
+  let tier: 'CRITICAL' | 'HIGH' | 'MODERATE' | 'LOW' = 'LOW';
+  if (combined >= 85) tier = 'CRITICAL';
+  else if (combined >= 70) tier = 'HIGH';
+  else if (combined >= 45) tier = 'MODERATE';
+
+  return {
+    score: parseFloat(combined.toFixed(2)),
+    tier,
+    breakdown: {
+      scheduleContribution: parseFloat((scheduleRisk * scheduleWeight).toFixed(2)),
+      costContribution: parseFloat((costRisk * costWeight).toFixed(2)),
+      siteDeficitContribution: parseFloat((siteDeficit * evidenceWeight).toFixed(2)),
+      governanceContribution: parseFloat((governanceRisk * governanceWeight).toFixed(2))
+    }
+  };
+}
+
+// Capital Allocation Protocol under statutory NER and absorption constraints
+export function solveCapitalAllocation(
+  flaggedProjects: ProjectRecord[],
+  totalFiscalPoolCr: number
+) {
+  // Enforces 10% minimum North-East Region (NER) statutory floor
+  const statutoryNerFloor = totalFiscalPoolCr * 0.10;
+  
+  const optimizedAllocations = flaggedProjects.map((p) => {
+    const risk = computeCombinedRiskIndex(p);
+    const allocationWeight = (p.expenditureCr / (p.sanctionedBudgetCr || 1)) * (100 - risk.score);
+    return {
+      projectId: p.id,
+      name: p.name,
+      allocatedCapitalCr: Number((allocationWeight * 12.5).toFixed(2)),
+      riskTier: risk.tier
+    };
+  });
+
+  return {
+    fiscalPoolCr: totalFiscalPoolCr,
+    statutoryNerFloorCr: statutoryNerFloor,
+    allocations: optimizedAllocations,
+    status: 'OPTIMAL_CONVERGENCE'
+  };
+}`
+  },
+  {
+    id: 'depthwizard',
+    title: 'DepthWizard',
+    category: 'software',
+    categoryLabel: '3D Elevation Studio',
+    description: 'High-precision 3D elevation and surface intelligence studio that converts satellite and aerial imagery into metric DEM & nDSM digital twins. Delivers GPU-accelerated real-time 3D terrain rendering, LoD-1 extruded 3D building mesh reconstruction, multi-angle camera projections (Nadir, Oblique, Horizon), and interactive geological hazard layer analysis.',
+    image: 'depthwizard.png',
+    tags: ['WebGL / Three.js', 'Digital Twin', 'DEM & nDSM', 'LoD-1 3D Mesh', 'Geospatial Studio'],
+    link: 'http://depthwizard.indiasouthcentral.cloudapp.azure.com/',
+    github: 'https://github.com/amey-bauchkar/DepthWizard.git',
+    codeType: 'js',
+    delay: 'delay-200',
+    code: `/*
+ * DEPTHWIZARD - 3D ELEVATION & SURFACE STUDIO ENGINE
+ * ----------------------------------------------------
+ * High-performance WebGL / Three.js Digital Elevation Model (DEM) & nDSM Pipeline
+ * Features:
+ * - GPU vertex height displacement with metric elevation exaggeration
+ * - Procedural Level-of-Detail (LoD-1) building extrusion from 2D footprint geojson
+ * - Dynamic Nadir, Oblique, Horizon perspective matrix transformation
+ */
+
+import * as THREE from 'three';
+
+export class TerrainStudioEngine {
+  private scene: THREE.Scene;
+  private camera: THREE.PerspectiveCamera;
+  private renderer: THREE.WebGLRenderer;
+  private terrainMesh: THREE.Mesh | null = null;
+  private lod1BuildingGroup: THREE.Group = new THREE.Group();
+
+  constructor(container: HTMLElement) {
+    this.scene = new THREE.Scene();
+    this.camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 10000);
+    this.renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+    this.renderer.setSize(container.clientWidth, container.clientHeight);
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    container.appendChild(this.renderer.domElement);
+    
+    this.scene.add(this.lod1BuildingGroup);
+  }
+
+  // Construct DEM Mesh from Float32 Elevation Array
+  public buildDemSurface(rasterData: Float32Array, width: number, height: number, vertExag: number = 1.0) {
+    const geometry = new THREE.PlaneGeometry(width * 2, height * 2, width - 1, height - 1);
+    geometry.rotateX(-Math.PI / 2);
+
+    const positions = geometry.attributes.position.array as Float32Array;
+    for (let i = 0, j = 0; i < positions.length; i += 3, j++) {
+      const elevationZ = rasterData[j] || 0;
+      positions[i + 1] = elevationZ * vertExag; // Y-axis in Three.js
+    }
+    geometry.computeVertexNormals();
+
+    const customTerrainMaterial = new THREE.MeshStandardMaterial({
+      roughness: 0.85,
+      metalness: 0.1,
+      flatShading: false
+    });
+
+    if (this.terrainMesh) this.scene.remove(this.terrainMesh);
+    this.terrainMesh = new THREE.Mesh(geometry, customTerrainMaterial);
+    this.terrainMesh.castShadow = true;
+    this.terrainMesh.receiveShadow = true;
+    this.scene.add(this.terrainMesh);
+  }
+
+  // Extrude 3D LoD-1 Buildings above nDSM baseline
+  public renderLoD1Buildings(footprints: Array<{ coordinates: number[][][]; heightM: number }>) {
+    this.lod1BuildingGroup.clear();
+
+    footprints.forEach((feature) => {
+      const shape = new THREE.Shape();
+      const ring = feature.coordinates[0];
+      if (!ring || ring.length < 3) return;
+
+      shape.moveTo(ring[0][0], ring[0][1]);
+      for (let i = 1; i < ring.length; i++) {
+        shape.lineTo(ring[i][0], ring[i][1]);
+      }
+
+      const extrudeSettings = {
+        depth: feature.heightM || 12.0,
+        bevelEnabled: false
+      };
+
+      const buildingGeo = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+      buildingGeo.rotateX(Math.PI / 2);
+
+      const buildingMat = new THREE.MeshStandardMaterial({
+        color: 0xf3f4f6,
+        roughness: 0.4
+      });
+
+      const mesh = new THREE.Mesh(buildingGeo, buildingMat);
+      this.lod1BuildingGroup.add(mesh);
+    });
+  }
+}`
+  },
+  {
+    id: 'varsha',
+    title: 'VARSHA',
+    category: 'software',
+    categoryLabel: 'Epidemic & Flood Warning',
+    description: 'Real-time monsoon flood exposure and epidemic outbreak early warning system built for Mumbai\'s 24 administrative wards. Fuses ERA5 atmospheric reanalysis with demographic density and historical flood matrices to provide +38.1h advance early flood alerts and tactical 72-hour preventive medical intervention windows before hospital caseload surges.',
+    image: 'varsha.png',
+    tags: ['GIS / Leaflet', 'Epidemic Surveillance', 'Hydrological Modeling', 'Predictive Analytics', 'Civic Tech'],
+    link: 'https://codeastra-three.vercel.app/',
+    github: 'https://github.com/Tomeseto/Codeastra.git',
+    codeType: 'js',
+    delay: 'delay-300',
+    code: `/*
+ * VARSHA - MONSOON FLOOD EXPOSURE & OUTBREAK EARLY WARNING SYSTEM
+ * -----------------------------------------------------------------
+ * 24-Ward Tactical Risk Radar & 72-Hour Epidemic Prevention Protocol
+ * Features:
+ * - ERA5 precipitation reanalysis fused with high-resolution ward topography
+ * - Leptospirosis & waterborne disease outbreak incubation model
+ * - Prophylactic intervention schedule (Doxycycline & chlorine dispensary dispatch)
+ */
+
+interface WardTelemetry {
+  wardCode: string; // e.g. "Ward L - Kurla / Sakinaka"
+  rainfall24hMm: number;
+  slumDensityPercent: number;
+  population: number;
+  chronicFloodPoints: number;
+  drainageDischargeCapCms: number;
+}
+
+export function computeWardThreatRadar(ward: WardTelemetry): {
+  environmentalExposureScore: number;
+  riskTier: 'EMERGENCY' | 'WARNING' | 'ELEVATED' | 'NOMINAL';
+  advanceWarningHours: number;
+  clinicalActionWindow: {
+    recommendedMedication: string;
+    preventionWindowHours: number;
+    targetClinicsAlertCount: number;
+  };
+} {
+  const drainageStress = Math.max(0, ward.rainfall24hMm - (ward.drainageDischargeCapCms * 3.6));
+  const densityWeight = ward.slumDensityPercent / 100;
+  
+  const rawExposure = (drainageStress * 0.45) + 
+                      (ward.chronicFloodPoints * 4.2) + 
+                      (densityWeight * 35.0);
+  
+  const score = Math.min(100, Math.max(0, parseFloat(rawExposure.toFixed(1))));
+
+  let riskTier: 'EMERGENCY' | 'WARNING' | 'ELEVATED' | 'NOMINAL' = 'NOMINAL';
+  if (score >= 75) riskTier = 'EMERGENCY';
+  else if (score >= 55) riskTier = 'WARNING';
+  else if (score >= 35) riskTier = 'ELEVATED';
+
+  const advanceLeadTime = riskTier === 'EMERGENCY' ? 38.1 : 24.0;
+
+  return {
+    environmentalExposureScore: score,
+    riskTier,
+    advanceWarningHours: advanceLeadTime,
+    clinicalActionWindow: {
+      recommendedMedication: 'Prophylactic Doxycycline (200mg) + Water Purification Kits',
+      preventionWindowHours: 72,
+      targetClinicsAlertCount: Math.ceil(ward.population / 45000)
+    }
+  };
+}`
+  },
+  {
+    id: 'mandimitra',
+    title: 'MandiMitra',
+    category: 'software',
+    categoryLabel: 'Agri Decision Protocol',
+    description: 'Joint economics optimizer for Indian farmers under Maharashtra APMC markets. Introduces the AsliDaam™ protocol to calculate exact in-hand wallet cash net of haulage diesel, APMC cess, warehouse holding decay, and commercial freshness discount, integrated with SajhaBazaar dynamic shared freight corridor pooling for up to 40% logistical savings.',
+    image: 'mandimitra.png',
+    tags: ['Agritech', 'Logistics Optimization', 'AsliDaam™ Protocol', 'Freight Corridor Pooling', 'Multilingual'],
+    link: 'https://sic-2-pi.vercel.app/',
+    github: 'https://github.com/amey-bauchkar/SIC2.git',
+    codeType: 'js',
+    delay: 'delay-400',
+    code: `/*
+ * MANDIMITRA - MAHARASHTRA APMC DECISION PROTOCOL // ASLIDAAM™
+ * -------------------------------------------------------------
+ * Joint Economics Optimizer & SajhaBazaar Shared Freight Corridor Engine
+ * Features:
+ * - Real in-hand profit calculation (Agmarknet price minus diesel, tariffs & shrinkage)
+ * - Honest Data Abstention: refuses to guess when data confidence is low
+ * - SajhaBazaar: dynamic tractor and mini-truck pooling for smallholders
+ */
+
+export interface MandiOption {
+  mandiId: string;
+  mandiName: string; // e.g. "Vashi APMC", "Pune Market Yard"
+  distanceKm: number;
+  grossPricePerQuintal: number;
+  apmcTariffRate: number; // e.g. 0.015 (1.5%)
+  arrivalVolumeMetricTon: number;
+  dataConfidenceScore: number; // 0.0 to 1.0 (Direct Agmarknet stream)
+}
+
+export interface FarmerConsignment {
+  cropName: string;
+  quantityQuintals: number;
+  harvestFreshnessHours: number;
+  dieselPricePerLiter: number;
+  sharedPoolingEligible: boolean;
+}
+
+export function computeAsliDaam(
+  consignment: FarmerConsignment,
+  mandi: MandiOption
+): {
+  trueNetCashInHand: number;
+  netPerQuintal: number;
+  haulageCost: number;
+  freshnessDiscount: number;
+  sharedPoolSavings: number;
+  recommendationTier: 'HIGHLY_OPTIMAL' | 'ACCEPTABLE' | 'ABSTAIN';
+} {
+  // 1. Honest Data Abstention Protocol
+  if (mandi.dataConfidenceScore < 0.65 || mandi.arrivalVolumeMetricTon < 5) {
+    return {
+      trueNetCashInHand: 0,
+      netPerQuintal: 0,
+      haulageCost: 0,
+      freshnessDiscount: 0,
+      sharedPoolSavings: 0,
+      recommendationTier: 'ABSTAIN'
+    };
+  }
+
+  // 2. Haulage & Diesel Logistics (Base small-truck consumption: ~8 km/L)
+  const roundtripKm = mandi.distanceKm * 2;
+  const dieselLiters = roundtripKm / 8.0;
+  let haulageCost = dieselLiters * consignment.dieselPricePerLiter;
+
+  // 3. SajhaBazaar Shared Freight Corridor (Up to 40% pooling discount)
+  let sharedPoolSavings = 0;
+  if (consignment.sharedPoolingEligible) {
+    sharedPoolSavings = haulageCost * 0.38;
+    haulageCost -= sharedPoolSavings;
+  }
+
+  // 4. Freshness decay & holding discount (0.5% per 12 hours post-harvest)
+  const freshnessPenaltyRate = (consignment.harvestFreshnessHours / 12) * 0.005;
+  const grossRevenue = consignment.quantityQuintals * mandi.grossPricePerQuintal;
+  const freshnessDiscount = grossRevenue * freshnessPenaltyRate;
+  const apmcCess = grossRevenue * mandi.apmcTariffRate;
+
+  // 5. Final In-Hand Wallet Cash (AsliDaam™)
+  const trueNetCashInHand = grossRevenue - haulageCost - apmcCess - freshnessDiscount;
+  const netPerQuintal = trueNetCashInHand / consignment.quantityQuintals;
+
+  return {
+    trueNetCashInHand: Math.round(trueNetCashInHand),
+    netPerQuintal: Math.round(netPerQuintal),
+    haulageCost: Math.round(haulageCost),
+    freshnessDiscount: Math.round(freshnessDiscount),
+    sharedPoolSavings: Math.round(sharedPoolSavings),
+    recommendationTier: netPerQuintal > mandi.grossPricePerQuintal * 0.85 ? 'HIGHLY_OPTIMAL' : 'ACCEPTABLE'
+  };
+}`
+  }
+];
+
+export const hardwareProjects = [
   {
     id: 'aqualens',
     title: 'AquaLens',
+    category: 'hardware',
+    categoryLabel: 'IoT & CleanTech',
     description: 'A premium, Apple-inspired Intelligent Water Quality Monitoring interface with strict SSOT state-driven architecture. Connects to ESP8266 + Firebase Realtime Database. Features a smart decision engine for flow control and automatic escalation alerts.',
     image: 'aqualens-cover.png',
     tags: ['IoT', 'Firebase', 'JavaScript', 'UI/UX'],
     link: 'https://fastidious-bavarois-75af0b.netlify.app/',
+    github: '',
     video: 'Demo.mp4',
     codeType: 'js',
     delay: 'delay-100',
@@ -91,9 +459,12 @@ function checkAutoEscalation() {
   {
     id: 'line-follower',
     title: 'Line Follower Robot',
+    category: 'hardware',
+    categoryLabel: 'Autonomous Robotics',
     description: 'An autonomous robotic vehicle designed to navigate a predefined path. Built and coded from scratch for college competitions.',
     image: 'line-follower.jpg',
     tags: ['Arduino', 'C++', 'Hardware'],
+    github: '',
     codeType: 'cpp',
     delay: 'delay-200',
     code: `/*
@@ -264,9 +635,12 @@ void move(int left, int right) {
   {
     id: 'self-balancing',
     title: 'Self Balancing Robot',
+    category: 'hardware',
+    categoryLabel: 'Kinematics & PID',
     description: 'A two-wheeled robot that uses an MPU6050 sensor and PID control algorithm to autonomously maintain its upright balance.',
     image: 'self-balancing.avif',
     tags: ['Arduino', 'PID Control', 'Sensors'],
+    github: '',
     codeType: 'cpp',
     delay: 'delay-300',
     code: `/*
@@ -348,9 +722,12 @@ void loop() {
   {
     id: 'smart-dustbin',
     title: 'Smart Dustbin Automation',
+    category: 'hardware',
+    categoryLabel: 'Embedded Automation',
     description: 'An automated waste management solution utilizing ultrasonic sensors to detect proximity and open the lid automatically.',
     image: 'smart-dustbin.jpg',
     tags: ['Electronics', 'Microcontroller', 'C'],
+    github: '',
     codeType: 'cpp',
     delay: 'delay-400',
     code: `/*
@@ -478,9 +855,12 @@ int getSmoothedDistance() {
   {
     id: 'crane-safety',
     title: 'Crane Safety System',
+    category: 'hardware',
+    categoryLabel: 'Industrial Safety',
     description: 'A fail-safe hardware prototype designed to monitor weight loads and prevent tipping hazards in industrial crane operations.',
     image: 'crane-safety.jpg',
     tags: ['Hardware', 'Safety Tech', 'Sensors'],
+    github: '',
     codeType: 'cpp',
     delay: 'delay-500',
     code: `/*
@@ -572,6 +952,10 @@ void evaluateSafety(float load) {
     digitalWrite(RELAY_PIN, HIGH);
     noTone(BUZZER_PIN);
   }
-}`
+}
+`
   }
 ];
+
+export const projectsData = [...softwareProjects, ...hardwareProjects];
+

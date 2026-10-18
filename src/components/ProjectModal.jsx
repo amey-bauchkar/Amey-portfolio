@@ -19,9 +19,14 @@ const ProjectModal = ({ project, isOpen, onClose, onOpenCode }) => {
                 <i className="fas fa-times text-xl"></i>
               </button>
               
-              <div className="inline-flex items-center gap-2 mb-4">
+              <div className="inline-flex items-center gap-2 mb-4 flex-wrap">
                 <span className="w-8 h-0.5 bg-accent"></span>
-                <span className="text-accent text-sm font-bold tracking-wider uppercase">Project Details</span>
+                <span className="text-accent text-sm font-bold tracking-wider uppercase">
+                  {project.categoryLabel || 'Project Details'}
+                </span>
+                <span className="text-xs px-2.5 py-0.5 rounded-full bg-white/10 text-white/80 font-mono uppercase tracking-wider ml-2 border border-white/10">
+                  {project.category === 'software' ? 'Software Platform' : 'Robotics & Hardware'}
+                </span>
               </div>
               <h2 className="text-3xl md:text-4xl font-bold text-text-primary mb-6">{project.title}</h2>
               <p className="text-text-secondary text-lg leading-relaxed mb-8">{project.description}</p>
@@ -32,15 +37,20 @@ const ProjectModal = ({ project, isOpen, onClose, onOpenCode }) => {
                 ))}
               </div>
               
-              <div className="flex items-center gap-4 border-t border-border/50 pt-8 mt-8">
+              <div className="flex flex-wrap items-center gap-4 border-t border-border/50 pt-8 mt-8">
                 {project.link && (
-                  <a href={project.link} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 bg-accent hover:bg-accent-hover text-white font-semibold px-6 py-3 rounded-md transition-all">
+                  <a href={project.link} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 bg-accent hover:bg-accent-hover text-white font-semibold px-6 py-3 rounded-md transition-all shadow-lg shadow-accent/20">
                     <i className="fas fa-external-link-alt"></i> Live Demo
+                  </a>
+                )}
+                {project.github && (
+                  <a href={project.github} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold px-6 py-3 rounded-md transition-all">
+                    <i className="fab fa-github text-lg"></i> GitHub Repo
                   </a>
                 )}
                 {project.code && (
                   <button onClick={() => onOpenCode(project)} className="inline-flex items-center gap-2 bg-bg border border-border hover:border-accent/50 text-white font-semibold px-6 py-3 rounded-md transition-all cursor-pointer">
-                    <i className="fas fa-code"></i> View Source
+                    <i className="fas fa-code"></i> Architecture & Code
                   </button>
                 )}
               </div>
