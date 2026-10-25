@@ -54,7 +54,25 @@ const Achievements = () => {
   }, [selectedAchievement, modalIndex]);
 
   return (
-    <section id="achievements" className="relative py-20 md:py-28 bg-bg bg-grid z-10 text-text-primary">
+    <section id="achievements" className="relative py-20 md:py-28 bg-bg bg-grid z-10 text-text-primary overflow-hidden">
+      {/* Cinematic Background Video (matching portfolio aesthetic) */}
+      <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none z-0">
+        <video 
+          className="w-full h-full object-cover opacity-20 filter contrast-125 brightness-90"
+          autoPlay 
+          loop 
+          muted 
+          playsInline 
+          aria-hidden="true"
+        >
+          <source src="/achievements-bg.mp4" type="video/mp4" />
+          <source src="/convert_the_above_video_into_c.mp4" type="video/mp4" />
+        </video>
+        {/* Ambient Dark Gradient Vignette for flawless text contrast */}
+        <div className="absolute inset-0 bg-gradient-to-b from-bg/95 via-bg/85 to-bg pointer-events-none"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-bg/80 via-transparent to-bg/80 pointer-events-none"></div>
+      </div>
+
       {/* Background Ambience Orbs (matching Skills and Projects) */}
       <div className="absolute top-1/4 -right-32 w-96 h-96 bg-accent/5 rounded-full blur-[140px] pointer-events-none"></div>
       <div className="absolute bottom-1/3 -left-32 w-96 h-96 bg-accent/5 rounded-full blur-[140px] pointer-events-none"></div>
