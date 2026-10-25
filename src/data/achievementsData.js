@@ -13,8 +13,9 @@ export const achievementsData = [
     date: '30 July 2026',
     featured: true,
     description: 'Awarded 1st place in the flagship AI Hackathon during TCS Technology Day 2026. Recognized by enterprise industry leaders for standout innovation, rapid model integration, and practical AI architecture.',
-    image: '/achievements/tcs-hackathon.jpg',
-    proofLabel: 'Official Winner Certificate',
+    image: '/achievements/tcs-hackathon.png',
+    altImage: '/achievements/tcs-hackathon.jpg',
+    proofLabel: 'Team Winner Photo & Certificate',
     stats: '1st Place',
     tags: ['AI / ML', 'Enterprise Hackathon', 'Rapid Prototyping']
   },

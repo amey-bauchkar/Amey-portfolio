@@ -14,26 +14,32 @@ const Achievements = () => {
     return true;
   });
 
+  const [activeModalImage, setActiveModalImage] = useState('primary');
+
   const handleOpenModal = (achievement) => {
     const idx = achievementsData.findIndex(a => a.id === achievement.id);
     setModalIndex(idx >= 0 ? idx : 0);
     setSelectedAchievement(achievement);
+    setActiveModalImage('primary');
   };
 
   const handleCloseModal = () => {
     setSelectedAchievement(null);
+    setActiveModalImage('primary');
   };
 
   const handleNextModal = () => {
     const nextIdx = (modalIndex + 1) % achievementsData.length;
     setModalIndex(nextIdx);
     setSelectedAchievement(achievementsData[nextIdx]);
+    setActiveModalImage('primary');
   };
 
   const handlePrevModal = () => {
     const prevIdx = (modalIndex - 1 + achievementsData.length) % achievementsData.length;
     setModalIndex(prevIdx);
     setSelectedAchievement(achievementsData[prevIdx]);
+    setActiveModalImage('primary');
   };
 
   useEffect(() => {
@@ -51,13 +57,13 @@ const Achievements = () => {
   const getBadgeStyle = (type) => {
     switch (type) {
       case 'gold':
-        return 'bg-amber-500/15 text-amber-300 border-amber-500/30';
+        return 'bg-[#121008]/95 text-amber-300 border-amber-500/60 shadow-lg shadow-black/80';
       case 'blue':
-        return 'bg-cyan-500/15 text-cyan-300 border-cyan-500/30';
+        return 'bg-[#081119]/95 text-cyan-300 border-cyan-500/60 shadow-lg shadow-black/80';
       case 'emerald':
-        return 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30';
+        return 'bg-[#081810]/95 text-emerald-300 border-emerald-500/60 shadow-lg shadow-black/80';
       default:
-        return 'bg-white/10 text-white/90 border-white/20';
+        return 'bg-black/95 text-white/95 border-white/40 shadow-lg shadow-black/80';
     }
   };
 
@@ -198,31 +204,39 @@ const Achievements = () => {
               >
                 {/* Visual Certificate / Media Container */}
                 <div 
-                  className="relative aspect-[16/10] w-full overflow-hidden bg-black/60 cursor-pointer"
+                  className="relative h-64 sm:h-72 w-full overflow-hidden bg-[#0c0c10] cursor-pointer flex items-center justify-center p-3 border-b border-white/10 group/thumb"
                   onClick={() => handleOpenModal(item)}
                 >
+                  {/* Ambient backdrop glow in image colors */}
+                  <img
+                    src={item.image}
+                    alt=""
+                    aria-hidden="true"
+                    className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-25 scale-125 pointer-events-none"
+                  />
+
+                  {/* Sharp, uncropped foreground photo / certificate */}
                   <img
                     src={item.image}
                     alt={item.title}
-                    className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
+                    className="relative z-10 max-h-full max-w-full object-contain rounded-md transition-transform duration-500 group-hover/thumb:scale-[1.03] shadow-[0_8px_24px_rgba(0,0,0,0.6)]"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#131317] via-black/20 to-transparent"></div>
 
                   {/* Top Badge Overlay */}
-                  <div className="absolute top-3 left-3 right-3 flex items-center justify-between gap-2 pointer-events-none">
-                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider border backdrop-blur-md shadow-md ${getBadgeStyle(item.badgeType)}`}>
+                  <div className="absolute top-3 left-3 right-3 flex items-center justify-between gap-2 z-20 pointer-events-none">
+                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider border backdrop-blur-md shadow-lg ${getBadgeStyle(item.badgeType)}`}>
                       <i className={`fas ${item.icon} text-[11px]`}></i>
                       {item.badge}
                     </span>
-                    <span className="text-[11px] font-mono font-medium px-2.5 py-1 rounded-md bg-black/75 backdrop-blur-md text-white/80 border border-white/10">
+                    <span className="text-[11px] font-mono font-medium px-2.5 py-1 rounded-md bg-black/90 backdrop-blur-md text-white/90 border border-white/20 shadow-md">
                       {item.date}
                     </span>
                   </div>
 
                   {/* Click to expand hover hint */}
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/40 backdrop-blur-[2px]">
-                    <span className="inline-flex items-center gap-2 bg-black/80 text-white text-xs font-semibold px-4 py-2 rounded-full border border-white/20 shadow-lg">
-                      <i className="fas fa-search-plus text-accent"></i> Inspect Certificate
+                  <div className="absolute inset-0 z-20 flex items-center justify-center opacity-0 group-hover/thumb:opacity-100 transition-opacity duration-300 bg-black/40 backdrop-blur-[2px]">
+                    <span className="inline-flex items-center gap-2 bg-black/85 text-white text-xs font-semibold px-4 py-2 rounded-full border border-white/25 shadow-xl">
+                      <i className="fas fa-search-plus text-accent"></i> Inspect Full Proof
                     </span>
                   </div>
                 </div>
@@ -288,7 +302,7 @@ const Achievements = () => {
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-[#16161c]">
+            <div className="flex flex-wrap items-center justify-between gap-3 px-6 py-4 border-b border-white/10 bg-[#16161c]">
               <div className="flex items-center gap-3">
                 <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold uppercase tracking-wider border ${getBadgeStyle(selectedAchievement.badgeType)}`}>
                   {selectedAchievement.badge}
@@ -296,18 +310,40 @@ const Achievements = () => {
                 <span className="text-xs font-mono text-white/50 hidden sm:inline">
                   [{modalIndex + 1} of {achievementsData.length}]
                 </span>
+
+                {/* Dual view toggle if altImage is present (e.g. TCS team photo & certificate) */}
+                {selectedAchievement.altImage && (
+                  <div className="inline-flex items-center rounded-lg bg-black/60 p-1 border border-white/10 text-xs ml-2">
+                    <button
+                      onClick={() => setActiveModalImage('primary')}
+                      className={`px-3 py-1 rounded-md transition-colors cursor-pointer font-medium ${
+                        activeModalImage === 'primary' ? 'bg-accent text-white shadow-md' : 'text-white/60 hover:text-white'
+                      }`}
+                    >
+                      Team Photo
+                    </button>
+                    <button
+                      onClick={() => setActiveModalImage('alt')}
+                      className={`px-3 py-1 rounded-md transition-colors cursor-pointer font-medium ${
+                        activeModalImage === 'alt' ? 'bg-accent text-white shadow-md' : 'text-white/60 hover:text-white'
+                      }`}
+                    >
+                      Certificate
+                    </button>
+                  </div>
+                )}
               </div>
 
               <div className="flex items-center gap-2">
                 <a
-                  href={selectedAchievement.image}
+                  href={activeModalImage === 'alt' && selectedAchievement.altImage ? selectedAchievement.altImage : selectedAchievement.image}
                   target="_blank"
                   rel="noreferrer"
                   className="px-3 py-1.5 rounded-lg text-xs font-medium text-white/70 hover:text-white hover:bg-white/10 transition-colors inline-flex items-center gap-1.5"
-                  title="Open original image in new tab"
+                  title="Open original high-res image in new tab"
                 >
                   <i className="fas fa-external-link-alt text-[10px]"></i>
-                  <span className="hidden sm:inline">Full Image</span>
+                  <span className="hidden sm:inline">Original High-Res</span>
                 </a>
 
                 <button 
@@ -321,11 +357,11 @@ const Achievements = () => {
             </div>
 
             {/* Modal Image Viewport */}
-            <div className="relative flex-1 bg-black/90 flex items-center justify-center overflow-hidden min-h-[300px] max-h-[62vh] p-4 sm:p-6">
+            <div className="relative flex-1 bg-black/95 flex items-center justify-center overflow-hidden min-h-[320px] max-h-[72vh] p-4 sm:p-6">
               <img 
-                src={selectedAchievement.image} 
+                src={activeModalImage === 'alt' && selectedAchievement.altImage ? selectedAchievement.altImage : selectedAchievement.image} 
                 alt={selectedAchievement.title} 
-                className="max-w-full max-h-[58vh] object-contain rounded-lg shadow-2xl border border-white/10"
+                className="max-w-full max-h-[66vh] object-contain rounded-lg shadow-2xl border border-white/10"
               />
 
               {/* Prev / Next Navigation Arrows */}

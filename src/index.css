@@ -139,8 +139,10 @@ a, button, .project-card { user-select: none; -webkit-user-select: none; }
 .hero-section {
   position: relative;
   width: 100%;
-  height: 100dvh;
-  min-height: 600px;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   overflow: hidden;
 }
 
@@ -168,12 +170,10 @@ a, button, .project-card { user-select: none; -webkit-user-select: none; }
 }
 
 .hero-content {
-  position: absolute;
+  position: relative;
   z-index: 10;
-  top: 32%;
-  transform: none;
   width: 100%;
-  padding: 0 4rem;
+  padding: 6.5rem 4rem 3.5rem 4rem;
   display: flex;
   flex-direction: column;
 }
@@ -209,9 +209,9 @@ a, button, .project-card { user-select: none; -webkit-user-select: none; }
 .hero-name-block {
   font-family: 'Outfit', sans-serif;
   font-weight: 800;
-  font-size: clamp(3rem, 7vw, 4.8rem); /* Reduced from 6.5rem to 4.8rem max */
-  line-height: 0.95; /* Increased line-height from 0.85 to 0.95 */
-  margin-bottom: 20px; /* Increased margin */
+  font-size: clamp(2.8rem, 6vw, 4.4rem);
+  line-height: 0.95;
+  margin-bottom: 14px;
   letter-spacing: -0.02em;
   text-transform: uppercase;
 }
@@ -227,8 +227,8 @@ a, button, .project-card { user-select: none; -webkit-user-select: none; }
 
 .hero-pills {
   display: flex;
-  gap: 10px; /* Increased gap */
-  margin-bottom: 24px; /* Increased margin */
+  gap: 8px;
+  margin-bottom: 16px;
   flex-wrap: wrap;
 }
 
@@ -238,23 +238,23 @@ a, button, .project-card { user-select: none; -webkit-user-select: none; }
   color: rgba(255,255,255,0.6);
   font-size: 11px;
   border-radius: 20px;
-  padding: 5px 14px; /* Increased padding */
+  padding: 5px 14px;
   font-weight: 500;
 }
 
 .hero-subtitle-text {
   font-family: 'Inter', sans-serif;
-  color: rgba(255,255,255,0.5);
-  font-size: 15px; /* Slightly larger text */
-  line-height: 1.8; /* Increased line-height */
-  max-width: 320px; /* Slightly wider */
-  margin-bottom: 36px; /* Increased margin */
+  color: rgba(255,255,255,0.55);
+  font-size: 14px;
+  line-height: 1.7;
+  max-width: 360px;
+  margin-bottom: 24px;
 }
 
 .hero-cta-row {
   display: flex;
-  gap: 16px; /* Increased gap */
-  margin-bottom: 32px; /* Increased margin */
+  gap: 14px;
+  margin-bottom: 24px;
   flex-wrap: wrap;
 }
 
@@ -436,8 +436,8 @@ a, button, .project-card { user-select: none; -webkit-user-select: none; }
   }
   .hero-content {
     width: 100%;
-    padding: 0 1.5rem;
-    top: 20%; /* Shift content up to leave room for bottom stats */
+    padding: 5rem 1.5rem 6.5rem 1.5rem;
+    top: auto;
   }
   .hero-name-first, .hero-name-last {
     font-size: clamp(2.4rem, 9vw, 3.5rem);

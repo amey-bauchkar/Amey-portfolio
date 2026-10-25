@@ -74,16 +74,6 @@ const Navbar = () => {
           </div>
 
           <div className="flex items-center gap-4">
-            <a 
-              href="https://github.com/amey-bauchkar" 
-              target="_blank" 
-              rel="noreferrer" 
-              className="text-text-secondary hover:text-white transition-colors p-1" 
-              aria-label="GitHub Profile"
-            >
-              <i className="fab fa-github text-xl"></i>
-            </a>
-
             <Link to="/contact" className="hidden sm:inline-flex items-center gap-2 bg-accent hover:bg-accent-hover text-white text-sm font-semibold px-5 py-2.5 rounded-md transition-all duration-300 hover:shadow-lg hover:shadow-accent/25 hover:-translate-y-0.5 active:translate-y-0">
               Let's Talk
               <i className="fas fa-arrow-right text-xs"></i>

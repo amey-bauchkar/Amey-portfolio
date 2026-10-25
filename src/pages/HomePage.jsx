@@ -3,7 +3,7 @@ import Hero from '../components/Hero';
 
 const HomePage = ({ onOpenCv }) => {
   return (
-    <div>
+    <div className="flex flex-col min-h-screen">
       <Hero onOpenCv={onOpenCv} />
     </div>
   );
