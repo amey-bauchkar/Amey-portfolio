@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { achievementsData, achievementStats } from '../data/achievementsData';
 
 const Achievements = () => {
@@ -6,6 +6,30 @@ const Achievements = () => {
   const [selectedAchievement, setSelectedAchievement] = useState(null);
   const [modalIndex, setModalIndex] = useState(0);
   const [activeModalImage, setActiveModalImage] = useState('primary');
+  const videoRef = useRef(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    video.defaultMuted = true;
+    video.muted = true;
+    
+    const playVideo = () => {
+      video.play().catch(() => {});
+    };
+
+    playVideo();
+    window.addEventListener('click', playVideo, { once: true });
+    window.addEventListener('touchstart', playVideo, { once: true });
+    window.addEventListener('scroll', playVideo, { once: true });
+
+    return () => {
+      window.removeEventListener('click', playVideo);
+      window.removeEventListener('touchstart', playVideo);
+      window.removeEventListener('scroll', playVideo);
+    };
+  }, []);
 
   const filteredAchievements = achievementsData.filter(item => {
     if (activeFilter === 'all') return true;
@@ -54,24 +78,28 @@ const Achievements = () => {
   }, [selectedAchievement, modalIndex]);
 
   return (
-    <section id="achievements" className="relative py-20 md:py-28 bg-bg bg-grid z-10 text-text-primary overflow-hidden">
-      {/* Cinematic Background Video (matching portfolio aesthetic) */}
-      <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none z-0">
+    <section id="achievements" className="relative py-20 md:py-28 z-10 text-text-primary">
+      {/* Fixed Fullscreen Background Video (stays centered & visible during scroll) */}
+      <div className="fixed inset-0 w-full h-full overflow-hidden pointer-events-none z-0">
         <video 
-          className="w-full h-full object-cover opacity-25 filter contrast-125 brightness-90"
+          ref={videoRef}
+          className="w-full h-full object-cover opacity-65 md:opacity-55 filter contrast-115 brightness-105 transition-opacity duration-700"
           src="/achievements-bg.mp4"
           autoPlay 
           loop 
           muted 
           playsInline 
+          preload="auto"
           aria-hidden="true"
         >
           <source src="/achievements-bg.mp4" type="video/mp4" />
           <source src="/convert_the_above_video_into_c.mp4" type="video/mp4" />
         </video>
-        {/* Ambient Dark Gradient Vignette for flawless text contrast */}
-        <div className="absolute inset-0 bg-gradient-to-b from-bg/95 via-bg/85 to-bg pointer-events-none"></div>
-        <div className="absolute inset-0 bg-gradient-to-r from-bg/80 via-transparent to-bg/80 pointer-events-none"></div>
+        {/* Subtle Dark Vignette & Mesh Grid for optimal text contrast */}
+        <div className="absolute inset-0 bg-black/40 pointer-events-none"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-bg via-transparent to-bg/85 pointer-events-none"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-bg/75 via-transparent to-bg/75 pointer-events-none"></div>
+        <div className="absolute inset-0 bg-grid opacity-25 pointer-events-none"></div>
       </div>
 
       {/* Background Ambience Orbs (matching Skills and Projects) */}
