@@ -5,6 +5,7 @@ const Achievements = () => {
   const [activeFilter, setActiveFilter] = useState('all');
   const [selectedAchievement, setSelectedAchievement] = useState(null);
   const [modalIndex, setModalIndex] = useState(0);
+  const [activeModalImage, setActiveModalImage] = useState('primary');
 
   const filteredAchievements = achievementsData.filter(item => {
     if (activeFilter === 'all') return true;
@@ -13,8 +14,6 @@ const Achievements = () => {
     if (activeFilter === 'shortlisted') return item.category === 'shortlisted';
     return true;
   });
-
-  const [activeModalImage, setActiveModalImage] = useState('primary');
 
   const handleOpenModal = (achievement) => {
     const idx = achievementsData.findIndex(a => a.id === achievement.id);
@@ -54,95 +53,100 @@ const Achievements = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedAchievement, modalIndex]);
 
-  const getBadgeStyle = (type) => {
-    switch (type) {
-      case 'gold':
-        return 'bg-[#121008]/95 text-amber-300 border-amber-500/60 shadow-lg shadow-black/80';
-      case 'blue':
-        return 'bg-[#081119]/95 text-cyan-300 border-cyan-500/60 shadow-lg shadow-black/80';
-      case 'emerald':
-        return 'bg-[#081810]/95 text-emerald-300 border-emerald-500/60 shadow-lg shadow-black/80';
-      default:
-        return 'bg-black/95 text-white/95 border-white/40 shadow-lg shadow-black/80';
-    }
-  };
-
   return (
-    <div className="relative py-28 md:py-36 bg-[#0a0a0c] text-white min-h-screen overflow-hidden">
-      {/* Subtle Background Glow Elements */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] bg-accent/5 rounded-full blur-[140px] pointer-events-none"></div>
-      <div className="absolute bottom-1/4 right-10 w-[500px] h-[400px] bg-amber-500/5 rounded-full blur-[160px] pointer-events-none"></div>
+    <section id="achievements" className="relative py-20 md:py-28 bg-bg bg-grid z-10 text-text-primary">
+      {/* Background Ambience Orbs (matching Skills and Projects) */}
+      <div className="absolute top-1/4 -right-32 w-96 h-96 bg-accent/5 rounded-full blur-[140px] pointer-events-none"></div>
+      <div className="absolute bottom-1/3 -left-32 w-96 h-96 bg-accent/5 rounded-full blur-[140px] pointer-events-none"></div>
 
       <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
         
-        {/* Editorial Section Header */}
-        <div className="max-w-3xl mb-14 md:mb-20">
-          <div className="inline-flex items-center gap-2 mb-4">
+        {/* Section Header (matching Skills & Projects typography) */}
+        <div className="mb-12 md:mb-16 anim-hidden animate-fade-in-up">
+          <div className="inline-flex items-center gap-2 mb-3">
             <span className="w-8 h-0.5 bg-accent"></span>
-            <span className="text-accent text-xs sm:text-sm font-mono font-bold tracking-[0.2em] uppercase">
-              // RECOGNITION &amp; MILESTONES
+            <span className="text-accent text-sm font-bold tracking-wider uppercase font-inter">
+              Recognition &amp; Honors
             </span>
           </div>
 
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-6 uppercase" style={{ fontFamily: '"Outfit", sans-serif' }}>
-            Achievements <br className="hidden sm:inline" />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent via-amber-400 to-amber-200">
-              &amp; Activities
-            </span>
+          <h1 
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-text-primary tracking-tight uppercase" 
+            style={{ fontFamily: '"Outfit", sans-serif' }}
+          >
+            Achievements <span className="text-accent">&amp; Activities</span>
           </h1>
 
-          <p className="text-text-secondary text-base sm:text-lg md:text-xl leading-relaxed">
-            Proven engineering ability under pressure. A record of competing, innovating, and winning in hackathons, design sprints, and national technological challenges.
+          <p className="text-text-secondary text-base sm:text-lg md:text-xl leading-relaxed max-w-3xl mt-4 font-normal font-sans">
+            Proven engineering ability under pressure. A record of competing, innovating, and winning in hackathons, design sprints, and national engineering challenges.
           </p>
         </div>
 
-        {/* Milestone Quick Stats Bar */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-12">
-          <div className="bg-[#121215]/80 backdrop-blur-md border border-white/10 rounded-xl p-5 md:p-6 transition-all duration-300 hover:border-accent/40">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-mono uppercase tracking-wider text-text-secondary">Total Honors</span>
-              <i className="fas fa-award text-accent/80 text-lg"></i>
+        {/* Milestone Quick Stats Bar (matching Skills cards styling) */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-12">
+          
+          <div className="bg-card border border-border rounded-2xl p-5 sm:p-6 hover:border-accent/50 transition-all duration-300 shadow-lg group hover:-translate-y-1">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-xs font-semibold uppercase tracking-wider text-text-secondary font-inter">Total Honors</span>
+              <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center text-accent text-lg group-hover:scale-110 transition-transform">
+                <i className="fas fa-award"></i>
+              </div>
             </div>
-            <div className="text-3xl sm:text-4xl font-bold text-white tracking-tight">{achievementStats.totalCount}</div>
-            <div className="text-xs text-text-secondary mt-1">Hackathons &amp; Events</div>
+            <div className="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight" style={{ fontFamily: '"Outfit", sans-serif' }}>
+              {achievementStats.totalCount}
+            </div>
+            <div className="text-xs text-text-secondary mt-1 font-medium">Hackathons &amp; Events</div>
           </div>
 
-          <div className="bg-[#121215]/80 backdrop-blur-md border border-white/10 rounded-xl p-5 md:p-6 transition-all duration-300 hover:border-amber-500/40">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-mono uppercase tracking-wider text-amber-400">1st Place Wins</span>
-              <i className="fas fa-trophy text-amber-400 text-lg"></i>
+          <div className="bg-card border border-border rounded-2xl p-5 sm:p-6 hover:border-accent/50 transition-all duration-300 shadow-lg group hover:-translate-y-1">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-xs font-semibold uppercase tracking-wider text-text-secondary font-inter">1st Place Wins</span>
+              <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center text-accent text-lg group-hover:scale-110 transition-transform">
+                <i className="fas fa-trophy"></i>
+              </div>
             </div>
-            <div className="text-3xl sm:text-4xl font-bold text-white tracking-tight">{achievementStats.wins}</div>
-            <div className="text-xs text-text-secondary mt-1">TCS, Innovista &amp; CSI</div>
+            <div className="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight" style={{ fontFamily: '"Outfit", sans-serif' }}>
+              {achievementStats.wins}
+            </div>
+            <div className="text-xs text-text-secondary mt-1 font-medium">TCS, Innovista &amp; CSI</div>
           </div>
 
-          <div className="bg-[#121215]/80 backdrop-blur-md border border-white/10 rounded-xl p-5 md:p-6 transition-all duration-300 hover:border-cyan-400/40">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-mono uppercase tracking-wider text-cyan-400">Finalist Placements</span>
-              <i className="fas fa-medal text-cyan-400 text-lg"></i>
+          <div className="bg-card border border-border rounded-2xl p-5 sm:p-6 hover:border-accent/50 transition-all duration-300 shadow-lg group hover:-translate-y-1">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-xs font-semibold uppercase tracking-wider text-text-secondary font-inter">Finalist Placements</span>
+              <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center text-accent text-lg group-hover:scale-110 transition-transform">
+                <i className="fas fa-medal"></i>
+              </div>
             </div>
-            <div className="text-3xl sm:text-4xl font-bold text-white tracking-tight">{achievementStats.nationalFinals}</div>
-            <div className="text-xs text-text-secondary mt-1">COEP MindSpark &amp; More</div>
+            <div className="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight" style={{ fontFamily: '"Outfit", sans-serif' }}>
+              {achievementStats.nationalFinals}
+            </div>
+            <div className="text-xs text-text-secondary mt-1 font-medium">COEP MindSpark &amp; More</div>
           </div>
 
-          <div className="bg-[#121215]/80 backdrop-blur-md border border-white/10 rounded-xl p-5 md:p-6 transition-all duration-300 hover:border-emerald-400/40">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-mono uppercase tracking-wider text-emerald-400">Smart India Hackathon</span>
-              <i className="fas fa-flag-checkered text-emerald-400 text-lg"></i>
+          <div className="bg-card border border-border rounded-2xl p-5 sm:p-6 hover:border-accent/50 transition-all duration-300 shadow-lg group hover:-translate-y-1">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-xs font-semibold uppercase tracking-wider text-text-secondary font-inter">Smart India Hackathon</span>
+              <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center text-accent text-lg group-hover:scale-110 transition-transform">
+                <i className="fas fa-flag-checkered"></i>
+              </div>
             </div>
-            <div className="text-3xl sm:text-4xl font-bold text-white tracking-tight">Top 45</div>
-            <div className="text-xs text-text-secondary mt-1">SIH 2026 Internal Shortlist</div>
+            <div className="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight" style={{ fontFamily: '"Outfit", sans-serif' }}>
+              Top 45
+            </div>
+            <div className="text-xs text-text-secondary mt-1 font-medium">SIH 2026 Internal Shortlist</div>
           </div>
+
         </div>
 
-        {/* Filter Tabs */}
-        <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-10 pb-4 border-b border-white/10">
+        {/* Filter Pills (identical to Projects.jsx category pills) */}
+        <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 mb-12 pb-6 border-b border-border/80">
           <button
             onClick={() => setActiveFilter('all')}
-            className={`px-4 sm:px-5 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-300 cursor-pointer ${
+            className={`px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-semibold tracking-wider uppercase transition-all duration-300 border cursor-pointer ${
               activeFilter === 'all'
-                ? 'bg-accent text-white shadow-lg shadow-accent/25'
-                : 'bg-white/5 text-text-secondary hover:text-white hover:bg-white/10 border border-white/5'
+                ? 'bg-accent text-white border-accent shadow-lg shadow-accent/25'
+                : 'bg-card text-text-secondary border-border hover:border-accent/40 hover:text-white backdrop-blur-md'
             }`}
           >
             All Recognitions ({achievementsData.length})
@@ -150,34 +154,34 @@ const Achievements = () => {
 
           <button
             onClick={() => setActiveFilter('winner')}
-            className={`px-4 sm:px-5 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-300 cursor-pointer inline-flex items-center gap-2 ${
+            className={`px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-semibold tracking-wider uppercase transition-all duration-300 border cursor-pointer flex items-center gap-2 ${
               activeFilter === 'winner'
-                ? 'bg-amber-500 text-black shadow-lg shadow-amber-500/25'
-                : 'bg-white/5 text-text-secondary hover:text-white hover:bg-white/10 border border-white/5'
+                ? 'bg-accent text-white border-accent shadow-lg shadow-accent/25'
+                : 'bg-card text-text-secondary border-border hover:border-accent/40 hover:text-white backdrop-blur-md'
             }`}
           >
             <i className="fas fa-trophy text-xs"></i>
-            1st Place Wins (3)
+            1st Place Wins ({achievementStats.wins})
           </button>
 
           <button
             onClick={() => setActiveFilter('finalist')}
-            className={`px-4 sm:px-5 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-300 cursor-pointer inline-flex items-center gap-2 ${
+            className={`px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-semibold tracking-wider uppercase transition-all duration-300 border cursor-pointer flex items-center gap-2 ${
               activeFilter === 'finalist'
-                ? 'bg-cyan-500 text-black shadow-lg shadow-cyan-500/25'
-                : 'bg-white/5 text-text-secondary hover:text-white hover:bg-white/10 border border-white/5'
+                ? 'bg-accent text-white border-accent shadow-lg shadow-accent/25'
+                : 'bg-card text-text-secondary border-border hover:border-accent/40 hover:text-white backdrop-blur-md'
             }`}
           >
             <i className="fas fa-medal text-xs"></i>
-            Finalists (4)
+            Finalists ({achievementStats.nationalFinals})
           </button>
 
           <button
             onClick={() => setActiveFilter('shortlisted')}
-            className={`px-4 sm:px-5 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-300 cursor-pointer inline-flex items-center gap-2 ${
+            className={`px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-semibold tracking-wider uppercase transition-all duration-300 border cursor-pointer flex items-center gap-2 ${
               activeFilter === 'shortlisted'
-                ? 'bg-emerald-500 text-black shadow-lg shadow-emerald-500/25'
-                : 'bg-white/5 text-text-secondary hover:text-white hover:bg-white/10 border border-white/5'
+                ? 'bg-accent text-white border-accent shadow-lg shadow-accent/25'
+                : 'bg-card text-text-secondary border-border hover:border-accent/40 hover:text-white backdrop-blur-md'
             }`}
           >
             <i className="fas fa-flag-checkered text-xs"></i>
@@ -185,26 +189,38 @@ const Achievements = () => {
           </button>
         </div>
 
-        {/* Achievements Grid */}
+        {/* Achievements Grid (matching ProjectsCard design system) */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {filteredAchievements.map((item, index) => {
-            const isWinner = item.category === 'winner';
-            const isSIH = item.category === 'shortlisted';
-
             return (
               <div
                 key={item.id}
-                className={`group relative bg-[#131317]/90 backdrop-blur-md rounded-2xl border transition-all duration-500 flex flex-col justify-between overflow-hidden shadow-xl hover:-translate-y-1.5 ${
-                  isWinner 
-                    ? 'border-amber-500/20 hover:border-amber-400/60 hover:shadow-amber-500/10' 
-                    : isSIH 
-                      ? 'border-emerald-500/20 hover:border-emerald-400/60 hover:shadow-emerald-500/10'
-                      : 'border-white/10 hover:border-accent/50 hover:shadow-accent/10'
-                }`}
+                className="group relative bg-card border border-border rounded-2xl overflow-hidden hover:border-accent/50 transition-all duration-500 shadow-xl flex flex-col justify-between hover:-translate-y-1.5"
               >
-                {/* Visual Certificate / Media Container */}
+                {/* Card Header (Number, Category Badge & Accent Line identical to Projects.jsx) */}
+                <div className="flex items-center justify-between gap-4 p-5 sm:p-6 pb-4">
+                  <div className="flex items-end gap-3">
+                    <span className="text-3xl sm:text-4xl font-light text-text-secondary/40 font-serif leading-none tracking-tighter group-hover:text-accent transition-colors duration-500">
+                      {index + 1 < 10 ? `0${index + 1}` : index + 1}
+                    </span>
+                    <div className="flex flex-col">
+                      <span className="text-[10px] sm:text-xs font-mono uppercase tracking-[0.2em] text-accent font-semibold">
+                        {item.badge}
+                      </span>
+                      <span className="text-[9px] sm:text-[10px] text-text-secondary/70 uppercase tracking-widest font-mono">
+                        {item.date}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="h-px bg-border grow max-w-[100px] relative overflow-hidden hidden sm:block">
+                    <div className="absolute top-0 left-0 h-full w-full bg-accent transform -translate-x-full group-hover:translate-x-0 transition-transform duration-[0.8s] ease-in-out"></div>
+                  </div>
+                </div>
+
+                {/* Photo / Media Container (Ambient backlight & 100% uncropped object-contain) */}
                 <div 
-                  className="relative h-64 sm:h-72 w-full overflow-hidden bg-[#0c0c10] cursor-pointer flex items-center justify-center p-3 border-b border-white/10 group/thumb"
+                  className="relative h-60 sm:h-64 w-full bg-[#111113] cursor-pointer flex items-center justify-center p-3 border-y border-border/80 overflow-hidden group/thumb"
                   onClick={() => handleOpenModal(item)}
                 >
                   {/* Ambient backdrop glow in image colors */}
@@ -212,75 +228,65 @@ const Achievements = () => {
                     src={item.image}
                     alt=""
                     aria-hidden="true"
-                    className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-25 scale-125 pointer-events-none"
+                    className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-20 scale-125 pointer-events-none"
                   />
 
                   {/* Sharp, uncropped foreground photo / certificate */}
                   <img
                     src={item.image}
                     alt={item.title}
-                    className="relative z-10 max-h-full max-w-full object-contain rounded-md transition-transform duration-500 group-hover/thumb:scale-[1.03] shadow-[0_8px_24px_rgba(0,0,0,0.6)]"
+                    className="relative z-10 max-h-full max-w-full object-contain rounded-md transition-transform duration-500 group-hover/thumb:scale-[1.03] shadow-[0_6px_20px_rgba(0,0,0,0.6)]"
                   />
-
-                  {/* Top Badge Overlay */}
-                  <div className="absolute top-3 left-3 right-3 flex items-center justify-between gap-2 z-20 pointer-events-none">
-                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider border backdrop-blur-md shadow-lg ${getBadgeStyle(item.badgeType)}`}>
-                      <i className={`fas ${item.icon} text-[11px]`}></i>
-                      {item.badge}
-                    </span>
-                    <span className="text-[11px] font-mono font-medium px-2.5 py-1 rounded-md bg-black/90 backdrop-blur-md text-white/90 border border-white/20 shadow-md">
-                      {item.date}
-                    </span>
-                  </div>
 
                   {/* Click to expand hover hint */}
                   <div className="absolute inset-0 z-20 flex items-center justify-center opacity-0 group-hover/thumb:opacity-100 transition-opacity duration-300 bg-black/40 backdrop-blur-[2px]">
-                    <span className="inline-flex items-center gap-2 bg-black/85 text-white text-xs font-semibold px-4 py-2 rounded-full border border-white/25 shadow-xl">
+                    <span className="inline-flex items-center gap-2 bg-card/90 text-text-primary text-xs font-semibold px-4 py-2 rounded-full border border-border shadow-xl">
                       <i className="fas fa-search-plus text-accent"></i> Inspect Full Proof
                     </span>
                   </div>
                 </div>
 
-                {/* Card Content Body */}
-                <div className="p-6 flex-1 flex flex-col justify-between">
+                {/* Card Body */}
+                <div className="p-5 sm:p-6 flex-1 flex flex-col justify-between">
                   <div>
                     {/* Organization / Location */}
-                    <div className="flex items-center gap-2 text-xs text-text-secondary font-mono mb-2">
-                      <i className="fas fa-map-marker-alt text-accent text-[11px]"></i>
+                    <div className="flex items-center gap-2 text-xs text-text-secondary font-medium mb-2.5">
+                      <i className="fas fa-map-marker-alt text-accent text-xs"></i>
                       <span className="truncate">{item.organization}</span>
                     </div>
 
                     {/* Achievement Title */}
-                    <h2 className="text-xl font-bold text-white group-hover:text-accent transition-colors duration-300 leading-snug mb-3">
+                    <h2 className="text-xl sm:text-2xl font-bold text-text-primary group-hover:text-accent transition-colors duration-300 leading-snug mb-3">
                       {item.title}
                     </h2>
 
                     {/* Description */}
-                    <p className="text-text-secondary text-sm leading-relaxed mb-6">
+                    <p className="text-text-secondary text-sm leading-relaxed mb-6 font-normal">
                       {item.description}
                     </p>
                   </div>
 
-                  {/* Bottom section: Tags & CTA */}
                   <div>
-                    <div className="flex flex-wrap gap-1.5 mb-5">
+                    {/* Tags (matching Projects.jsx tags exactly) */}
+                    <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-6">
                       {item.tags.map(tag => (
                         <span 
                           key={tag} 
-                          className="text-[11px] font-mono px-2.5 py-0.5 rounded-md bg-white/5 text-text-secondary border border-white/5"
+                          className="text-[11px] font-semibold px-3 py-1 bg-white/5 text-white/80 rounded-md border border-white/10 shadow-sm group-hover:border-white/20 transition-all"
                         >
-                          #{tag}
+                          {tag}
                         </span>
                       ))}
                     </div>
 
+                    {/* Bottom CTA Button */}
                     <button
                       onClick={() => handleOpenModal(item)}
-                      className="w-full py-2.5 px-4 rounded-xl text-xs sm:text-sm font-semibold inline-flex items-center justify-center gap-2 bg-white/5 hover:bg-accent hover:text-white text-text-secondary transition-all duration-300 border border-white/10 hover:border-accent group-hover:bg-white/10 cursor-pointer"
+                      className="w-full py-2.5 px-4 rounded-lg text-xs sm:text-sm font-semibold inline-flex items-center justify-center gap-2 bg-bg hover:bg-accent text-text-primary hover:text-white border border-border hover:border-accent transition-all duration-300 shadow-sm cursor-pointer group/btn"
                     >
-                      <i className="fas fa-certificate text-accent group-hover:text-white transition-colors"></i>
+                      <i className="fas fa-certificate text-accent group-hover/btn:text-white transition-colors"></i>
                       <span>View Proof &amp; Details</span>
-                      <i className="fas fa-arrow-right text-[10px] ml-1 opacity-70 group-hover:translate-x-1 transition-transform"></i>
+                      <i className="fas fa-arrow-right text-[10px] ml-1 opacity-70 group-hover/btn:translate-x-1 transition-transform"></i>
                     </button>
                   </div>
                 </div>
@@ -291,33 +297,33 @@ const Achievements = () => {
 
       </div>
 
-      {/* Fullscreen Certificate Lightbox Modal */}
+      {/* Fullscreen Certificate Lightbox Modal (matching ProjectModal.jsx styling) */}
       {selectedAchievement && (
         <div 
-          className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-6 md:p-8 bg-black/90 backdrop-blur-xl animate-fade-in"
+          className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-6 md:p-8 bg-bg/80 backdrop-blur-md animate-fade-in"
           onClick={handleCloseModal}
         >
           <div 
-            className="relative w-full max-w-5xl bg-[#121217] border border-white/15 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]"
+            className="relative w-full max-w-5xl bg-card border border-border rounded-xl shadow-2xl shadow-accent/10 overflow-hidden flex flex-col max-h-[90vh]"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
-            <div className="flex flex-wrap items-center justify-between gap-3 px-6 py-4 border-b border-white/10 bg-[#16161c]">
+            <div className="flex flex-wrap items-center justify-between gap-3 px-6 py-4 border-b border-border/80 bg-card">
               <div className="flex items-center gap-3">
-                <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold uppercase tracking-wider border ${getBadgeStyle(selectedAchievement.badgeType)}`}>
+                <span className="px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase font-inter bg-accent/10 text-accent border border-accent/30 shadow-sm">
                   {selectedAchievement.badge}
                 </span>
-                <span className="text-xs font-mono text-white/50 hidden sm:inline">
+                <span className="text-xs font-mono text-text-secondary hidden sm:inline">
                   [{modalIndex + 1} of {achievementsData.length}]
                 </span>
 
-                {/* Dual view toggle if altImage is present (e.g. TCS team photo & certificate) */}
+                {/* Dual view toggle for TCS */}
                 {selectedAchievement.altImage && (
-                  <div className="inline-flex items-center rounded-lg bg-black/60 p-1 border border-white/10 text-xs ml-2">
+                  <div className="inline-flex items-center rounded-lg bg-bg border border-border p-1 text-xs ml-2">
                     <button
                       onClick={() => setActiveModalImage('primary')}
                       className={`px-3 py-1 rounded-md transition-colors cursor-pointer font-medium ${
-                        activeModalImage === 'primary' ? 'bg-accent text-white shadow-md' : 'text-white/60 hover:text-white'
+                        activeModalImage === 'primary' ? 'bg-accent text-white shadow' : 'text-text-secondary hover:text-white'
                       }`}
                     >
                       Team Photo
@@ -325,7 +331,7 @@ const Achievements = () => {
                     <button
                       onClick={() => setActiveModalImage('alt')}
                       className={`px-3 py-1 rounded-md transition-colors cursor-pointer font-medium ${
-                        activeModalImage === 'alt' ? 'bg-accent text-white shadow-md' : 'text-white/60 hover:text-white'
+                        activeModalImage === 'alt' ? 'bg-accent text-white shadow' : 'text-text-secondary hover:text-white'
                       }`}
                     >
                       Certificate
@@ -339,7 +345,7 @@ const Achievements = () => {
                   href={activeModalImage === 'alt' && selectedAchievement.altImage ? selectedAchievement.altImage : selectedAchievement.image}
                   target="_blank"
                   rel="noreferrer"
-                  className="px-3 py-1.5 rounded-lg text-xs font-medium text-white/70 hover:text-white hover:bg-white/10 transition-colors inline-flex items-center gap-1.5"
+                  className="px-3 py-1.5 rounded-lg text-xs font-medium text-text-secondary hover:text-white hover:bg-white/10 transition-colors inline-flex items-center gap-1.5"
                   title="Open original high-res image in new tab"
                 >
                   <i className="fas fa-external-link-alt text-[10px]"></i>
@@ -348,7 +354,7 @@ const Achievements = () => {
 
                 <button 
                   onClick={handleCloseModal}
-                  className="w-8 h-8 rounded-full bg-white/10 hover:bg-accent text-white flex items-center justify-center transition-colors cursor-pointer"
+                  className="w-9 h-9 rounded-full bg-bg/60 hover:bg-accent text-white flex items-center justify-center transition-colors cursor-pointer"
                   aria-label="Close modal"
                 >
                   <i className="fas fa-times text-sm"></i>
@@ -357,17 +363,17 @@ const Achievements = () => {
             </div>
 
             {/* Modal Image Viewport */}
-            <div className="relative flex-1 bg-black/95 flex items-center justify-center overflow-hidden min-h-[320px] max-h-[72vh] p-4 sm:p-6">
+            <div className="relative flex-1 bg-[#0d0d0f] flex items-center justify-center overflow-hidden min-h-[320px] max-h-[70vh] p-4 sm:p-6">
               <img 
                 src={activeModalImage === 'alt' && selectedAchievement.altImage ? selectedAchievement.altImage : selectedAchievement.image} 
                 alt={selectedAchievement.title} 
-                className="max-w-full max-h-[66vh] object-contain rounded-lg shadow-2xl border border-white/10"
+                className="max-w-full max-h-[66vh] object-contain rounded-lg shadow-2xl border border-border"
               />
 
               {/* Prev / Next Navigation Arrows */}
               <button 
                 onClick={handlePrevModal}
-                className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/60 hover:bg-accent text-white flex items-center justify-center transition-all backdrop-blur-sm border border-white/20 cursor-pointer shadow-lg hover:scale-110"
+                className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-card/80 hover:bg-accent text-white flex items-center justify-center transition-all backdrop-blur-sm border border-border cursor-pointer shadow-lg hover:scale-110"
                 aria-label="Previous certificate"
               >
                 <i className="fas fa-chevron-left"></i>
@@ -375,7 +381,7 @@ const Achievements = () => {
 
               <button 
                 onClick={handleNextModal}
-                className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/60 hover:bg-accent text-white flex items-center justify-center transition-all backdrop-blur-sm border border-white/20 cursor-pointer shadow-lg hover:scale-110"
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-card/80 hover:bg-accent text-white flex items-center justify-center transition-all backdrop-blur-sm border border-border cursor-pointer shadow-lg hover:scale-110"
                 aria-label="Next certificate"
               >
                 <i className="fas fa-chevron-right"></i>
@@ -383,19 +389,28 @@ const Achievements = () => {
             </div>
 
             {/* Modal Footer Details */}
-            <div className="p-5 sm:p-6 bg-[#16161c] border-t border-white/10">
+            <div className="p-6 bg-card border-t border-border/80">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
-                <h3 className="text-lg sm:text-xl font-bold text-white">
+                <h3 className="text-xl sm:text-2xl font-bold text-text-primary" style={{ fontFamily: '"Outfit", sans-serif' }}>
                   {selectedAchievement.title}
                 </h3>
                 <span className="text-xs font-mono text-accent">
                   {selectedAchievement.date}
                 </span>
               </div>
-              <p className="text-xs sm:text-sm text-text-secondary leading-relaxed mb-3">
+              <p className="text-sm text-text-secondary leading-relaxed mb-4">
                 {selectedAchievement.description}
               </p>
-              <div className="flex items-center justify-between text-xs text-white/50 font-mono pt-2 border-t border-white/5">
+              
+              <div className="flex flex-wrap gap-2 mb-4">
+                {selectedAchievement.tags.map(tag => (
+                  <span key={tag} className="text-xs font-semibold px-3 py-1 bg-accent/10 text-accent rounded-md border border-accent/20">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+
+              <div className="flex items-center justify-between text-xs text-text-secondary/70 font-mono pt-3 border-t border-border/60">
                 <span>{selectedAchievement.organization}</span>
                 <span className="hidden sm:inline">Use arrow keys (← / →) to navigate</span>
               </div>
@@ -405,7 +420,7 @@ const Achievements = () => {
         </div>
       )}
 
-    </div>
+    </section>
   );
 };
 
