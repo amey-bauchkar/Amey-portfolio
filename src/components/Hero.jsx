@@ -24,11 +24,12 @@ const Hero = ({ onOpenCv }) => {
 
         <div className="hero-pills anim-hidden animate-fade-in-up delay-400">
           <div className="hero-pill">⚡ Hardware Dev</div>
-          <div className="hero-pill">&lt;/&gt; Web Dev</div>
+          <div className="hero-pill">&lt;/&gt; Full Stack Dev</div>
+          <div className="hero-pill">🤖 AI/ML Enthusiast</div>
         </div>
 
         <p className="hero-subtitle-text anim-hidden animate-fade-in-up delay-500">
-          Bridging hardware innovation and modern web technologies — from circuit boards to clean code.
+          Bridging hardware innovation, full-stack systems, and AI/ML — from circuit boards to intelligent code.
         </p>
 
         <div className="hero-cta-row anim-hidden animate-fade-in-up delay-600">
@@ -47,11 +48,14 @@ const Hero = ({ onOpenCv }) => {
           <a href="tel:+918591094018" className="hero-social-circle" aria-label="Phone">
             <i className="fas fa-phone"></i>
           </a>
-          <a href="https://www.instagram.com/13amey_/" target="_blank" rel="noreferrer" className="hero-social-circle" aria-label="Instagram">
-            <i className="fab fa-instagram"></i>
+          <a href="https://github.com/amey-bauchkar" target="_blank" rel="noreferrer" className="hero-social-circle" aria-label="GitHub">
+            <i className="fab fa-github"></i>
           </a>
           <a href="https://www.linkedin.com/in/amey-bauchkar-3394453ba/" target="_blank" rel="noreferrer" className="hero-social-circle" aria-label="LinkedIn">
             <i className="fab fa-linkedin-in"></i>
+          </a>
+          <a href="https://www.instagram.com/13amey_/" target="_blank" rel="noreferrer" className="hero-social-circle" aria-label="Instagram">
+            <i className="fab fa-instagram"></i>
           </a>
         </div>
       </div>
@@ -59,18 +63,23 @@ const Hero = ({ onOpenCv }) => {
       {/* Premium Editorial / Aesthetic Stats Sidebar */}
       <div className="hero-floating-stats">
         <div className="hero-stat-item-wrap animate-fade-in-up delay-800">
-          <div className="hero-stat-value">1<span>st</span></div>
+          <div className="hero-stat-value">2<span>nd</span></div>
           <div className="hero-stat-label">Year · B.Tech</div>
         </div>
 
         <div className="hero-stat-item-wrap animate-fade-in-up delay-900">
           <div className="hero-stat-value">4<span>+</span></div>
-          <div className="hero-stat-label">Hardware Projects</div>
+          <div className="hero-stat-label">Software Projects</div>
         </div>
 
         <div className="hero-stat-item-wrap animate-fade-in-up delay-1000">
+          <div className="hero-stat-value">5<span>+</span></div>
+          <div className="hero-stat-label">Hardware Projects</div>
+        </div>
+
+        <div className="hero-stat-item-wrap animate-fade-in-up delay-1100">
           <div className="hero-stat-value">&lt;/&gt;</div>
-          <div className="hero-stat-label">Frontend Dev</div>
+          <div className="hero-stat-label">Full Stack &amp; AI/ML</div>
         </div>
       </div>
 

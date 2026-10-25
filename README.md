@@ -1,9 +1,10 @@
 # 🚀 Amey Bauchkar - Personal Portfolio
 
-Welcome to my personal portfolio repository! I'm **Amey Bauchkar**, a 1st-year B.Tech student who specializes in bridging the gap between hardware innovation and modern web technologies — from circuit boards to clean code.
+Welcome to my personal portfolio repository! I'm **Amey Bauchkar**, a 2nd-year B.Tech student who specializes in bridging the gap between hardware innovation, full-stack web applications, and AI/ML systems — from circuit boards to intelligent code.
 
 ## 🛠️ Tech Stack & Skills
-- **Frontend Development:** React.js, Vite, Tailwind CSS, GSAP / Framer Motion, HTML5, CSS3
+- **Full Stack Development:** React.js, Next.js, Node.js, Vite, Tailwind CSS, GSAP / Framer Motion, HTML5, CSS3
+- **AI & Machine Learning:** Machine Learning, Predictive Models, Decision Systems, Linear Programming
 - **Hardware & IoT:** Arduino, C++, Microcontrollers, Embedded Systems, ESP8266, Sensor Integration, PID Control
 - **Tools & Platforms:** Git, GitHub, Firebase, VS Code, PlatformIO
 
@@ -56,6 +57,7 @@ To run this portfolio locally on your machine, follow these steps:
    ```
 
 ## 📬 Let's Connect!
+- **GitHub:** [amey-bauchkar](https://github.com/amey-bauchkar)
 - **Email:** [bauchkaramey1306@gmail.com](mailto:bauchkaramey1306@gmail.com)
 - **LinkedIn:** [Amey Bauchkar](https://www.linkedin.com/in/amey-bauchkar-3394453ba/)
 - **Instagram:** [@13amey_](https://www.instagram.com/13amey_/)

@@ -248,43 +248,7 @@ const Projects = ({ onOpenProject }) => {
           </div>
         </div>
 
-        {/* Sticky floating category indicator for quick toggling while scrolling */}
-        <div className="sticky top-20 z-40 w-full flex justify-end px-6 md:px-12 lg:px-24 pointer-events-none mb-6">
-          <div className="pointer-events-auto inline-flex items-center gap-1.5 p-1.5 rounded-full bg-black/75 backdrop-blur-xl border border-white/15 shadow-2xl">
-            <button
-              onClick={() => handleFilterChange('all')}
-              className={`px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-semibold tracking-wider transition-all duration-300 ${
-                activeCategory === 'all'
-                  ? 'bg-accent text-white shadow-md shadow-accent/30'
-                  : 'text-white/60 hover:text-white hover:bg-white/10'
-              }`}
-            >
-              All ({projectsData.length})
-            </button>
-            <button
-              onClick={() => handleFilterChange('software')}
-              className={`px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-semibold tracking-wider transition-all duration-300 flex items-center gap-1.5 ${
-                activeCategory === 'software'
-                  ? 'bg-accent text-white shadow-md shadow-accent/30'
-                  : 'text-white/60 hover:text-white hover:bg-white/10'
-              }`}
-            >
-              <i className="fas fa-laptop-code text-[10px]"></i>
-              <span>Software ({softwareProjects.length})</span>
-            </button>
-            <button
-              onClick={() => handleFilterChange('hardware')}
-              className={`px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-semibold tracking-wider transition-all duration-300 flex items-center gap-1.5 ${
-                activeCategory === 'hardware'
-                  ? 'bg-accent text-white shadow-md shadow-accent/30'
-                  : 'text-white/60 hover:text-white hover:bg-white/10'
-              }`}
-            >
-              <i className="fas fa-microchip text-[10px]"></i>
-              <span>Hardware ({hardwareProjects.length})</span>
-            </button>
-          </div>
-        </div>
+
 
         {/* ========================================================================= */}
         {/* SECTION 1: SOFTWARE & DECISION SYSTEMS                                    */}

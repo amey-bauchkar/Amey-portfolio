@@ -17,7 +17,7 @@ const About = () => {
 
           <div className="lg:col-span-7 lg:pl-12 lg:mt-12 reveal-up">
             <p className="text-text-secondary text-lg md:text-xl leading-relaxed mb-8 max-w-2xl">
-              I am a first-year EXCS student with a deep passion for blurring the lines between hardware and software. I don't just write code — I build physical systems and bring them to life on the web.
+              I am a second-year EXCS student with a deep passion for blurring the lines between hardware and software. I don't just write code — I build physical systems and bring them to life on the web.
             </p>
             <p className="text-text-secondary text-lg md:text-xl leading-relaxed max-w-2xl">
               Whether I'm soldering components for an IoT project or crafting smooth, responsive user interfaces, my goal is to create seamless, end-to-end experiences.

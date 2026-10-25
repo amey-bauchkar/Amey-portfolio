@@ -66,6 +66,16 @@ const Navbar = () => {
           </div>
 
           <div className="flex items-center gap-4">
+            <a 
+              href="https://github.com/amey-bauchkar" 
+              target="_blank" 
+              rel="noreferrer" 
+              className="text-text-secondary hover:text-white transition-colors p-1" 
+              aria-label="GitHub Profile"
+            >
+              <i className="fab fa-github text-xl"></i>
+            </a>
+
             <Link to="/contact" className="hidden sm:inline-flex items-center gap-2 bg-accent hover:bg-accent-hover text-white text-sm font-semibold px-5 py-2.5 rounded-md transition-all duration-300 hover:shadow-lg hover:shadow-accent/25 hover:-translate-y-0.5 active:translate-y-0">
               Let's Talk
               <i className="fas fa-arrow-right text-xs"></i>
@@ -86,6 +96,16 @@ const Navbar = () => {
             <NavLink to="/projects" onClick={() => setMobileMenuOpen(false)} className={({ isActive }) => `mobile-link px-4 py-3 rounded-lg hover:text-white hover:bg-white/5 transition-all duration-300 text-sm font-medium ${isActive ? 'text-accent bg-white/5' : 'text-text-secondary'}`}>Projects</NavLink>
             <NavLink to="/skills" onClick={() => setMobileMenuOpen(false)} className={({ isActive }) => `mobile-link px-4 py-3 rounded-lg hover:text-white hover:bg-white/5 transition-all duration-300 text-sm font-medium ${isActive ? 'text-accent bg-white/5' : 'text-text-secondary'}`}>Skills</NavLink>
             <NavLink to="/contact" onClick={() => setMobileMenuOpen(false)} className={({ isActive }) => `mobile-link px-4 py-3 rounded-lg hover:text-white hover:bg-white/5 transition-all duration-300 text-sm font-medium ${isActive ? 'text-accent bg-white/5' : 'text-text-secondary'}`}>Contact</NavLink>
+            <a 
+              href="https://github.com/amey-bauchkar" 
+              target="_blank" 
+              rel="noreferrer" 
+              onClick={() => setMobileMenuOpen(false)}
+              className="mobile-link px-4 py-3 rounded-lg hover:text-white hover:bg-white/5 transition-all duration-300 text-sm font-medium text-text-secondary flex items-center gap-3"
+            >
+              <i className="fab fa-github text-base"></i>
+              <span>GitHub Profile</span>
+            </a>
             <Link to="/contact" onClick={() => setMobileMenuOpen(false)} className="sm:hidden mx-4 mt-4 text-center bg-accent hover:bg-accent-hover text-white text-sm font-semibold px-5 py-3 rounded-md transition-all duration-300 shadow-lg shadow-accent/20">
               Let's Talk
             </Link>
