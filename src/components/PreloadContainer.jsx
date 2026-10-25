@@ -106,6 +106,7 @@ const PreloadContainer = () => {
     const videoUrls = [
       '/convert_the_above_video_into_c.mp4',
       '/Demo.mp4',
+      '/achievements-bg.mp4',
     ];
 
     videoUrls.forEach(url => {

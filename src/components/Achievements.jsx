@@ -58,7 +58,8 @@ const Achievements = () => {
       {/* Cinematic Background Video (matching portfolio aesthetic) */}
       <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none z-0">
         <video 
-          className="w-full h-full object-cover opacity-20 filter contrast-125 brightness-90"
+          className="w-full h-full object-cover opacity-25 filter contrast-125 brightness-90"
+          src="/achievements-bg.mp4"
           autoPlay 
           loop 
           muted 

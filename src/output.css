@@ -9,17 +9,11 @@
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
       "Courier New", monospace;
     --color-red-500: oklch(63.7% 0.237 25.331);
-    --color-amber-200: oklch(92.4% 0.12 95.746);
     --color-amber-300: oklch(87.9% 0.169 91.605);
     --color-amber-400: oklch(82.8% 0.189 84.429);
     --color-amber-500: oklch(76.9% 0.188 70.08);
     --color-green-400: oklch(79.2% 0.209 151.711);
-    --color-emerald-300: oklch(84.5% 0.143 164.978);
     --color-emerald-400: oklch(76.5% 0.177 163.223);
-    --color-emerald-500: oklch(69.6% 0.17 162.48);
-    --color-cyan-300: oklch(86.5% 0.127 207.078);
-    --color-cyan-400: oklch(78.9% 0.154 211.53);
-    --color-cyan-500: oklch(71.5% 0.143 215.221);
     --color-gray-200: oklch(92.8% 0.006 264.531);
     --color-gray-300: oklch(87.2% 0.01 258.338);
     --color-gray-400: oklch(70.7% 0.022 261.325);
@@ -1853,6 +1847,9 @@
   }
   .opacity-20 {
     opacity: 20%;
+  }
+  .opacity-25 {
+    opacity: 25%;
   }
   .opacity-40 {
     opacity: 40%;
