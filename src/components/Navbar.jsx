@@ -55,6 +55,14 @@ const Navbar = () => {
                 </>
               )}
             </NavLink>
+            <NavLink to="/achievements" className={navLinkClass}>
+              {({ isActive }) => (
+                <>
+                  Achievements
+                  <span className={navLineClass({ isActive })}></span>
+                </>
+              )}
+            </NavLink>
             <NavLink to="/contact" className={navLinkClass}>
               {({ isActive }) => (
                 <>
@@ -95,6 +103,7 @@ const Navbar = () => {
             <NavLink to="/about" onClick={() => setMobileMenuOpen(false)} className={({ isActive }) => `mobile-link px-4 py-3 rounded-lg hover:text-white hover:bg-white/5 transition-all duration-300 text-sm font-medium ${isActive ? 'text-accent bg-white/5' : 'text-text-secondary'}`}>About</NavLink>
             <NavLink to="/projects" onClick={() => setMobileMenuOpen(false)} className={({ isActive }) => `mobile-link px-4 py-3 rounded-lg hover:text-white hover:bg-white/5 transition-all duration-300 text-sm font-medium ${isActive ? 'text-accent bg-white/5' : 'text-text-secondary'}`}>Projects</NavLink>
             <NavLink to="/skills" onClick={() => setMobileMenuOpen(false)} className={({ isActive }) => `mobile-link px-4 py-3 rounded-lg hover:text-white hover:bg-white/5 transition-all duration-300 text-sm font-medium ${isActive ? 'text-accent bg-white/5' : 'text-text-secondary'}`}>Skills</NavLink>
+            <NavLink to="/achievements" onClick={() => setMobileMenuOpen(false)} className={({ isActive }) => `mobile-link px-4 py-3 rounded-lg hover:text-white hover:bg-white/5 transition-all duration-300 text-sm font-medium ${isActive ? 'text-accent bg-white/5' : 'text-text-secondary'}`}>Achievements</NavLink>
             <NavLink to="/contact" onClick={() => setMobileMenuOpen(false)} className={({ isActive }) => `mobile-link px-4 py-3 rounded-lg hover:text-white hover:bg-white/5 transition-all duration-300 text-sm font-medium ${isActive ? 'text-accent bg-white/5' : 'text-text-secondary'}`}>Contact</NavLink>
             <a 
               href="https://github.com/amey-bauchkar" 

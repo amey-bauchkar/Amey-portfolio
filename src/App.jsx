@@ -19,6 +19,7 @@ import HomePage from './pages/HomePage';
 import AboutPage from './pages/AboutPage';
 import ProjectsPage from './pages/ProjectsPage';
 import SkillsPage from './pages/SkillsPage';
+import AchievementsPage from './pages/AchievementsPage';
 import ContactPage from './pages/ContactPage';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -124,6 +125,7 @@ function App() {
           <Route path="/about" element={<AboutPage />} />
           <Route path="/projects" element={<ProjectsPage onOpenProject={handleOpenProject} />} />
           <Route path="/skills" element={<SkillsPage />} />
+          <Route path="/achievements" element={<AchievementsPage />} />
           <Route path="/contact" element={<ContactPage />} />
         </Routes>
       </main>

@@ -15,7 +15,14 @@ const Hero = ({ onOpenCv }) => {
       <div className="hero-overlay" aria-hidden="true"></div>
 
       <div className="hero-content">
-
+        <Link 
+          to="/achievements" 
+          className="anim-hidden animate-fade-in-up delay-200 inline-flex items-center gap-2 px-3.5 py-1.5 mb-4 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-mono hover:bg-amber-500/20 hover:border-amber-400 transition-all duration-300 w-fit backdrop-blur-md group shadow-lg shadow-amber-500/10 cursor-pointer"
+        >
+          <i className="fas fa-trophy text-[11px] text-amber-400"></i>
+          <span>3x Hackathon Winner &amp; SIH Qualified</span>
+          <i className="fas fa-chevron-right text-[9px] opacity-70 group-hover:translate-x-0.5 transition-transform"></i>
+        </Link>
 
         <h1 className="hero-name-block anim-hidden animate-fade-in-up delay-300">
           <span className="hero-name-first block">Amey</span>
