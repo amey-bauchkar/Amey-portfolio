@@ -1,11 +1,63 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { achievementsData, achievementStats } from '../data/achievementsData';
 
+// Helper to reliably normalize images for any achievement
+const getAchievementImages = (item) => {
+  if (!item) return [];
+  if (Array.isArray(item.images) && item.images.length > 0) {
+    return item.images.map((img, idx) => {
+      if (typeof img === 'string') {
+        return {
+          url: img,
+          title: `Photo ${idx + 1}`,
+          label: `Photo ${idx + 1}`,
+          caption: item.title || ''
+        };
+      }
+      return {
+        url: img.url || item.image,
+        title: img.title || img.label || `Photo ${idx + 1}`,
+        label: img.label || img.title || `Photo ${idx + 1}`,
+        caption: img.caption || ''
+      };
+    });
+  }
+  if (item.altImage) {
+    return [
+      {
+        url: item.image,
+        title: item.proofLabel || 'Primary Photo',
+        label: 'Photo 1',
+        caption: item.proofLabel || ''
+      },
+      {
+        url: item.altImage,
+        title: 'Secondary Document',
+        label: 'Document',
+        caption: item.proofLabel || ''
+      }
+    ];
+  }
+  if (item.image) {
+    return [
+      {
+        url: item.image,
+        title: item.proofLabel || item.title,
+        label: 'Recognition Proof',
+        caption: item.proofLabel || ''
+      }
+    ];
+  }
+  return [];
+};
+
 const Achievements = () => {
   const [activeFilter, setActiveFilter] = useState('all');
   const [selectedAchievement, setSelectedAchievement] = useState(null);
   const [modalIndex, setModalIndex] = useState(0);
-  const [activeModalImage, setActiveModalImage] = useState('primary');
+  const [activePhotoIndex, setActivePhotoIndex] = useState(0);
+  const [cardPhotoIndexes, setCardPhotoIndexes] = useState({});
+  const [isZoomed, setIsZoomed] = useState(false);
   const videoRef = useRef(null);
 
   useEffect(() => {
@@ -39,43 +91,85 @@ const Achievements = () => {
     return true;
   });
 
-  const handleOpenModal = (achievement) => {
+  const handleOpenModal = (achievement, initialPhotoIdx = 0) => {
     const idx = achievementsData.findIndex(a => a.id === achievement.id);
     setModalIndex(idx >= 0 ? idx : 0);
     setSelectedAchievement(achievement);
-    setActiveModalImage('primary');
+    setActivePhotoIndex(initialPhotoIdx);
+    setIsZoomed(false);
   };
 
   const handleCloseModal = () => {
     setSelectedAchievement(null);
-    setActiveModalImage('primary');
+    setActivePhotoIndex(0);
+    setIsZoomed(false);
   };
 
   const handleNextModal = () => {
     const nextIdx = (modalIndex + 1) % achievementsData.length;
     setModalIndex(nextIdx);
     setSelectedAchievement(achievementsData[nextIdx]);
-    setActiveModalImage('primary');
+    setActivePhotoIndex(0);
+    setIsZoomed(false);
   };
 
   const handlePrevModal = () => {
     const prevIdx = (modalIndex - 1 + achievementsData.length) % achievementsData.length;
     setModalIndex(prevIdx);
     setSelectedAchievement(achievementsData[prevIdx]);
-    setActiveModalImage('primary');
+    setActivePhotoIndex(0);
+    setIsZoomed(false);
+  };
+
+  // Switch photo within current modal achievement
+  const modalPhotos = getAchievementImages(selectedAchievement);
+  const currentModalPhoto = modalPhotos[activePhotoIndex] || modalPhotos[0] || (selectedAchievement ? { url: selectedAchievement.image, title: selectedAchievement.title, label: 'Proof' } : null);
+
+  const handleNextPhoto = (e) => {
+    if (e) e.stopPropagation();
+    setIsZoomed(false);
+    if (modalPhotos.length <= 1) {
+      handleNextModal();
+      return;
+    }
+    setActivePhotoIndex((prev) => (prev + 1) % modalPhotos.length);
+  };
+
+  const handlePrevPhoto = (e) => {
+    if (e) e.stopPropagation();
+    setIsZoomed(false);
+    if (modalPhotos.length <= 1) {
+      handlePrevModal();
+      return;
+    }
+    setActivePhotoIndex((prev) => (prev - 1 + modalPhotos.length) % modalPhotos.length);
   };
 
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (!selectedAchievement) return;
       if (e.key === 'Escape') handleCloseModal();
-      if (e.key === 'ArrowRight') handleNextModal();
-      if (e.key === 'ArrowLeft') handlePrevModal();
+      if (e.key === 'ArrowRight') {
+        if (modalPhotos.length > 1 && activePhotoIndex < modalPhotos.length - 1) {
+          setIsZoomed(false);
+          setActivePhotoIndex(prev => prev + 1);
+        } else {
+          handleNextModal();
+        }
+      }
+      if (e.key === 'ArrowLeft') {
+        if (modalPhotos.length > 1 && activePhotoIndex > 0) {
+          setIsZoomed(false);
+          setActivePhotoIndex(prev => prev - 1);
+        } else {
+          handlePrevModal();
+        }
+      }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedAchievement, modalIndex]);
+  }, [selectedAchievement, modalIndex, activePhotoIndex, modalPhotos.length]);
 
   return (
     <section id="achievements" className="relative py-20 md:py-28 z-10 text-text-primary">
@@ -236,15 +330,20 @@ const Achievements = () => {
           </button>
         </div>
 
-        {/* Achievements Grid (matching ProjectsCard design system) */}
+        {/* Achievements Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {filteredAchievements.map((item, index) => {
+            const itemImages = getAchievementImages(item);
+            const currentCardPhotoIdx = cardPhotoIndexes[item.id] || 0;
+            const currentCardPhoto = itemImages[currentCardPhotoIdx] || itemImages[0];
+            const hasMultiplePhotos = itemImages.length > 1;
+
             return (
               <div
                 key={item.id}
                 className="group relative bg-card border border-border rounded-2xl overflow-hidden hover:border-accent/50 transition-all duration-500 shadow-xl flex flex-col justify-between hover:-translate-y-1.5"
               >
-                {/* Card Header (Number, Category Badge & Accent Line identical to Projects.jsx) */}
+                {/* Card Header */}
                 <div className="flex items-center justify-between gap-4 p-5 sm:p-6 pb-4">
                   <div className="flex items-end gap-3">
                     <span className="text-3xl sm:text-4xl font-light text-text-secondary/40 font-serif leading-none tracking-tighter group-hover:text-accent transition-colors duration-500">
@@ -265,32 +364,68 @@ const Achievements = () => {
                   </div>
                 </div>
 
-                {/* Photo / Media Container (Ambient backlight & 100% uncropped object-contain) */}
+                {/* Photo / Media Container */}
                 <div 
                   className="relative h-60 sm:h-64 w-full bg-[#111113] cursor-pointer flex items-center justify-center p-3 border-y border-border/80 overflow-hidden group/thumb"
-                  onClick={() => handleOpenModal(item)}
+                  onClick={() => handleOpenModal(item, currentCardPhotoIdx)}
                 >
+                  {/* Multiple photos indicator badge */}
+                  {hasMultiplePhotos && (
+                    <div 
+                      className="absolute top-3 right-3 z-20 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/75 backdrop-blur-md text-white text-[11px] font-medium border border-white/10 shadow-lg group-hover:border-accent/50 transition-colors"
+                      title={`${itemImages.length} photos available`}
+                    >
+                      <i className="fas fa-images text-accent text-xs"></i>
+                      <span>{itemImages.length} Photos</span>
+                    </div>
+                  )}
+
                   {/* Ambient backdrop glow in image colors */}
                   <img
-                    src={item.image}
+                    src={currentCardPhoto.url}
                     alt=""
                     aria-hidden="true"
-                    className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-20 scale-125 pointer-events-none"
+                    className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-20 scale-125 pointer-events-none transition-all duration-500"
                   />
 
                   {/* Sharp, uncropped foreground photo / certificate */}
                   <img
-                    src={item.image}
+                    src={currentCardPhoto.url}
                     alt={item.title}
-                    className="relative z-10 max-h-full max-w-full object-contain rounded-md transition-transform duration-500 group-hover/thumb:scale-[1.03] shadow-[0_6px_20px_rgba(0,0,0,0.6)]"
+                    className="relative z-10 max-h-full max-w-full w-auto h-auto object-contain rounded-md transition-transform duration-500 group-hover/thumb:scale-[1.03] shadow-[0_6px_20px_rgba(0,0,0,0.6)]"
                   />
 
                   {/* Click to expand hover hint */}
                   <div className="absolute inset-0 z-20 flex items-center justify-center opacity-0 group-hover/thumb:opacity-100 transition-opacity duration-300 bg-black/40 backdrop-blur-[2px]">
                     <span className="inline-flex items-center gap-2 bg-card/90 text-text-primary text-xs font-semibold px-4 py-2 rounded-full border border-border shadow-xl">
-                      <i className="fas fa-search-plus text-accent"></i> Inspect Full Proof
+                      <i className="fas fa-search-plus text-accent"></i> 
+                      {hasMultiplePhotos ? `View All ${itemImages.length} Photos` : 'Inspect Full Proof'}
                     </span>
                   </div>
+
+                  {/* Dot navigation if multiple photos */}
+                  {hasMultiplePhotos && (
+                    <div 
+                      className="absolute bottom-2.5 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/70 backdrop-blur-md border border-white/10"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {itemImages.map((img, pIdx) => {
+                        const isCur = currentCardPhotoIdx === pIdx;
+                        return (
+                          <button
+                            key={pIdx}
+                            type="button"
+                            onClick={() => setCardPhotoIndexes(prev => ({ ...prev, [item.id]: pIdx }))}
+                            className={`transition-all rounded-full cursor-pointer ${
+                              isCur ? 'w-4 h-1.5 bg-accent' : 'w-1.5 h-1.5 bg-white/40 hover:bg-white/80'
+                            }`}
+                            title={img.label || `Photo ${pIdx + 1}`}
+                            aria-label={`Preview ${img.label || `photo ${pIdx + 1}`}`}
+                          />
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
 
                 {/* Card Body */}
@@ -314,7 +449,7 @@ const Achievements = () => {
                   </div>
 
                   <div>
-                    {/* Tags (matching Projects.jsx tags exactly) */}
+                    {/* Tags */}
                     <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-6">
                       {item.tags.map(tag => (
                         <span 
@@ -328,11 +463,11 @@ const Achievements = () => {
 
                     {/* Bottom CTA Button */}
                     <button
-                      onClick={() => handleOpenModal(item)}
+                      onClick={() => handleOpenModal(item, currentCardPhotoIdx)}
                       className="w-full py-2.5 px-4 rounded-lg text-xs sm:text-sm font-semibold inline-flex items-center justify-center gap-2 bg-bg hover:bg-accent text-text-primary hover:text-white border border-border hover:border-accent transition-all duration-300 shadow-sm cursor-pointer group/btn"
                     >
                       <i className="fas fa-certificate text-accent group-hover/btn:text-white transition-colors"></i>
-                      <span>View Proof &amp; Details</span>
+                      <span>{hasMultiplePhotos ? `View Photos & Details (${itemImages.length})` : 'View Proof & Details'}</span>
                       <i className="fas fa-arrow-right text-[10px] ml-1 opacity-70 group-hover/btn:translate-x-1 transition-transform"></i>
                     </button>
                   </div>
@@ -344,55 +479,75 @@ const Achievements = () => {
 
       </div>
 
-      {/* Fullscreen Certificate Lightbox Modal (matching ProjectModal.jsx styling) */}
-      {selectedAchievement && (
+      {/* Fullscreen Certificate Lightbox Modal */}
+      {selectedAchievement && currentModalPhoto && (
         <div 
-          className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-6 md:p-8 bg-bg/80 backdrop-blur-md animate-fade-in"
+          className="fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-4 md:p-6 bg-bg/90 backdrop-blur-md animate-fade-in"
           onClick={handleCloseModal}
         >
           <div 
-            className="relative w-full max-w-5xl bg-card border border-border rounded-xl shadow-2xl shadow-accent/10 overflow-hidden flex flex-col max-h-[90vh]"
+            className="relative w-full max-w-5xl bg-card border border-border rounded-xl shadow-2xl shadow-accent/10 overflow-hidden flex flex-col max-h-[96vh]"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
-            <div className="flex flex-wrap items-center justify-between gap-3 px-6 py-4 border-b border-border/80 bg-card">
-              <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center justify-between gap-3 px-4 sm:px-6 py-3 border-b border-border/80 bg-card z-20">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                 <span className="px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase font-inter bg-accent/10 text-accent border border-accent/30 shadow-sm">
                   {selectedAchievement.badge}
                 </span>
+
                 <span className="text-xs font-mono text-text-secondary hidden sm:inline">
                   [{modalIndex + 1} of {achievementsData.length}]
                 </span>
 
-                {/* Dual view toggle for TCS */}
-                {selectedAchievement.altImage && (
-                  <div className="inline-flex items-center rounded-lg bg-bg border border-border p-1 text-xs ml-2">
-                    <button
-                      onClick={() => setActiveModalImage('primary')}
-                      className={`px-3 py-1 rounded-md transition-colors cursor-pointer font-medium ${
-                        activeModalImage === 'primary' ? 'bg-accent text-white shadow' : 'text-text-secondary hover:text-white'
-                      }`}
-                    >
-                      Team Photo
-                    </button>
-                    <button
-                      onClick={() => setActiveModalImage('alt')}
-                      className={`px-3 py-1 rounded-md transition-colors cursor-pointer font-medium ${
-                        activeModalImage === 'alt' ? 'bg-accent text-white shadow' : 'text-text-secondary hover:text-white'
-                      }`}
-                    >
-                      Certificate
-                    </button>
+                {/* Multiple Photos Pill Switcher */}
+                {modalPhotos.length > 1 && (
+                  <div className="inline-flex items-center rounded-lg bg-bg border border-border p-1 text-xs">
+                    {modalPhotos.map((photo, pIdx) => {
+                      const isActive = activePhotoIndex === pIdx;
+                      return (
+                        <button
+                          key={pIdx}
+                          onClick={() => {
+                            setActivePhotoIndex(pIdx);
+                            setIsZoomed(false);
+                          }}
+                          className={`px-3 py-1 rounded-md transition-all cursor-pointer font-medium flex items-center gap-1.5 ${
+                            isActive 
+                              ? 'bg-accent text-white shadow-sm font-semibold' 
+                              : 'text-text-secondary hover:text-white hover:bg-white/5'
+                          }`}
+                        >
+                          <i className={`fas ${pIdx === 0 ? 'fa-image' : 'fa-certificate'} text-[10px]`}></i>
+                          <span>{photo.label}</span>
+                        </button>
+                      );
+                    })}
                   </div>
                 )}
               </div>
 
               <div className="flex items-center gap-2">
+                {/* Zoom / Full Toggle Button */}
+                <button
+                  type="button"
+                  onClick={() => setIsZoomed(!isZoomed)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors inline-flex items-center gap-1.5 cursor-pointer ${
+                    isZoomed 
+                      ? 'bg-accent text-white border-accent' 
+                      : 'text-text-secondary hover:text-white hover:bg-white/10 border-border'
+                  }`}
+                  title={isZoomed ? "Reset zoom (Fit to window)" : "Zoom in 100% to read full details"}
+                >
+                  <i className={`fas ${isZoomed ? 'fa-search-minus' : 'fa-search-plus'} text-[11px]`}></i>
+                  <span className="hidden sm:inline">{isZoomed ? 'Fit Screen' : 'Zoom In'}</span>
+                </button>
+
                 <a
-                  href={activeModalImage === 'alt' && selectedAchievement.altImage ? selectedAchievement.altImage : selectedAchievement.image}
+                  href={currentModalPhoto.url}
                   target="_blank"
                   rel="noreferrer"
-                  className="px-3 py-1.5 rounded-lg text-xs font-medium text-text-secondary hover:text-white hover:bg-white/10 transition-colors inline-flex items-center gap-1.5"
+                  className="px-3 py-1.5 rounded-lg text-xs font-medium text-text-secondary hover:text-white hover:bg-white/10 border border-border transition-colors inline-flex items-center gap-1.5"
                   title="Open original high-res image in new tab"
                 >
                   <i className="fas fa-external-link-alt text-[10px]"></i>
@@ -401,7 +556,7 @@ const Achievements = () => {
 
                 <button 
                   onClick={handleCloseModal}
-                  className="w-9 h-9 rounded-full bg-bg/60 hover:bg-accent text-white flex items-center justify-center transition-colors cursor-pointer"
+                  className="w-8 h-8 rounded-full bg-bg/80 hover:bg-accent text-white flex items-center justify-center transition-colors cursor-pointer border border-border"
                   aria-label="Close modal"
                 >
                   <i className="fas fa-times text-sm"></i>
@@ -409,57 +564,180 @@ const Achievements = () => {
               </div>
             </div>
 
-            {/* Modal Image Viewport */}
-            <div className="relative flex-1 bg-[#0d0d0f] flex items-center justify-center overflow-hidden min-h-[320px] max-h-[70vh] p-4 sm:p-6">
-              <img 
-                src={activeModalImage === 'alt' && selectedAchievement.altImage ? selectedAchievement.altImage : selectedAchievement.image} 
-                alt={selectedAchievement.title} 
-                className="max-w-full max-h-[66vh] object-contain rounded-lg shadow-2xl border border-border"
-              />
+            {/* Modal Image Viewport (Clean, Uncropped & Fully Visible) */}
+            <div 
+              className={`relative flex-1 bg-[#070709] min-h-[320px] max-h-[66vh] sm:max-h-[68vh] flex items-center justify-center p-2 sm:p-4 select-none ${
+                isZoomed ? 'overflow-auto cursor-grab' : 'overflow-hidden'
+              }`}
+            >
+              {/* Background ambient glow matching current image */}
+              {!isZoomed && (
+                <img 
+                  key={`glow-${currentModalPhoto.url}`}
+                  src={currentModalPhoto.url} 
+                  alt="" 
+                  aria-hidden="true"
+                  className="absolute inset-0 w-full h-full object-cover blur-3xl opacity-20 pointer-events-none scale-125"
+                />
+              )}
 
-              {/* Prev / Next Navigation Arrows */}
-              <button 
-                onClick={handlePrevModal}
-                className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-card/80 hover:bg-accent text-white flex items-center justify-center transition-all backdrop-blur-sm border border-border cursor-pointer shadow-lg hover:scale-110"
-                aria-label="Previous certificate"
+              {/* Main high-res active photo (100% uncropped object-contain) */}
+              <div 
+                className={`relative z-10 w-full h-full flex items-center justify-center ${
+                  isZoomed ? 'min-w-[1200px] min-h-[750px] p-4' : ''
+                }`}
               >
-                <i className="fas fa-chevron-left"></i>
-              </button>
+                <img 
+                  key={currentModalPhoto.url}
+                  src={currentModalPhoto.url} 
+                  alt={currentModalPhoto.title} 
+                  onClick={() => setIsZoomed(!isZoomed)}
+                  className={`rounded-lg shadow-2xl border border-border/60 transition-transform duration-300 ${
+                    isZoomed 
+                      ? 'max-w-none w-full object-contain cursor-zoom-out' 
+                      : 'max-w-full max-h-full w-auto h-auto object-contain cursor-zoom-in'
+                  }`}
+                  style={!isZoomed ? { maxHeight: 'calc(66vh - 24px)' } : {}}
+                />
+              </div>
 
-              <button 
-                onClick={handleNextModal}
-                className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-card/80 hover:bg-accent text-white flex items-center justify-center transition-all backdrop-blur-sm border border-border cursor-pointer shadow-lg hover:scale-110"
-                aria-label="Next certificate"
-              >
-                <i className="fas fa-chevron-right"></i>
-              </button>
+              {/* Left / Right Navigation Controls */}
+              {modalPhotos.length > 1 ? (
+                <>
+                  <button 
+                    onClick={handlePrevPhoto}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full bg-card/90 hover:bg-accent text-white flex items-center justify-center transition-all backdrop-blur-sm border border-border cursor-pointer shadow-xl hover:scale-110"
+                    title="Previous photo (←)"
+                    aria-label="Previous photo"
+                  >
+                    <i className="fas fa-chevron-left"></i>
+                  </button>
+
+                  <button 
+                    onClick={handleNextPhoto}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full bg-card/90 hover:bg-accent text-white flex items-center justify-center transition-all backdrop-blur-sm border border-border cursor-pointer shadow-xl hover:scale-110"
+                    title="Next photo (→)"
+                    aria-label="Next photo"
+                  >
+                    <i className="fas fa-chevron-right"></i>
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button 
+                    onClick={handlePrevModal}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full bg-card/90 hover:bg-accent text-white flex items-center justify-center transition-all backdrop-blur-sm border border-border cursor-pointer shadow-xl hover:scale-110"
+                    title="Previous recognition (←)"
+                    aria-label="Previous recognition"
+                  >
+                    <i className="fas fa-chevron-left"></i>
+                  </button>
+
+                  <button 
+                    onClick={handleNextModal}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full bg-card/90 hover:bg-accent text-white flex items-center justify-center transition-all backdrop-blur-sm border border-border cursor-pointer shadow-xl hover:scale-110"
+                    title="Next recognition (→)"
+                    aria-label="Next recognition"
+                  >
+                    <i className="fas fa-chevron-right"></i>
+                  </button>
+                </>
+              )}
             </div>
 
+            {/* Interactive Thumbnail Gallery Row for Multi-Photo Achievements */}
+            {modalPhotos.length > 1 && (
+              <div className="flex items-center justify-center gap-3 px-4 py-2 bg-[#0e0e11] border-t border-border/80">
+                <span className="text-[11px] font-mono uppercase tracking-wider text-text-secondary/70 mr-1 hidden sm:inline-flex items-center gap-1.5">
+                  <i className="fas fa-images text-accent text-xs"></i> Select Proof:
+                </span>
+                {modalPhotos.map((photo, pIdx) => {
+                  const isSelected = activePhotoIndex === pIdx;
+                  return (
+                    <button
+                      key={pIdx}
+                      type="button"
+                      onClick={() => {
+                        setActivePhotoIndex(pIdx);
+                        setIsZoomed(false);
+                      }}
+                      className={`group/thumb flex items-center gap-2.5 px-3 py-1.5 rounded-lg border transition-all cursor-pointer ${
+                        isSelected 
+                          ? 'border-accent bg-accent/15 text-white shadow-md shadow-accent/10 ring-1 ring-accent' 
+                          : 'border-border/80 bg-card/70 text-text-secondary hover:border-white/30 hover:text-white'
+                      }`}
+                    >
+                      <img 
+                        src={photo.url} 
+                        alt={photo.label} 
+                        className={`w-9 h-7 rounded object-cover border transition-all ${
+                          isSelected ? 'border-accent' : 'border-white/10 opacity-70 group-hover/thumb:opacity-100'
+                        }`}
+                      />
+                      <div className="text-left">
+                        <span className="block text-xs font-semibold leading-tight">{photo.label}</span>
+                        <span className="block text-[10px] text-text-secondary/80 font-mono leading-tight">{pIdx === 0 ? 'Primary' : `Photo ${pIdx + 1}`}</span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
             {/* Modal Footer Details */}
-            <div className="p-6 bg-card border-t border-border/80">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
-                <h3 className="text-xl sm:text-2xl font-bold text-text-primary" style={{ fontFamily: '"Outfit", sans-serif' }}>
+            <div className="px-5 py-3.5 sm:px-6 sm:py-4 bg-card border-t border-border/80">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-1.5">
+                <h3 className="text-lg sm:text-xl font-bold text-text-primary" style={{ fontFamily: '"Outfit", sans-serif' }}>
                   {selectedAchievement.title}
                 </h3>
                 <span className="text-xs font-mono text-accent">
                   {selectedAchievement.date}
                 </span>
               </div>
-              <p className="text-sm text-text-secondary leading-relaxed mb-4">
-                {selectedAchievement.description}
+              <p className="text-xs sm:text-sm text-text-secondary leading-relaxed mb-3">
+                {currentModalPhoto.caption || selectedAchievement.description}
               </p>
               
-              <div className="flex flex-wrap gap-2 mb-4">
+              <div className="flex flex-wrap gap-1.5 mb-3">
                 {selectedAchievement.tags.map(tag => (
-                  <span key={tag} className="text-xs font-semibold px-3 py-1 bg-accent/10 text-accent rounded-md border border-accent/20">
+                  <span key={tag} className="text-[11px] font-semibold px-2.5 py-0.5 bg-accent/10 text-accent rounded-md border border-accent/20">
                     {tag}
                   </span>
                 ))}
               </div>
 
-              <div className="flex items-center justify-between text-xs text-text-secondary/70 font-mono pt-3 border-t border-border/60">
-                <span>{selectedAchievement.organization}</span>
-                <span className="hidden sm:inline">Use arrow keys (← / →) to navigate</span>
+              {/* Navigation Bar between Recognitions */}
+              <div className="flex items-center justify-between pt-2.5 border-t border-border/60 text-xs font-mono">
+                <button
+                  onClick={handlePrevModal}
+                  className="px-3 py-1.5 rounded-lg bg-bg hover:bg-accent text-text-secondary hover:text-white border border-border hover:border-accent transition-all cursor-pointer flex items-center gap-2"
+                  title="Previous recognition"
+                >
+                  <i className="fas fa-chevron-left text-[10px]"></i>
+                  <span className="hidden sm:inline">Previous Recognition</span>
+                  <span className="sm:hidden">Prev</span>
+                </button>
+
+                <div className="text-center text-text-secondary/70">
+                  <span className="hidden md:inline">
+                    {modalPhotos.length > 1 
+                      ? 'Use ← / → arrows to flip photos · Esc to close' 
+                      : 'Use ← / → arrows to browse recognitions · Esc to close'}
+                  </span>
+                  <span className="md:hidden">
+                    {modalIndex + 1} / {achievementsData.length}
+                  </span>
+                </div>
+
+                <button
+                  onClick={handleNextModal}
+                  className="px-3 py-1.5 rounded-lg bg-bg hover:bg-accent text-text-secondary hover:text-white border border-border hover:border-accent transition-all cursor-pointer flex items-center gap-2"
+                  title="Next recognition"
+                >
+                  <span className="hidden sm:inline">Next Recognition</span>
+                  <span className="sm:hidden">Next</span>
+                  <i className="fas fa-chevron-right text-[10px]"></i>
+                </button>
               </div>
             </div>
 

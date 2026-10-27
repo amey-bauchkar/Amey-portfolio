@@ -15,6 +15,20 @@ export const achievementsData = [
     description: 'Awarded 1st place in the flagship AI Hackathon during TCS Technology Day 2026. Recognized by enterprise industry leaders for standout innovation, rapid model integration, and practical AI architecture.',
     image: '/achievements/tcs-hackathon.png',
     altImage: '/achievements/tcs-hackathon.jpg',
+    images: [
+      {
+        url: '/achievements/tcs-hackathon.png',
+        title: 'Winning Team Photo',
+        label: 'Team Photo',
+        caption: 'Winning Team BUBBLE SORT with TCS Leadership & Official Trophy'
+      },
+      {
+        url: '/achievements/tcs-hackathon.jpg',
+        title: 'Official Winner Certificate',
+        label: 'Certificate',
+        caption: '1st Place Certificate of Excellence awarded by Tata Consultancy Services'
+      }
+    ],
     proofLabel: 'Team Winner Photo & Certificate',
     stats: '1st Place',
     tags: ['AI / ML', 'Enterprise Hackathon', 'Rapid Prototyping']
@@ -34,6 +48,14 @@ export const achievementsData = [
     featured: true,
     description: 'Secured First Prize with DepthWizard — an intelligent spatial depth perception & computer vision system uniting custom hardware sensor telemetry with real-time AI processing.',
     image: '/achievements/innovista-winner.jpeg',
+    images: [
+      {
+        url: '/achievements/innovista-winner.jpeg',
+        title: 'Innovista 1st Prize Proof',
+        label: 'Winner Recognition',
+        caption: 'Official 1st Prize Recognition & Evaluation for DepthWizard'
+      }
+    ],
     proofLabel: 'Winner Proof & Recognition',
     stats: '1st Prize',
     tags: ['DepthWizard', 'Computer Vision', 'Hardware + AI']
@@ -51,9 +73,23 @@ export const achievementsData = [
     location: 'Mumbai, India',
     date: '2026',
     featured: true,
-    description: 'Declared Winner under Problem Statement 2 for crafting high-fidelity design systems, intuitive user workflows, and interactive micro-animations under strict time constraints.',
+    description: 'Declared Winner under Problem Statement 2 for crafting high-fidelity design systems, intuitive user workflows, and interactive micro-animations under strict time constraints in Chaos By Design.',
     image: '/achievements/csivit-winner.jpeg',
-    proofLabel: 'Winner Certificate / Proof',
+    images: [
+      {
+        url: '/achievements/csivit-winner.jpeg',
+        title: 'Winner Announcement & Standings',
+        label: 'Announcement',
+        caption: 'Official Winner Announcement for CSI-VIT Problem Statement 2'
+      },
+      {
+        url: '/achievements/csivit-chaos-by-design.png',
+        title: 'Chaos By Design — Winner Certificate',
+        label: 'Certificate',
+        caption: 'Certificate of Achievement awarded to Amey Bauchkar — Chaos By Design'
+      }
+    ],
+    proofLabel: 'Winner Announcement & Certificate',
     stats: 'Winner',
     tags: ['UI / UX Design', 'Figma Prototyping', 'Design Systems']
   },
@@ -72,7 +108,21 @@ export const achievementsData = [
     featured: true,
     description: 'Advanced to the prestigious national finals at COEP Technological University for MindSpark 2026, competing against premier engineering institutions across India in high-level engineering challenges.',
     image: '/achievements/coep-mindspark.jpeg',
-    proofLabel: 'Finalist Event Photo & Badge',
+    images: [
+      {
+        url: '/achievements/coep-mindspark.jpeg',
+        title: 'MindSpark Finalist Photo & ID',
+        label: 'Event Badge',
+        caption: 'COEP Technological University MindSpark \'26 National Finalist Entry'
+      },
+      {
+        url: '/achievements/coep-mindspark-shortlist.png',
+        title: 'MindSpark \'26 Shortlisted Teams Official Notice',
+        label: 'Shortlisted Teams',
+        caption: 'Official Shortlisted Teams list for MindSpark \'26 National Finals at COEP'
+      }
+    ],
+    proofLabel: 'Finalist Event Photo & Shortlist',
     stats: 'National Finals',
     tags: ['COEP Pune', 'National Event', 'Engineering Challenge']
   },
@@ -91,6 +141,14 @@ export const achievementsData = [
     featured: true,
     description: 'Led Team BUBBLESORT (Team 41) to qualify in the Top 45 teams during the competitive internal hackathon rounds for India\'s flagship nationwide Smart India Hackathon (SIH) 2026.',
     image: '/achievements/sih-internal.jpeg',
+    images: [
+      {
+        url: '/achievements/sih-internal.jpeg',
+        title: 'SIH Internal Hackathon Shortlist Notice',
+        label: 'Shortlist Document',
+        caption: 'SIH 2026 Institutional Hackathon Results — Team 41 (BUBBLESORT)'
+      }
+    ],
     proofLabel: 'SIH Internal Hackathon Shortlist Notice',
     stats: 'Top 45 Teams',
     tags: ['Smart India Hackathon', 'Team Leader', 'National Hackathon']
@@ -110,6 +168,14 @@ export const achievementsData = [
     featured: false,
     description: 'Selected as a Finalist in the IEEE-partnered NeoFuture Hackathon, pitching an innovative end-to-end full-stack software application developed in a continuous 24-hour sprint.',
     image: '/achievements/neofuture-hackathon.png',
+    images: [
+      {
+        url: '/achievements/neofuture-hackathon.png',
+        title: 'NeoFuture Finalist Certificate',
+        label: 'Finals Certificate',
+        caption: 'Official Certificate of Participation & Finals (IEEE Maharashtra)'
+      }
+    ],
     proofLabel: 'Official Certificate of Participation & Finals',
     stats: 'Finalist',
     tags: ['IEEE', '24-Hour Sprint', 'Full-Stack Development']
@@ -129,6 +195,14 @@ export const achievementsData = [
     featured: false,
     description: 'Demonstrated rapid software prototyping and system architecture as Team BUBBLE SORT, successfully qualifying for the Grand Finale of MUSA CodeX 2026.',
     image: '/achievements/musa-codex.png',
+    images: [
+      {
+        url: '/achievements/musa-codex.png',
+        title: 'MUSA CodeX Finals Certificate',
+        label: 'Finals Certificate',
+        caption: 'MUSA CodeX 2026 Grand Finale Qualifier Certificate'
+      }
+    ],
     proofLabel: 'MUSA CodeX Finals Certificate',
     stats: 'Finals Qualified',
     tags: ['MUSA', 'CodeX', 'Hackathon']
@@ -148,6 +222,14 @@ export const achievementsData = [
     featured: false,
     description: 'Finished as a Finalist in the intensive 18-hour overnight IGNITE IT 8.0 Hackathon, developing and deploying real-world solutions under strict time and evaluation constraints.',
     image: '/achievements/ignite-hackathon.png',
+    images: [
+      {
+        url: '/achievements/ignite-hackathon.png',
+        title: 'IGNITE 8.0 Certificate of Merit',
+        label: 'Merit Certificate',
+        caption: 'IGNITE IT 8.0 Official 18-Hour Hackathon Certificate of Merit'
+      }
+    ],
     proofLabel: 'IGNITE 8.0 Certificate of Merit / Participation',
     stats: '18-Hr Sprint',
     tags: ['18-Hour Hackathon', 'Rapid Execution', 'System Prototyping']

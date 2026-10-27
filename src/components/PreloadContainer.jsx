@@ -133,6 +133,8 @@ const PreloadContainer = () => {
       '/crane-safety.jpg',
       '/amey-photo.png',
       '/Amey_Bauchkar_Resume.png',
+      '/achievements/csivit-chaos-by-design.png',
+      '/achievements/coep-mindspark-shortlist.png',
     ];
 
     imageUrls.forEach(url => {
