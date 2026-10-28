@@ -17,10 +17,10 @@ const PreloadContainer = () => {
     window.__preloadStarted = true;
 
     const zipAssets = [
-      { key: 'frames',          url: '/frames.zip',          expectedSize: 17277506 },
-      { key: 'projects-frames', url: '/projects-frames.zip', expectedSize: 27243606 },
-      { key: 'workshop-frames', url: '/workshop-frames.zip', expectedSize: 47386201 },
-      { key: 'contact-frames',  url: '/contact-frames.zip',  expectedSize: 25519194 },
+      { key: 'frames',          url: '/frames.zip',          expectedSize: 33012808 },
+      { key: 'projects-frames', url: '/projects-frames.zip', expectedSize: 40755305 },
+      { key: 'workshop-frames', url: '/workshop-frames.zip', expectedSize: 52499393 },
+      { key: 'contact-frames',  url: '/contact-frames.zip',  expectedSize: 38581958 },
     ];
 
     window.__cachedFrames = {
