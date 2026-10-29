@@ -21,6 +21,7 @@ const PreloadContainer = () => {
       { key: 'projects-frames', url: '/projects-frames.zip', expectedSize: 40755305 },
       { key: 'workshop-frames', url: '/workshop-frames.zip', expectedSize: 52499393 },
       { key: 'contact-frames',  url: '/contact-frames.zip',  expectedSize: 38581958 },
+      { key: 'achievements-frames', url: '/achievements-frames.zip', expectedSize: 42613640 },
     ];
 
     window.__cachedFrames = {
@@ -28,6 +29,7 @@ const PreloadContainer = () => {
       'projects-frames': new Array(240).fill(null),
       'workshop-frames': new Array(240).fill(null),
       'contact-frames': new Array(240).fill(null),
+      'achievements-frames': new Array(240).fill(null),
     };
 
     window.__totalBytesToLoad = zipAssets.reduce((sum, a) => sum + a.expectedSize, 0);
@@ -38,6 +40,7 @@ const PreloadContainer = () => {
       'projects-frames': 0,
       'workshop-frames': 0,
       'contact-frames': 0,
+      'achievements-frames': 0,
     };
 
     const loadZip = (asset) => {
@@ -106,7 +109,6 @@ const PreloadContainer = () => {
     const videoUrls = [
       '/convert_the_above_video_into_c.mp4',
       '/Demo.mp4',
-      '/achievements-bg.mp4',
     ];
 
     videoUrls.forEach(url => {

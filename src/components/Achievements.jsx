@@ -1,5 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { achievementsData, achievementStats } from '../data/achievementsData';
+import AchievementsCanvasSequence from './AchievementsCanvasSequence';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 // Helper to reliably normalize images for any achievement
 const getAchievementImages = (item) => {
@@ -58,32 +64,9 @@ const Achievements = () => {
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
   const [cardPhotoIndexes, setCardPhotoIndexes] = useState({});
   const [isZoomed, setIsZoomed] = useState(false);
-  const videoRef = useRef(null);
+  const containerRef = useRef(null);
 
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    video.defaultMuted = true;
-    video.muted = true;
-    
-    const playVideo = () => {
-      video.play().catch(() => {});
-    };
-
-    playVideo();
-    window.addEventListener('click', playVideo, { once: true });
-    window.addEventListener('touchstart', playVideo, { once: true });
-    window.addEventListener('scroll', playVideo, { once: true });
-
-    return () => {
-      window.removeEventListener('click', playVideo);
-      window.removeEventListener('touchstart', playVideo);
-      window.removeEventListener('scroll', playVideo);
-    };
-  }, []);
-
-  const filteredAchievements = achievementsData.filter(item => {
+  const filteredAchievements = achievementsData.filter((item) => {
     if (activeFilter === 'all') return true;
     if (activeFilter === 'winner') return item.category === 'winner';
     if (activeFilter === 'finalist') return item.category === 'finalist';
@@ -91,8 +74,52 @@ const Achievements = () => {
     return true;
   });
 
+  // Smooth, high-performance card entry triggers (play once to eliminate GPU reflow churn)
+  useEffect(() => {
+    const cards = gsap.utils.toArray('.achievement-scroll-card');
+    const triggers = [];
+
+    cards.forEach((card) => {
+      const st = gsap.fromTo(
+        card,
+        {
+          opacity: 0,
+          y: 40,
+        },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.6,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: card,
+            start: 'top 88%',
+            toggleActions: 'play none none none',
+          },
+        }
+      );
+      if (st.scrollTrigger) triggers.push(st.scrollTrigger);
+    });
+
+    const refreshTimer = setTimeout(() => {
+      ScrollTrigger.refresh();
+    }, 150);
+
+    return () => {
+      clearTimeout(refreshTimer);
+      triggers.forEach((t) => t && t.kill());
+    };
+  }, [activeFilter]);
+
+  const handleFilterChange = (filter) => {
+    setActiveFilter(filter);
+    setTimeout(() => {
+      ScrollTrigger.refresh();
+    }, 100);
+  };
+
   const handleOpenModal = (achievement, initialPhotoIdx = 0) => {
-    const idx = achievementsData.findIndex(a => a.id === achievement.id);
+    const idx = achievementsData.findIndex((a) => a.id === achievement.id);
     setModalIndex(idx >= 0 ? idx : 0);
     setSelectedAchievement(achievement);
     setActivePhotoIndex(initialPhotoIdx);
@@ -121,9 +148,13 @@ const Achievements = () => {
     setIsZoomed(false);
   };
 
-  // Switch photo within current modal achievement
   const modalPhotos = getAchievementImages(selectedAchievement);
-  const currentModalPhoto = modalPhotos[activePhotoIndex] || modalPhotos[0] || (selectedAchievement ? { url: selectedAchievement.image, title: selectedAchievement.title, label: 'Proof' } : null);
+  const currentModalPhoto =
+    modalPhotos[activePhotoIndex] ||
+    modalPhotos[0] ||
+    (selectedAchievement
+      ? { url: selectedAchievement.image, title: selectedAchievement.title, label: 'Proof' }
+      : null);
 
   const handleNextPhoto = (e) => {
     if (e) e.stopPropagation();
@@ -145,6 +176,7 @@ const Achievements = () => {
     setActivePhotoIndex((prev) => (prev - 1 + modalPhotos.length) % modalPhotos.length);
   };
 
+  // Keyboard controls for modal viewer
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (!selectedAchievement) return;
@@ -152,7 +184,7 @@ const Achievements = () => {
       if (e.key === 'ArrowRight') {
         if (modalPhotos.length > 1 && activePhotoIndex < modalPhotos.length - 1) {
           setIsZoomed(false);
-          setActivePhotoIndex(prev => prev + 1);
+          setActivePhotoIndex((prev) => prev + 1);
         } else {
           handleNextModal();
         }
@@ -160,7 +192,7 @@ const Achievements = () => {
       if (e.key === 'ArrowLeft') {
         if (modalPhotos.length > 1 && activePhotoIndex > 0) {
           setIsZoomed(false);
-          setActivePhotoIndex(prev => prev - 1);
+          setActivePhotoIndex((prev) => prev - 1);
         } else {
           handlePrevModal();
         }
@@ -171,208 +203,242 @@ const Achievements = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedAchievement, modalIndex, activePhotoIndex, modalPhotos.length]);
 
+  // Scaled height so scroll scrubbing is responsive and natural
+  const containerHeightClass =
+    activeFilter === 'all'
+      ? 'h-[1050vh]'
+      : activeFilter === 'winner'
+      ? 'h-[550vh]'
+      : activeFilter === 'finalist'
+      ? 'h-[650vh]'
+      : 'h-[380vh]';
+
   return (
-    <section id="achievements" className="relative py-20 md:py-28 z-10 text-text-primary">
-      {/* Fixed Fullscreen Background Video (stays centered & visible during scroll) */}
-      <div className="fixed inset-0 w-full h-full overflow-hidden pointer-events-none z-0">
-        <video 
-          ref={videoRef}
-          className="w-full h-full object-cover opacity-65 md:opacity-55 filter contrast-115 brightness-105 transition-opacity duration-700"
-          src="/achievements-bg.mp4"
-          autoPlay 
-          loop 
-          muted 
-          playsInline 
-          preload="auto"
-          aria-hidden="true"
-        >
-          <source src="/achievements-bg.mp4" type="video/mp4" />
-          <source src="/convert_the_above_video_into_c.mp4" type="video/mp4" />
-        </video>
-        {/* Subtle Dark Vignette & Mesh Grid for optimal text contrast */}
-        <div className="absolute inset-0 bg-black/40 pointer-events-none"></div>
-        <div className="absolute inset-0 bg-gradient-to-t from-bg via-transparent to-bg/85 pointer-events-none"></div>
-        <div className="absolute inset-0 bg-gradient-to-r from-bg/75 via-transparent to-bg/75 pointer-events-none"></div>
-        <div className="absolute inset-0 bg-grid opacity-25 pointer-events-none"></div>
-      </div>
+    <section
+      id="achievements-canvas-container"
+      ref={containerRef}
+      className={`relative w-full ${containerHeightClass} bg-[#070709] transition-[height] duration-500`}
+    >
+      {/* Sticky Hardware-Accelerated 60FPS Canvas Sequence */}
+      <AchievementsCanvasSequence />
 
-      {/* Background Ambience Orbs (matching Skills and Projects) */}
-      <div className="absolute top-1/4 -right-32 w-96 h-96 bg-accent/5 rounded-full blur-[140px] pointer-events-none"></div>
-      <div className="absolute bottom-1/3 -left-32 w-96 h-96 bg-accent/5 rounded-full blur-[140px] pointer-events-none"></div>
+      {/* Scrollable Overlay Layer */}
+      <div className="absolute top-0 left-0 w-full h-full z-20 pointer-events-none flex flex-col">
+        {/* Intro Section: Overview, Quick Stats & Filter Pills */}
+        <div className="min-h-[100vh] flex flex-col justify-center px-6 sm:px-12 md:px-20 lg:px-24 py-16">
+          <div className="max-w-4xl pointer-events-auto">
+            {/* Stage Indicator Badge */}
+            <div className="inline-flex items-center gap-2 mb-4">
+              <span className="w-8 h-0.5 bg-accent"></span>
+              <span className="text-accent text-xs sm:text-sm font-bold tracking-[0.25em] uppercase font-mono">
+                01 // Arena Honors &amp; Hackathons
+              </span>
+            </div>
 
-      <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
-        
-        {/* Section Header (matching Skills & Projects typography) */}
-        <div className="mb-12 md:mb-16 anim-hidden animate-fade-in-up">
-          <div className="inline-flex items-center gap-2 mb-3">
-            <span className="w-8 h-0.5 bg-accent"></span>
-            <span className="text-accent text-sm font-bold tracking-wider uppercase font-inter">
-              Recognition &amp; Honors
-            </span>
-          </div>
+            {/* Section Heading */}
+            <h1
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-white tracking-tight uppercase leading-[1.08] mb-5 drop-shadow-2xl"
+              style={{ fontFamily: '"Outfit", sans-serif' }}
+            >
+              Achievements <br />
+              <span className="text-accent">&amp; Activities</span>
+            </h1>
 
-          <h1 
-            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-text-primary tracking-tight uppercase" 
-            style={{ fontFamily: '"Outfit", sans-serif' }}
-          >
-            Achievements <span className="text-accent">&amp; Activities</span>
-          </h1>
+            <p className="text-gray-300 text-base sm:text-lg leading-relaxed max-w-2xl font-light mb-8 drop-shadow-md">
+              Proven engineering ability under pressure. Competing, architecting, and winning across flagship AI hackathons, robotics challenges, and national design sprints.
+            </p>
 
-          <p className="text-text-secondary text-base sm:text-lg md:text-xl leading-relaxed max-w-3xl mt-4 font-normal font-sans">
-            Proven engineering ability under pressure. A record of competing, innovating, and winning in hackathons, design sprints, and national engineering challenges.
-          </p>
-        </div>
+            {/* Quick Stats Grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-8 max-w-3xl">
+              <div className="bg-[#0e0e13]/90 border border-white/10 rounded-xl p-4 hover:border-accent/50 transition-colors shadow-lg group">
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-white/50 font-mono">
+                    Total Honors
+                  </span>
+                  <i className="fas fa-award text-accent text-sm group-hover:scale-110 transition-transform"></i>
+                </div>
+                <div
+                  className="text-2xl sm:text-3xl font-extrabold text-white"
+                  style={{ fontFamily: '"Outfit", sans-serif' }}
+                >
+                  {achievementStats.totalCount}
+                </div>
+                <div className="text-[10px] text-white/40 mt-0.5">Hackathons &amp; Events</div>
+              </div>
 
-        {/* Milestone Quick Stats Bar (matching Skills cards styling) */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-12">
-          
-          <div className="bg-card border border-border rounded-2xl p-5 sm:p-6 hover:border-accent/50 transition-all duration-300 shadow-lg group hover:-translate-y-1">
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-xs font-semibold uppercase tracking-wider text-text-secondary font-inter">Total Honors</span>
-              <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center text-accent text-lg group-hover:scale-110 transition-transform">
-                <i className="fas fa-award"></i>
+              <div className="bg-[#0e0e13]/90 border border-white/10 rounded-xl p-4 hover:border-accent/50 transition-colors shadow-lg group">
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-white/50 font-mono">
+                    1st Place Wins
+                  </span>
+                  <i className="fas fa-trophy text-accent text-sm group-hover:scale-110 transition-transform"></i>
+                </div>
+                <div
+                  className="text-2xl sm:text-3xl font-extrabold text-white"
+                  style={{ fontFamily: '"Outfit", sans-serif' }}
+                >
+                  {achievementStats.wins}
+                </div>
+                <div className="text-[10px] text-white/40 mt-0.5">TCS, Innovista &amp; CSI</div>
+              </div>
+
+              <div className="bg-[#0e0e13]/90 border border-white/10 rounded-xl p-4 hover:border-accent/50 transition-colors shadow-lg group">
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-white/50 font-mono">
+                    Finalists
+                  </span>
+                  <i className="fas fa-medal text-accent text-sm group-hover:scale-110 transition-transform"></i>
+                </div>
+                <div
+                  className="text-2xl sm:text-3xl font-extrabold text-white"
+                  style={{ fontFamily: '"Outfit", sans-serif' }}
+                >
+                  {achievementStats.nationalFinals}
+                </div>
+                <div className="text-[10px] text-white/40 mt-0.5">COEP MindSpark &amp; More</div>
+              </div>
+
+              <div className="bg-[#0e0e13]/90 border border-white/10 rounded-xl p-4 hover:border-accent/50 transition-colors shadow-lg group">
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-white/50 font-mono">
+                    SIH 2026
+                  </span>
+                  <i className="fas fa-flag-checkered text-accent text-sm group-hover:scale-110 transition-transform"></i>
+                </div>
+                <div
+                  className="text-2xl sm:text-3xl font-extrabold text-white"
+                  style={{ fontFamily: '"Outfit", sans-serif' }}
+                >
+                  Top 45
+                </div>
+                <div className="text-[10px] text-white/40 mt-0.5">Internal Hackathon Shortlist</div>
               </div>
             </div>
-            <div className="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight" style={{ fontFamily: '"Outfit", sans-serif' }}>
-              {achievementStats.totalCount}
-            </div>
-            <div className="text-xs text-text-secondary mt-1 font-medium">Hackathons &amp; Events</div>
-          </div>
 
-          <div className="bg-card border border-border rounded-2xl p-5 sm:p-6 hover:border-accent/50 transition-all duration-300 shadow-lg group hover:-translate-y-1">
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-xs font-semibold uppercase tracking-wider text-text-secondary font-inter">1st Place Wins</span>
-              <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center text-accent text-lg group-hover:scale-110 transition-transform">
-                <i className="fas fa-trophy"></i>
-              </div>
-            </div>
-            <div className="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight" style={{ fontFamily: '"Outfit", sans-serif' }}>
-              {achievementStats.wins}
-            </div>
-            <div className="text-xs text-text-secondary mt-1 font-medium">TCS, Innovista &amp; CSI</div>
-          </div>
-
-          <div className="bg-card border border-border rounded-2xl p-5 sm:p-6 hover:border-accent/50 transition-all duration-300 shadow-lg group hover:-translate-y-1">
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-xs font-semibold uppercase tracking-wider text-text-secondary font-inter">Finalist Placements</span>
-              <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center text-accent text-lg group-hover:scale-110 transition-transform">
-                <i className="fas fa-medal"></i>
-              </div>
-            </div>
-            <div className="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight" style={{ fontFamily: '"Outfit", sans-serif' }}>
-              {achievementStats.nationalFinals}
-            </div>
-            <div className="text-xs text-text-secondary mt-1 font-medium">COEP MindSpark &amp; More</div>
-          </div>
-
-          <div className="bg-card border border-border rounded-2xl p-5 sm:p-6 hover:border-accent/50 transition-all duration-300 shadow-lg group hover:-translate-y-1">
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-xs font-semibold uppercase tracking-wider text-text-secondary font-inter">Smart India Hackathon</span>
-              <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center text-accent text-lg group-hover:scale-110 transition-transform">
-                <i className="fas fa-flag-checkered"></i>
-              </div>
-            </div>
-            <div className="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight" style={{ fontFamily: '"Outfit", sans-serif' }}>
-              Top 45
-            </div>
-            <div className="text-xs text-text-secondary mt-1 font-medium">SIH 2026 Internal Shortlist</div>
-          </div>
-
-        </div>
-
-        {/* Filter Pills (identical to Projects.jsx category pills) */}
-        <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 mb-12 pb-6 border-b border-border/80">
-          <button
-            onClick={() => setActiveFilter('all')}
-            className={`px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-semibold tracking-wider uppercase transition-all duration-300 border cursor-pointer ${
-              activeFilter === 'all'
-                ? 'bg-accent text-white border-accent shadow-lg shadow-accent/25'
-                : 'bg-card text-text-secondary border-border hover:border-accent/40 hover:text-white backdrop-blur-md'
-            }`}
-          >
-            All Recognitions ({achievementsData.length})
-          </button>
-
-          <button
-            onClick={() => setActiveFilter('winner')}
-            className={`px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-semibold tracking-wider uppercase transition-all duration-300 border cursor-pointer flex items-center gap-2 ${
-              activeFilter === 'winner'
-                ? 'bg-accent text-white border-accent shadow-lg shadow-accent/25'
-                : 'bg-card text-text-secondary border-border hover:border-accent/40 hover:text-white backdrop-blur-md'
-            }`}
-          >
-            <i className="fas fa-trophy text-xs"></i>
-            1st Place Wins ({achievementStats.wins})
-          </button>
-
-          <button
-            onClick={() => setActiveFilter('finalist')}
-            className={`px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-semibold tracking-wider uppercase transition-all duration-300 border cursor-pointer flex items-center gap-2 ${
-              activeFilter === 'finalist'
-                ? 'bg-accent text-white border-accent shadow-lg shadow-accent/25'
-                : 'bg-card text-text-secondary border-border hover:border-accent/40 hover:text-white backdrop-blur-md'
-            }`}
-          >
-            <i className="fas fa-medal text-xs"></i>
-            Finalists ({achievementStats.nationalFinals})
-          </button>
-
-          <button
-            onClick={() => setActiveFilter('shortlisted')}
-            className={`px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-semibold tracking-wider uppercase transition-all duration-300 border cursor-pointer flex items-center gap-2 ${
-              activeFilter === 'shortlisted'
-                ? 'bg-accent text-white border-accent shadow-lg shadow-accent/25'
-                : 'bg-card text-text-secondary border-border hover:border-accent/40 hover:text-white backdrop-blur-md'
-            }`}
-          >
-            <i className="fas fa-flag-checkered text-xs"></i>
-            SIH Qualified (1)
-          </button>
-        </div>
-
-        {/* Achievements Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-          {filteredAchievements.map((item, index) => {
-            const itemImages = getAchievementImages(item);
-            const currentCardPhotoIdx = cardPhotoIndexes[item.id] || 0;
-            const currentCardPhoto = itemImages[currentCardPhotoIdx] || itemImages[0];
-            const hasMultiplePhotos = itemImages.length > 1;
-
-            return (
-              <div
-                key={item.id}
-                className="group relative bg-card border border-border rounded-2xl overflow-hidden hover:border-accent/50 transition-all duration-500 shadow-xl flex flex-col justify-between hover:-translate-y-1.5"
+            {/* Filter Pills */}
+            <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
+              <button
+                onClick={() => handleFilterChange('all')}
+                className={`px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-semibold tracking-wider uppercase transition-colors border cursor-pointer ${
+                  activeFilter === 'all'
+                    ? 'bg-accent text-white border-accent shadow-md shadow-accent/20'
+                    : 'bg-[#0e0e13]/80 text-white/70 border-white/15 hover:border-white/40 hover:text-white'
+                }`}
               >
-                {/* Card Header */}
-                <div className="flex items-center justify-between gap-4 p-5 sm:p-6 pb-4">
-                  <div className="flex items-end gap-3">
-                    <span className="text-3xl sm:text-4xl font-light text-text-secondary/40 font-serif leading-none tracking-tighter group-hover:text-accent transition-colors duration-500">
+                All Recognitions ({achievementsData.length})
+              </button>
+
+              <button
+                onClick={() => handleFilterChange('winner')}
+                className={`px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-semibold tracking-wider uppercase transition-colors border cursor-pointer flex items-center gap-2 ${
+                  activeFilter === 'winner'
+                    ? 'bg-accent text-white border-accent shadow-md shadow-accent/20'
+                    : 'bg-[#0e0e13]/80 text-white/70 border-white/15 hover:border-white/40 hover:text-white'
+                }`}
+              >
+                <i className="fas fa-trophy text-xs"></i>
+                1st Place Wins ({achievementStats.wins})
+              </button>
+
+              <button
+                onClick={() => handleFilterChange('finalist')}
+                className={`px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-semibold tracking-wider uppercase transition-colors border cursor-pointer flex items-center gap-2 ${
+                  activeFilter === 'finalist'
+                    ? 'bg-accent text-white border-accent shadow-md shadow-accent/20'
+                    : 'bg-[#0e0e13]/80 text-white/70 border-white/15 hover:border-white/40 hover:text-white'
+                }`}
+              >
+                <i className="fas fa-medal text-xs"></i>
+                Finalists ({achievementStats.nationalFinals})
+              </button>
+
+              <button
+                onClick={() => handleFilterChange('shortlisted')}
+                className={`px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-semibold tracking-wider uppercase transition-colors border cursor-pointer flex items-center gap-2 ${
+                  activeFilter === 'shortlisted'
+                    ? 'bg-accent text-white border-accent shadow-md shadow-accent/20'
+                    : 'bg-[#0e0e13]/80 text-white/70 border-white/15 hover:border-white/40 hover:text-white'
+                }`}
+              >
+                <i className="fas fa-flag-checkered text-xs"></i>
+                SIH Qualified (1)
+              </button>
+            </div>
+
+            {/* Scroll Indicator */}
+            <div className="mt-8 flex items-center gap-3 text-white/40 font-mono text-xs tracking-widest uppercase">
+              <span className="w-6 h-px bg-white/20"></span>
+              <span>Scroll to traverse honors</span>
+              <div className="animate-bounce">
+                <i className="fas fa-chevron-down text-accent text-xs"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Timeline of Achievement Cards (Alternating Left/Right) */}
+        {filteredAchievements.map((item, index) => {
+          const itemImages = getAchievementImages(item);
+          const currentCardPhotoIdx = cardPhotoIndexes[item.id] || 0;
+          const currentCardPhoto = itemImages[currentCardPhotoIdx] || itemImages[0];
+          const hasMultiplePhotos = itemImages.length > 1;
+          const isEven = index % 2 === 0;
+
+          return (
+            <div
+              key={item.id}
+              className={`min-h-[95vh] flex flex-col justify-center px-6 sm:px-12 md:px-16 lg:px-24 py-12 ${
+                isEven ? 'items-start' : 'items-end'
+              }`}
+            >
+              <div
+                className="achievement-scroll-card relative pointer-events-auto group w-full sm:w-[85vw] md:w-[60vw] lg:w-[620px] max-w-full flex flex-col gap-4 sm:gap-5 bg-[#0e0e13]/92 p-6 sm:p-7 md:p-8 rounded-2xl border border-white/10 hover:border-accent/40 transition-colors shadow-2xl will-change-transform"
+              >
+                {/* Card Header (Number, Badge & Date) */}
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-end gap-3 sm:gap-4">
+                    <span className="text-4xl sm:text-5xl font-light text-white/35 font-serif leading-none tracking-tighter group-hover:text-accent transition-colors duration-300">
                       {index + 1 < 10 ? `0${index + 1}` : index + 1}
                     </span>
                     <div className="flex flex-col">
-                      <span className="text-[10px] sm:text-xs font-mono uppercase tracking-[0.2em] text-accent font-semibold">
+                      <span className="text-[11px] sm:text-xs font-mono uppercase tracking-[0.2em] text-accent font-semibold flex items-center gap-1.5">
+                        <i className={`fas ${item.icon || 'fa-trophy'} text-[10px]`}></i>
                         {item.badge}
                       </span>
-                      <span className="text-[9px] sm:text-[10px] text-text-secondary/70 uppercase tracking-widest font-mono">
-                        {item.date}
+                      <span className="text-[10px] text-white/40 uppercase tracking-widest font-mono">
+                        {item.date} · {item.location}
                       </span>
                     </div>
                   </div>
 
-                  <div className="h-px bg-border grow max-w-[100px] relative overflow-hidden hidden sm:block">
-                    <div className="absolute top-0 left-0 h-full w-full bg-accent transform -translate-x-full group-hover:translate-x-0 transition-transform duration-[0.8s] ease-in-out"></div>
+                  <div className="h-px bg-white/15 grow max-w-[120px] relative overflow-hidden hidden sm:block">
+                    <div className="absolute top-0 left-0 h-full w-full bg-accent transform -translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-out"></div>
                   </div>
                 </div>
 
-                {/* Photo / Media Container */}
-                <div 
-                  className="relative h-60 sm:h-64 w-full bg-[#111113] cursor-pointer flex items-center justify-center p-3 border-y border-border/80 overflow-hidden group/thumb"
+                {/* Organization Subtitle */}
+                <div className="flex items-center gap-2 text-xs text-white/60 font-medium">
+                  <i className="fas fa-university text-accent/80 text-xs"></i>
+                  <span className="truncate">{item.organization}</span>
+                </div>
+
+                {/* Achievement Title */}
+                <h2
+                  className="text-xl sm:text-2xl md:text-3xl font-bold text-white group-hover:text-accent transition-colors duration-300 leading-snug"
+                  style={{ fontFamily: '"Outfit", sans-serif' }}
+                >
+                  {item.title}
+                </h2>
+
+                {/* Photo / Certificate Preview Container (Optimized: zero heavy blur) */}
+                <div
+                  className="relative h-56 sm:h-64 w-full bg-[#070709] rounded-xl cursor-pointer flex items-center justify-center p-3 border border-white/10 overflow-hidden group/thumb"
                   onClick={() => handleOpenModal(item, currentCardPhotoIdx)}
                 >
-                  {/* Multiple photos indicator badge */}
+                  {/* Multi-Photo Count Badge */}
                   {hasMultiplePhotos && (
-                    <div 
-                      className="absolute top-3 right-3 z-20 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/75 backdrop-blur-md text-white text-[11px] font-medium border border-white/10 shadow-lg group-hover:border-accent/50 transition-colors"
+                    <div
+                      className="absolute top-3 right-3 z-20 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/80 text-white text-[11px] font-mono border border-white/15 shadow-md group-hover:border-accent/50 transition-colors"
                       title={`${itemImages.length} photos available`}
                     >
                       <i className="fas fa-images text-accent text-xs"></i>
@@ -380,33 +446,26 @@ const Achievements = () => {
                     </div>
                   )}
 
-                  {/* Ambient backdrop glow in image colors */}
-                  <img
-                    src={currentCardPhoto.url}
-                    alt=""
-                    aria-hidden="true"
-                    className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-20 scale-125 pointer-events-none transition-all duration-500"
-                  />
-
-                  {/* Sharp, uncropped foreground photo / certificate */}
+                  {/* Sharp Uncropped Photo */}
                   <img
                     src={currentCardPhoto.url}
                     alt={item.title}
-                    className="relative z-10 max-h-full max-w-full w-auto h-auto object-contain rounded-md transition-transform duration-500 group-hover/thumb:scale-[1.03] shadow-[0_6px_20px_rgba(0,0,0,0.6)]"
+                    loading="lazy"
+                    className="relative z-10 max-h-full max-w-full w-auto h-auto object-contain rounded-md transition-transform duration-300 group-hover/thumb:scale-[1.02] shadow-md"
                   />
 
-                  {/* Click to expand hover hint */}
-                  <div className="absolute inset-0 z-20 flex items-center justify-center opacity-0 group-hover/thumb:opacity-100 transition-opacity duration-300 bg-black/40 backdrop-blur-[2px]">
-                    <span className="inline-flex items-center gap-2 bg-card/90 text-text-primary text-xs font-semibold px-4 py-2 rounded-full border border-border shadow-xl">
-                      <i className="fas fa-search-plus text-accent"></i> 
+                  {/* Hover Inspect Overlay */}
+                  <div className="absolute inset-0 z-20 flex items-center justify-center opacity-0 group-hover/thumb:opacity-100 transition-opacity duration-200 bg-black/45">
+                    <span className="inline-flex items-center gap-2 bg-black/90 text-white text-xs font-semibold px-4 py-2 rounded-full border border-white/20 shadow-xl">
+                      <i className="fas fa-search-plus text-accent"></i>
                       {hasMultiplePhotos ? `View All ${itemImages.length} Photos` : 'Inspect Full Proof'}
                     </span>
                   </div>
 
-                  {/* Dot navigation if multiple photos */}
+                  {/* Quick Thumbnail Dots Switcher */}
                   {hasMultiplePhotos && (
-                    <div 
-                      className="absolute bottom-2.5 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/70 backdrop-blur-md border border-white/10"
+                    <div
+                      className="absolute bottom-2.5 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/80 border border-white/15"
                       onClick={(e) => e.stopPropagation()}
                     >
                       {itemImages.map((img, pIdx) => {
@@ -415,7 +474,7 @@ const Achievements = () => {
                           <button
                             key={pIdx}
                             type="button"
-                            onClick={() => setCardPhotoIndexes(prev => ({ ...prev, [item.id]: pIdx }))}
+                            onClick={() => setCardPhotoIndexes((prev) => ({ ...prev, [item.id]: pIdx }))}
                             className={`transition-all rounded-full cursor-pointer ${
                               isCur ? 'w-4 h-1.5 bg-accent' : 'w-1.5 h-1.5 bg-white/40 hover:bg-white/80'
                             }`}
@@ -428,81 +487,112 @@ const Achievements = () => {
                   )}
                 </div>
 
-                {/* Card Body */}
-                <div className="p-5 sm:p-6 flex-1 flex flex-col justify-between">
-                  <div>
-                    {/* Organization / Location */}
-                    <div className="flex items-center gap-2 text-xs text-text-secondary font-medium mb-2.5">
-                      <i className="fas fa-map-marker-alt text-accent text-xs"></i>
-                      <span className="truncate">{item.organization}</span>
-                    </div>
+                {/* Description */}
+                <p className="text-gray-300 text-sm sm:text-base leading-relaxed font-light">
+                  {item.description}
+                </p>
 
-                    {/* Achievement Title */}
-                    <h2 className="text-xl sm:text-2xl font-bold text-text-primary group-hover:text-accent transition-colors duration-300 leading-snug mb-3">
-                      {item.title}
-                    </h2>
-
-                    {/* Description */}
-                    <p className="text-text-secondary text-sm leading-relaxed mb-6 font-normal">
-                      {item.description}
-                    </p>
-                  </div>
-
-                  <div>
-                    {/* Tags */}
-                    <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-6">
-                      {item.tags.map(tag => (
-                        <span 
-                          key={tag} 
-                          className="text-[11px] font-semibold px-3 py-1 bg-white/5 text-white/80 rounded-md border border-white/10 shadow-sm group-hover:border-white/20 transition-all"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-
-                    {/* Bottom CTA Button */}
-                    <button
-                      onClick={() => handleOpenModal(item, currentCardPhotoIdx)}
-                      className="w-full py-2.5 px-4 rounded-lg text-xs sm:text-sm font-semibold inline-flex items-center justify-center gap-2 bg-bg hover:bg-accent text-text-primary hover:text-white border border-border hover:border-accent transition-all duration-300 shadow-sm cursor-pointer group/btn"
+                {/* Tech Tags */}
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {item.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="text-[11px] sm:text-xs font-mono font-medium px-3 py-1 bg-white/5 text-white/80 rounded-md border border-white/10 group-hover:border-white/20 transition-colors"
                     >
-                      <i className="fas fa-certificate text-accent group-hover/btn:text-white transition-colors"></i>
-                      <span>{hasMultiplePhotos ? `View Photos & Details (${itemImages.length})` : 'View Proof & Details'}</span>
-                      <i className="fas fa-arrow-right text-[10px] ml-1 opacity-70 group-hover/btn:translate-x-1 transition-transform"></i>
-                    </button>
-                  </div>
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+
+                {/* CTA Inspect Button */}
+                <div className="pt-1">
+                  <button
+                    onClick={() => handleOpenModal(item, currentCardPhotoIdx)}
+                    className="w-full py-2.5 px-4 rounded-xl text-xs sm:text-sm font-semibold inline-flex items-center justify-center gap-2 bg-white/5 hover:bg-accent text-white border border-white/10 hover:border-accent transition-colors shadow-sm cursor-pointer group/btn"
+                  >
+                    <i className="fas fa-certificate text-accent group-hover/btn:text-white transition-colors"></i>
+                    <span>
+                      {hasMultiplePhotos
+                        ? `Inspect All Proofs & Photos (${itemImages.length})`
+                        : 'Inspect Verification Proof'}
+                    </span>
+                    <i className="fas fa-arrow-right text-[10px] ml-1 opacity-70 group-hover/btn:translate-x-1 transition-transform"></i>
+                  </button>
                 </div>
               </div>
-            );
-          })}
-        </div>
+            </div>
+          );
+        })}
 
+        {/* Grand Climax Section: Amey raising trophy with golden confetti on stage */}
+        <div className="min-h-[100vh] flex flex-col justify-center items-center px-6 sm:px-12 text-center py-16">
+          <div className="max-w-2xl pointer-events-auto bg-[#0e0e13]/92 border border-white/15 p-8 sm:p-10 md:p-12 rounded-3xl shadow-2xl flex flex-col items-center">
+            <div className="w-14 h-14 rounded-2xl bg-accent/15 border border-accent/30 flex items-center justify-center text-accent text-2xl mb-6 shadow-md shadow-accent/20">
+              <i className="fas fa-trophy"></i>
+            </div>
+
+            <span className="text-accent text-xs sm:text-sm font-bold tracking-[0.25em] uppercase font-mono mb-3 block">
+              Championship Mentality
+            </span>
+
+            <h2
+              className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight uppercase mb-5 leading-tight"
+              style={{ fontFamily: '"Outfit", sans-serif' }}
+            >
+              From First Principles <br />
+              <span className="text-accent">To The Podium</span>
+            </h2>
+
+            <p className="text-gray-300 text-sm sm:text-base leading-relaxed font-light mb-8 max-w-lg">
+              Whether it's an intensive 36-hour hackathon sprint, custom embedded firmware, or full-stack intelligent architecture, I engineer to deliver real impact.
+            </p>
+
+            <div className="flex flex-wrap items-center justify-center gap-4">
+              <Link
+                to="/projects"
+                className="px-6 py-3 rounded-xl bg-accent hover:bg-accent-hover text-white text-sm font-semibold tracking-wide uppercase transition-colors shadow-lg shadow-accent/30 inline-flex items-center gap-2 hover:-translate-y-0.5"
+              >
+                <span>View Engineered Projects</span>
+                <i className="fas fa-arrow-right text-xs"></i>
+              </Link>
+
+              <Link
+                to="/contact"
+                className="px-6 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-white text-sm font-semibold tracking-wide uppercase transition-colors border border-white/15 inline-flex items-center gap-2"
+              >
+                <i className="fas fa-envelope text-accent text-xs"></i>
+                <span>Get In Touch</span>
+              </Link>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Fullscreen Certificate Lightbox Modal */}
+      {/* Fullscreen Certificate Lightbox Modal (Uncropped, High-Res Proof Viewer) */}
       {selectedAchievement && currentModalPhoto && (
-        <div 
-          className="fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-4 md:p-6 bg-bg/90 backdrop-blur-md animate-fade-in"
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-4 md:p-6 bg-black/90 animate-fade-in"
           onClick={handleCloseModal}
         >
-          <div 
-            className="relative w-full max-w-5xl bg-card border border-border rounded-xl shadow-2xl shadow-accent/10 overflow-hidden flex flex-col max-h-[96vh]"
+          <div
+            className="relative w-full max-w-5xl bg-[#0f0f13] border border-white/15 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[96vh]"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
-            <div className="flex flex-wrap items-center justify-between gap-3 px-4 sm:px-6 py-3 border-b border-border/80 bg-card z-20">
+            <div className="flex flex-wrap items-center justify-between gap-3 px-4 sm:px-6 py-3.5 border-b border-white/10 bg-[#141419] z-20">
               <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-                <span className="px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase font-inter bg-accent/10 text-accent border border-accent/30 shadow-sm">
+                <span className="px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase font-mono bg-accent/15 text-accent border border-accent/30 shadow-sm flex items-center gap-1.5">
+                  <i className={`fas ${selectedAchievement.icon || 'fa-award'} text-[11px]`}></i>
                   {selectedAchievement.badge}
                 </span>
 
-                <span className="text-xs font-mono text-text-secondary hidden sm:inline">
+                <span className="text-xs font-mono text-white/50 hidden sm:inline">
                   [{modalIndex + 1} of {achievementsData.length}]
                 </span>
 
-                {/* Multiple Photos Pill Switcher */}
+                {/* Multiple Photos Switcher Pills */}
                 {modalPhotos.length > 1 && (
-                  <div className="inline-flex items-center rounded-lg bg-bg border border-border p-1 text-xs">
+                  <div className="inline-flex items-center rounded-lg bg-black/50 border border-white/10 p-1 text-xs">
                     {modalPhotos.map((photo, pIdx) => {
                       const isActive = activePhotoIndex === pIdx;
                       return (
@@ -512,10 +602,10 @@ const Achievements = () => {
                             setActivePhotoIndex(pIdx);
                             setIsZoomed(false);
                           }}
-                          className={`px-3 py-1 rounded-md transition-all cursor-pointer font-medium flex items-center gap-1.5 ${
-                            isActive 
-                              ? 'bg-accent text-white shadow-sm font-semibold' 
-                              : 'text-text-secondary hover:text-white hover:bg-white/5'
+                          className={`px-3 py-1 rounded-md transition-colors cursor-pointer font-medium flex items-center gap-1.5 ${
+                            isActive
+                              ? 'bg-accent text-white shadow-sm font-semibold'
+                              : 'text-white/60 hover:text-white hover:bg-white/5'
                           }`}
                         >
                           <i className={`fas ${pIdx === 0 ? 'fa-image' : 'fa-certificate'} text-[10px]`}></i>
@@ -533,11 +623,11 @@ const Achievements = () => {
                   type="button"
                   onClick={() => setIsZoomed(!isZoomed)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors inline-flex items-center gap-1.5 cursor-pointer ${
-                    isZoomed 
-                      ? 'bg-accent text-white border-accent' 
-                      : 'text-text-secondary hover:text-white hover:bg-white/10 border-border'
+                    isZoomed
+                      ? 'bg-accent text-white border-accent'
+                      : 'text-white/70 hover:text-white hover:bg-white/10 border-white/15'
                   }`}
-                  title={isZoomed ? "Reset zoom (Fit to window)" : "Zoom in 100% to read full details"}
+                  title={isZoomed ? 'Reset zoom (Fit to window)' : 'Zoom in 100% to inspect full details'}
                 >
                   <i className={`fas ${isZoomed ? 'fa-search-minus' : 'fa-search-plus'} text-[11px]`}></i>
                   <span className="hidden sm:inline">{isZoomed ? 'Fit Screen' : 'Zoom In'}</span>
@@ -547,16 +637,16 @@ const Achievements = () => {
                   href={currentModalPhoto.url}
                   target="_blank"
                   rel="noreferrer"
-                  className="px-3 py-1.5 rounded-lg text-xs font-medium text-text-secondary hover:text-white hover:bg-white/10 border border-border transition-colors inline-flex items-center gap-1.5"
+                  className="px-3 py-1.5 rounded-lg text-xs font-medium text-white/70 hover:text-white hover:bg-white/10 border border-white/15 transition-colors inline-flex items-center gap-1.5"
                   title="Open original high-res image in new tab"
                 >
                   <i className="fas fa-external-link-alt text-[10px]"></i>
                   <span className="hidden sm:inline">Original High-Res</span>
                 </a>
 
-                <button 
+                <button
                   onClick={handleCloseModal}
-                  className="w-8 h-8 rounded-full bg-bg/80 hover:bg-accent text-white flex items-center justify-center transition-colors cursor-pointer border border-border"
+                  className="w-8 h-8 rounded-full bg-white/10 hover:bg-accent text-white flex items-center justify-center transition-colors cursor-pointer border border-white/15"
                   aria-label="Close modal"
                 >
                   <i className="fas fa-times text-sm"></i>
@@ -564,58 +654,46 @@ const Achievements = () => {
               </div>
             </div>
 
-            {/* Modal Image Viewport (Clean, Uncropped & Fully Visible) */}
-            <div 
+            {/* Modal Image Viewport */}
+            <div
               className={`relative flex-1 bg-[#070709] min-h-[320px] max-h-[66vh] sm:max-h-[68vh] flex items-center justify-center p-2 sm:p-4 select-none ${
                 isZoomed ? 'overflow-auto cursor-grab' : 'overflow-hidden'
               }`}
             >
-              {/* Background ambient glow matching current image */}
-              {!isZoomed && (
-                <img 
-                  key={`glow-${currentModalPhoto.url}`}
-                  src={currentModalPhoto.url} 
-                  alt="" 
-                  aria-hidden="true"
-                  className="absolute inset-0 w-full h-full object-cover blur-3xl opacity-20 pointer-events-none scale-125"
-                />
-              )}
-
-              {/* Main high-res active photo (100% uncropped object-contain) */}
-              <div 
+              <div
                 className={`relative z-10 w-full h-full flex items-center justify-center ${
                   isZoomed ? 'min-w-[1200px] min-h-[750px] p-4' : ''
                 }`}
               >
-                <img 
+                <img
                   key={currentModalPhoto.url}
-                  src={currentModalPhoto.url} 
-                  alt={currentModalPhoto.title} 
+                  src={currentModalPhoto.url}
+                  alt={currentModalPhoto.title}
                   onClick={() => setIsZoomed(!isZoomed)}
-                  className={`rounded-lg shadow-2xl border border-border/60 transition-transform duration-300 ${
-                    isZoomed 
-                      ? 'max-w-none w-full object-contain cursor-zoom-out' 
+                  className={`rounded-lg shadow-2xl border border-white/10 transition-transform duration-300 ${
+                    isZoomed
+                      ? 'max-w-none w-full object-contain cursor-zoom-out'
                       : 'max-w-full max-h-full w-auto h-auto object-contain cursor-zoom-in'
                   }`}
                   style={!isZoomed ? { maxHeight: 'calc(66vh - 24px)' } : {}}
                 />
               </div>
 
-              {/* Left / Right Navigation Controls */}
+              {/* Navigation Arrows */}
               {modalPhotos.length > 1 ? (
                 <>
-                  <button 
+                  <button
                     onClick={handlePrevPhoto}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full bg-card/90 hover:bg-accent text-white flex items-center justify-center transition-all backdrop-blur-sm border border-border cursor-pointer shadow-xl hover:scale-110"
+                    className="absolute left-3 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full bg-black/80 hover:bg-accent text-white flex items-center justify-center transition-all border border-white/15 cursor-pointer shadow-xl hover:scale-110"
                     title="Previous photo (←)"
                     aria-label="Previous photo"
                   >
                     <i className="fas fa-chevron-left"></i>
                   </button>
 
-                  <button 
+                  <button
                     onClick={handleNextPhoto}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full bg-card/90 hover:bg-accent text-white flex items-center justify-center transition-all backdrop-blur-sm border border-border cursor-pointer shadow-xl hover:scale-110"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full bg-black/80 hover:bg-accent text-white flex items-center justify-center transition-all border border-white/15 cursor-pointer shadow-xl hover:scale-110"
                     title="Next photo (→)"
                     aria-label="Next photo"
                   >
@@ -624,18 +702,18 @@ const Achievements = () => {
                 </>
               ) : (
                 <>
-                  <button 
+                  <button
                     onClick={handlePrevModal}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full bg-card/90 hover:bg-accent text-white flex items-center justify-center transition-all backdrop-blur-sm border border-border cursor-pointer shadow-xl hover:scale-110"
+                    className="absolute left-3 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full bg-black/80 hover:bg-accent text-white flex items-center justify-center transition-all border border-white/15 cursor-pointer shadow-xl hover:scale-110"
                     title="Previous recognition (←)"
                     aria-label="Previous recognition"
                   >
                     <i className="fas fa-chevron-left"></i>
                   </button>
 
-                  <button 
+                  <button
                     onClick={handleNextModal}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full bg-card/90 hover:bg-accent text-white flex items-center justify-center transition-all backdrop-blur-sm border border-border cursor-pointer shadow-xl hover:scale-110"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 z-30 w-10 h-10 rounded-full bg-black/80 hover:bg-accent text-white flex items-center justify-center transition-all border border-white/15 cursor-pointer shadow-xl hover:scale-110"
                     title="Next recognition (→)"
                     aria-label="Next recognition"
                   >
@@ -645,10 +723,10 @@ const Achievements = () => {
               )}
             </div>
 
-            {/* Interactive Thumbnail Gallery Row for Multi-Photo Achievements */}
+            {/* Thumbnail Gallery Row for Multi-Photo Achievements */}
             {modalPhotos.length > 1 && (
-              <div className="flex items-center justify-center gap-3 px-4 py-2 bg-[#0e0e11] border-t border-border/80">
-                <span className="text-[11px] font-mono uppercase tracking-wider text-text-secondary/70 mr-1 hidden sm:inline-flex items-center gap-1.5">
+              <div className="flex items-center justify-center gap-3 px-4 py-2 bg-[#0a0a0d] border-t border-white/10">
+                <span className="text-[11px] font-mono uppercase tracking-wider text-white/50 mr-1 hidden sm:inline-flex items-center gap-1.5">
                   <i className="fas fa-images text-accent text-xs"></i> Select Proof:
                 </span>
                 {modalPhotos.map((photo, pIdx) => {
@@ -662,21 +740,23 @@ const Achievements = () => {
                         setIsZoomed(false);
                       }}
                       className={`group/thumb flex items-center gap-2.5 px-3 py-1.5 rounded-lg border transition-all cursor-pointer ${
-                        isSelected 
-                          ? 'border-accent bg-accent/15 text-white shadow-md shadow-accent/10 ring-1 ring-accent' 
-                          : 'border-border/80 bg-card/70 text-text-secondary hover:border-white/30 hover:text-white'
+                        isSelected
+                          ? 'border-accent bg-accent/20 text-white shadow-sm ring-1 ring-accent'
+                          : 'border-white/10 bg-white/5 text-white/60 hover:border-white/30 hover:text-white'
                       }`}
                     >
-                      <img 
-                        src={photo.url} 
-                        alt={photo.label} 
+                      <img
+                        src={photo.url}
+                        alt={photo.label}
                         className={`w-9 h-7 rounded object-cover border transition-all ${
-                          isSelected ? 'border-accent' : 'border-white/10 opacity-70 group-hover/thumb:opacity-100'
+                          isSelected ? 'border-accent' : 'border-white/15 opacity-70 group-hover/thumb:opacity-100'
                         }`}
                       />
                       <div className="text-left">
                         <span className="block text-xs font-semibold leading-tight">{photo.label}</span>
-                        <span className="block text-[10px] text-text-secondary/80 font-mono leading-tight">{pIdx === 0 ? 'Primary' : `Photo ${pIdx + 1}`}</span>
+                        <span className="block text-[10px] text-white/40 font-mono leading-tight">
+                          {pIdx === 0 ? 'Primary' : `Photo ${pIdx + 1}`}
+                        </span>
                       </div>
                     </button>
                   );
@@ -685,32 +765,36 @@ const Achievements = () => {
             )}
 
             {/* Modal Footer Details */}
-            <div className="px-5 py-3.5 sm:px-6 sm:py-4 bg-card border-t border-border/80">
+            <div className="px-5 py-3.5 sm:px-6 sm:py-4 bg-[#141419] border-t border-white/10">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-1.5">
-                <h3 className="text-lg sm:text-xl font-bold text-text-primary" style={{ fontFamily: '"Outfit", sans-serif' }}>
+                <h3
+                  className="text-lg sm:text-xl font-bold text-white"
+                  style={{ fontFamily: '"Outfit", sans-serif' }}
+                >
                   {selectedAchievement.title}
                 </h3>
-                <span className="text-xs font-mono text-accent">
-                  {selectedAchievement.date}
-                </span>
+                <span className="text-xs font-mono text-accent">{selectedAchievement.date}</span>
               </div>
-              <p className="text-xs sm:text-sm text-text-secondary leading-relaxed mb-3">
+              <p className="text-xs sm:text-sm text-gray-300 leading-relaxed mb-3 font-light">
                 {currentModalPhoto.caption || selectedAchievement.description}
               </p>
-              
+
               <div className="flex flex-wrap gap-1.5 mb-3">
-                {selectedAchievement.tags.map(tag => (
-                  <span key={tag} className="text-[11px] font-semibold px-2.5 py-0.5 bg-accent/10 text-accent rounded-md border border-accent/20">
+                {selectedAchievement.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="text-[11px] font-mono font-medium px-2.5 py-0.5 bg-accent/10 text-accent rounded-md border border-accent/20"
+                  >
                     {tag}
                   </span>
                 ))}
               </div>
 
               {/* Navigation Bar between Recognitions */}
-              <div className="flex items-center justify-between pt-2.5 border-t border-border/60 text-xs font-mono">
+              <div className="flex items-center justify-between pt-2.5 border-t border-white/10 text-xs font-mono">
                 <button
                   onClick={handlePrevModal}
-                  className="px-3 py-1.5 rounded-lg bg-bg hover:bg-accent text-text-secondary hover:text-white border border-border hover:border-accent transition-all cursor-pointer flex items-center gap-2"
+                  className="px-3 py-1.5 rounded-lg bg-black/60 hover:bg-accent text-white/70 hover:text-white border border-white/15 hover:border-accent transition-colors cursor-pointer flex items-center gap-2"
                   title="Previous recognition"
                 >
                   <i className="fas fa-chevron-left text-[10px]"></i>
@@ -718,10 +802,10 @@ const Achievements = () => {
                   <span className="sm:hidden">Prev</span>
                 </button>
 
-                <div className="text-center text-text-secondary/70">
+                <div className="text-center text-white/40">
                   <span className="hidden md:inline">
-                    {modalPhotos.length > 1 
-                      ? 'Use ← / → arrows to flip photos · Esc to close' 
+                    {modalPhotos.length > 1
+                      ? 'Use ← / → arrows to flip photos · Esc to close'
                       : 'Use ← / → arrows to browse recognitions · Esc to close'}
                   </span>
                   <span className="md:hidden">
@@ -731,7 +815,7 @@ const Achievements = () => {
 
                 <button
                   onClick={handleNextModal}
-                  className="px-3 py-1.5 rounded-lg bg-bg hover:bg-accent text-text-secondary hover:text-white border border-border hover:border-accent transition-all cursor-pointer flex items-center gap-2"
+                  className="px-3 py-1.5 rounded-lg bg-black/60 hover:bg-accent text-white/70 hover:text-white border border-white/15 hover:border-accent transition-colors cursor-pointer flex items-center gap-2"
                   title="Next recognition"
                 >
                   <span className="hidden sm:inline">Next Recognition</span>
@@ -740,11 +824,9 @@ const Achievements = () => {
                 </button>
               </div>
             </div>
-
           </div>
         </div>
       )}
-
     </section>
   );
 };
