@@ -432,7 +432,8 @@ const Achievements = () => {
 
                 {/* Photo / Certificate Preview Container (Optimized: zero heavy blur) */}
                 <div
-                  className="relative h-56 sm:h-64 w-full bg-[#070709] rounded-xl cursor-pointer flex items-center justify-center p-3 border border-white/10 overflow-hidden group/thumb"
+                  className="cursor-target relative h-56 sm:h-64 w-full bg-[#070709] rounded-xl cursor-pointer flex items-center justify-center p-3 border border-white/10 overflow-hidden group/thumb"
+                  data-cursor-label="Inspect"
                   onClick={() => handleOpenModal(item, currentCardPhotoIdx)}
                 >
                   {/* Multi-Photo Count Badge */}

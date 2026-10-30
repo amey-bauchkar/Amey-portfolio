@@ -34,7 +34,8 @@ const ProjectCard = ({ project, displayIndex, onOpenProject }) => (
     {/* Cinematic Image Frame */}
     <div 
       onClick={() => onOpenProject(project)}
-      className="relative w-full aspect-video rounded-lg overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.8)] group-hover:shadow-[0_0_40px_rgba(249,115,22,0.3)] transition-all duration-700 bg-[#0a0a0a] cursor-pointer"
+      data-cursor-label="Project"
+      className="cursor-target relative w-full aspect-video rounded-lg overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.8)] group-hover:shadow-[0_0_40px_rgba(249,115,22,0.3)] transition-all duration-700 bg-[#0a0a0a] cursor-pointer"
     >
       <img 
         src={`/${project.image}`} 

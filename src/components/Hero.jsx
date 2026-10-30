@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import TechText from './TechText';
 
 const Hero = ({ onOpenCv }) => {
   return (
@@ -24,11 +25,53 @@ const Hero = ({ onOpenCv }) => {
           <i className="fas fa-chevron-right text-[9px] opacity-70 group-hover:translate-x-0.5 transition-transform"></i>
         </Link>
 
-        <h1 className="hero-name-block anim-hidden animate-fade-in-up delay-300">
-          <span className="hero-name-first block">Amey</span>
-          <span className="hero-name-last block">Bauchkar</span>
+        <h1 className="hero-name-block anim-hidden animate-fade-in-up delay-300 flex flex-col gap-0 select-none w-full max-w-xl !mb-3" aria-label="Amey Bauchkar">
+          <span className="sr-only">Amey Bauchkar</span>
+          <div className="h-[52px] sm:h-[68px] md:h-[80px] lg:h-[92px] w-full max-w-[500px] -ml-[14px]">
+            <TechText
+              text="AMEY"
+              fontFamily="'Outfit', sans-serif"
+              fontWeight={800}
+              fontSize={90}
+              letterSpacing={-0.02}
+              align="left"
+              color="#ffffff"
+              accentColor="#FF6B2B"
+              reveal="letter"
+              dashLength={4}
+              dashGap={2}
+              specks={15}
+              intro="none"
+              clickKick
+              draggable
+              bounce={0.4}
+              sweep
+              speed={0.8}
+            />
+          </div>
+          <div className="h-[52px] sm:h-[68px] md:h-[80px] lg:h-[92px] w-full max-w-[500px] -ml-[14px] -mt-1 sm:mt-0">
+            <TechText
+              text="BAUCHKAR"
+              fontFamily="'Outfit', sans-serif"
+              fontWeight={800}
+              fontSize={90}
+              letterSpacing={-0.02}
+              align="left"
+              color="#FF6B2B"
+              accentColor="#ffffff"
+              reveal="letter"
+              dashLength={4}
+              dashGap={2}
+              specks={15}
+              intro="none"
+              clickKick
+              draggable
+              bounce={0.4}
+              sweep
+              speed={0.8}
+            />
+          </div>
         </h1>
-
         <div className="hero-pills anim-hidden animate-fade-in-up delay-400">
           <div className="hero-pill">⚡ Hardware Dev</div>
           <div className="hero-pill">&lt;/&gt; Full Stack Dev</div>
@@ -40,10 +83,10 @@ const Hero = ({ onOpenCv }) => {
         </p>
 
         <div className="hero-cta-row anim-hidden animate-fade-in-up delay-600">
-          <Link to="/projects" className="hero-cta-primary">
+          <Link to="/projects" data-cursor-label="Explore" className="hero-cta-primary">
             View Projects <i className="fas fa-arrow-right"></i>
           </Link>
-          <button onClick={onOpenCv} className="hero-cta-secondary">
+          <button onClick={onOpenCv} data-cursor-label="Resume" className="hero-cta-secondary">
             <i className="fas fa-expand"></i> View CV
           </button>
         </div>

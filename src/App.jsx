@@ -14,6 +14,7 @@ import CvModal from './components/CvModal';
 import Loader from './components/Loader';
 import PreloadContainer from './components/PreloadContainer';
 import RotateDeviceOverlay from './components/RotateDeviceOverlay';
+import TargetCursor from './components/TargetCursor';
 
 import HomePage from './pages/HomePage';
 import AboutPage from './pages/AboutPage';
@@ -113,6 +114,12 @@ function App() {
 
   return (
     <>
+      <TargetCursor 
+        spinDuration={2} 
+        hideDefaultCursor 
+        parallaxOn 
+        targetSelector=".cursor-target, a, button, [data-cursor-label]"
+      />
       <RotateDeviceOverlay />
       {isInitialLoading && <Loader onComplete={() => setIsInitialLoading(false)} />}
       <PreloadContainer />
