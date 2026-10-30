@@ -6,6 +6,7 @@ export const softwareProjects = [
     categoryLabel: 'Decision Intelligence',
     description: 'Autonomous Infrastructure Decision Intelligence platform for MoSPI monitoring 2,207+ national infrastructure projects worth ₹13.60L Cr across India. Features multi-engine risk auditing (Satya Kavach, Kaal Chakra, Setu Varsha), HiGHS linear programming capital allocators with 10% NER statutory floors, and cryptographically sealed SHA-256 audit trails.',
     image: 'prakalp-drishti.png',
+    youtubeVideo: 'https://youtu.be/8BCTEmupAjY',
     tags: ['Next.js', 'Decision Intelligence', 'HiGHS LP Solver', 'Risk Modeling', 'Geospatial'],
     link: 'https://prakalp-drishti.vercel.app/',
     github: 'https://github.com/amey-bauchkar/Prakalp-Drishti-.git',
@@ -104,6 +105,7 @@ export function solveCapitalAllocation(
     categoryLabel: '3D Elevation Studio',
     description: 'High-precision 3D elevation and surface intelligence studio that converts satellite and aerial imagery into metric DEM & nDSM digital twins. Delivers GPU-accelerated real-time 3D terrain rendering, LoD-1 extruded 3D building mesh reconstruction, multi-angle camera projections (Nadir, Oblique, Horizon), and interactive geological hazard layer analysis.',
     image: 'depthwizard.png',
+    youtubeVideo: 'https://youtu.be/Kvg8Pe5PR2Y',
     tags: ['WebGL / Three.js', 'Digital Twin', 'DEM & nDSM', 'LoD-1 3D Mesh', 'Geospatial Studio'],
     link: 'http://depthwizard.indiasouthcentral.cloudapp.azure.com/',
     github: 'https://github.com/amey-bauchkar/DepthWizard.git',
@@ -359,7 +361,159 @@ export function computeAsliDaam(
     sharedPoolSavings: Math.round(sharedPoolSavings),
     recommendationTier: netPerQuintal > mandi.grossPricePerQuintal * 0.85 ? 'HIGHLY_OPTIMAL' : 'ACCEPTABLE'
   };
-}`
+}`  },
+  {
+    id: 'cineplus',
+    title: 'CinePlus',
+    category: 'software',
+    categoryLabel: 'Multiplex Price & Show Finder',
+    description: 'Dynamic multiplex ticket price aggregator, showtime arbitrage matrix, and intelligent proximity finder across 50+ multiplexes. Features 4-window dynamic fare breakdowns (Morning, Matinee, Evening, Night) with Golden-Hour arbitrage savings up to 73%, Haversine GPS proximity sorting with weighted Best Value scores, 1-click deep booking links directly into multiplex seat layouts (BookMyShow, PVR INOX, Cinépolis), and a thread-safe daemon price drop alert system with live simulation controls for examiner reviews.',
+    image: 'cineplus.png',
+    video: 'cineplus-demo.mp4',
+    screenshots: [
+      {
+        title: 'CinePlus Neo-Brutalist Landing Page & Live Multiplex Radar',
+        caption: 'Official Two26 Studio inspired editorial showcase with live metro hubs ticker and real-time showtime curation.',
+        src: 'cineplus/main_landing.jpg'
+      },
+      {
+        title: 'Showtime Price Matrix & Golden-Hour Arbitrage',
+        caption: 'Live 4-window time breakdown showing minimum, average, and peak prices with GPS proximity controls.',
+        src: 'cineplus/price_matrix_gps.png'
+      },
+      {
+        title: 'Multi-Theatre Price Comparison with Nearest & Best Value',
+        caption: 'Dynamic distance-based sorting (km), live seat availability indicators, and tier breakdown.',
+        src: 'cineplus/price_comparison_nearest.png'
+      },
+      {
+        title: 'Multi-Platform Booking Gateway & Seat Matrix Deep Links',
+        caption: 'Direct seat layout deep-links jumping straight to BookMyShow, PVR INOX, and Cinépolis seat maps.',
+        src: 'cineplus/booking_gateway_deep_link.png'
+      },
+      {
+        title: 'Examiner Viva Demo & Real-Time Price Fluctuation Simulator',
+        caption: 'Interactive examiner testing console allowing instant on-demand price crashes (-40%) and prime surges (+80%).',
+        src: 'cineplus/examiner_demo_console.png'
+      },
+      {
+        title: 'Animated Reactive Toast & Pulsing Triggered Watchers',
+        caption: 'Instant user feedback when price drops below the specified target threshold with Two26 brutalist toasts.',
+        src: 'cineplus/price_drop_toast.png'
+      }
+    ],
+    tags: ['Python 3.10+', 'Flask 3.x', 'Price Arbitrage', 'Haversine GPS', 'BookMyShow Scraper', 'Thread-Safe Daemon', 'Two26 Brutalist UI'],
+    link: '#video-demo',
+    github: 'https://github.com/herambdbari1967-hue/Python-Mini-Project.git',
+    codeType: 'py',
+    delay: 'delay-500',
+    code: `"""
+CINEPLUS — MULTIPLEX PRICE ARBITRAGE & SHOWTIME FINDER ENGINE
+-------------------------------------------------------------
+Dynamic 4-Window Fare Aggregator, Haversine GPS Proximity Math,
+and Thread-Safe Daemon Price Drop Alert Manager with Examiner Viva Simulator.
+"""
+
+import math
+import threading
+import time
+from datetime import datetime
+
+# =====================================================================
+# 1. HAVERSINE GEODESIC DISTANCE & PROXIMITY ENGINE
+# =====================================================================
+def haversine_distance_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+    """Computes spherical geodesic distance between user GPS and multiplex in km."""
+    R = 6371.0  # Earth's mean radius in kilometers
+    dlat = math.radians(lat2 - lat1)
+    dlon = math.radians(lon2 - lon1)
+    a = (math.sin(dlat / 2.0) ** 2 +
+         math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) *
+         math.sin(dlon / 2.0) ** 2)
+    c = 2.0 * math.atan2(math.sqrt(a), math.sqrt(1.0 - a))
+    return round(R * c, 1)
+
+def compute_best_value_score(ticket_price: float, distance_km: float,
+                             min_price: float, max_price: float,
+                             max_dist_km: float = 35.0) -> float:
+    """
+    Normalizes price and geographical travel effort into a weighted cost metric.
+    Lower score represents superior overall consumer value.
+    Score = 0.60 * Normalized_Price + 0.40 * Normalized_Distance
+    """
+    price_norm = (ticket_price - min_price) / max(1, (max_price - min_price))
+    dist_norm = min(1.0, distance_km / max_dist_km)
+    return round((0.60 * price_norm) + (0.40 * dist_norm), 3)
+
+# =====================================================================
+# 2. 4-WINDOW SHOWTIME PRICE MATRIX & GOLDEN-HOUR ARBITRAGE ARBITER
+# =====================================================================
+def compute_golden_hour_deal(shows_by_window: dict) -> dict:
+    """
+    Scans morning and matinee slots against peak evening fare distribution.
+    Identifies maximum delta savings (up to 73% off peak evening).
+    """
+    evening_shows = shows_by_window.get("evening", [])
+    if not evening_shows:
+        return {"deal_found": False}
+    
+    evening_avg = round(sum(s["silver"] for s in evening_shows) / len(evening_shows))
+    daytime_candidates = shows_by_window.get("morning", []) + shows_by_window.get("matinee", [])
+    
+    if not daytime_candidates:
+        return {"deal_found": False}
+    
+    best_deal = min(daytime_candidates, key=lambda s: s["silver"])
+    savings = evening_avg - best_deal["silver"]
+    
+    if savings > 0:
+        return {
+            "deal_found": True,
+            "savings_amount": savings,
+            "savings_pct": round((savings / evening_avg) * 100),
+            "peak_avg_price": evening_avg,
+            "deal_price": best_deal["silver"],
+            "time_window": "Morning" if best_deal["hour"] < 12.0 else "Matinee",
+            "theatre_name": best_deal["theatre_name"],
+            "booking_url": best_deal["booking_url"]
+        }
+    return {"deal_found": False}
+
+# =====================================================================
+# 3. THREAD-SAFE PRICE ALERT DAEMON & EXAMINER VIVA SIMULATOR
+# =====================================================================
+class PriceAlertManager:
+    """Thread-safe background daemon monitoring active user price threshold watchers."""
+    def __init__(self):
+        self.alerts = []
+        self.notification_history = []
+        self._lock = threading.Lock()
+
+    def simulate_price_fluctuation(self, action: str = "drop", movie_id: str = None,
+                                   simulated_price: int = None) -> dict:
+        """
+        Examiner Viva Protocol:
+        Simulates instant flash price crashes (-40%) or prime surges (+80%)
+        triggering background daemon alerts, reactive navbar vibrations, and Two26 toasts.
+        """
+        with self._lock:
+            for alert in self.alerts:
+                if movie_id and alert["movie_id"] != movie_id:
+                    continue
+                if action == "drop":
+                    trigger_price = simulated_price or int(alert["target_price"] * 0.85)
+                    alert["status"] = "TRIGGERED"
+                    alert["last_price_found"] = trigger_price
+                    self.notification_history.insert(0, {
+                        "id": f"notif-{int(time.time() * 1000)}",
+                        "title": f"🔥 Price Crash: {alert['movie_title']}",
+                        "message": f"Tickets dropped to ₹{trigger_price} (Target: ₹{alert['target_price']})!",
+                        "timestamp": datetime.now().strftime("%H:%M:%S")
+                    })
+                elif action == "reset":
+                    alert["status"] = "Active"
+            return {"status": "success", "action": action}
+`
   }
 ];
 

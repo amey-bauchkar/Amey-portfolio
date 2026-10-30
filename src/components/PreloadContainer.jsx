@@ -109,6 +109,7 @@ const PreloadContainer = () => {
     const videoUrls = [
       '/convert_the_above_video_into_c.mp4',
       '/Demo.mp4',
+      '/cineplus-demo.mp4',
     ];
 
     videoUrls.forEach(url => {

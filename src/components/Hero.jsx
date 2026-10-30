@@ -118,7 +118,7 @@ const Hero = ({ onOpenCv }) => {
         </div>
 
         <div className="hero-stat-item-wrap animate-fade-in-up delay-900">
-          <div className="hero-stat-value">4<span>+</span></div>
+          <div className="hero-stat-value">5<span>+</span></div>
           <div className="hero-stat-label">Software Projects</div>
         </div>
 

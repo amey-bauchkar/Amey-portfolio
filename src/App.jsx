@@ -107,8 +107,8 @@ function App() {
   }, { scope: appRef, dependencies: [location.pathname, location.hash] });
 
   // Modal Handlers
-  const handleOpenProject = (project) => {
-    setActiveProject(project);
+  const handleOpenProject = (project, initialTab = null) => {
+    setActiveProject(project ? { ...project, initialTab } : null);
     setIsProjectModalOpen(true);
   };
 

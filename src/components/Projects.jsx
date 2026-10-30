@@ -51,8 +51,14 @@ const ProjectCard = ({ project, displayIndex, onOpenProject }) => (
       <div className="absolute top-3 left-3 flex items-center gap-2">
         {project.link && (
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-black/75 backdrop-blur-md border border-white/10 text-[10px] sm:text-xs text-white/90 font-mono shadow-md">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-            Live
+            <span className={`w-1.5 h-1.5 rounded-full ${project.video ? 'bg-accent' : project.link === '#' ? 'bg-amber-400' : 'bg-emerald-400'} animate-pulse`}></span>
+            {project.video ? 'Video Demo' : project.link === '#' ? 'Demo Ready' : 'Live'}
+          </span>
+        )}
+        {project.youtubeVideo && (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-black/75 backdrop-blur-md border border-white/10 text-[10px] sm:text-xs text-red-400 font-mono shadow-md">
+            <i className="fab fa-youtube text-[11px] text-red-500"></i>
+            Video
           </span>
         )}
         {project.github && (
@@ -105,17 +111,62 @@ const ProjectCard = ({ project, displayIndex, onOpenProject }) => (
       </button>
 
       <div className="flex items-center gap-2">
-        {project.link && (
-          <a
-            href={project.link}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-accent/20 hover:bg-accent text-accent hover:text-white border border-accent/40 text-xs font-semibold transition-all duration-300 shadow-sm"
-            title="Open Live Deployment"
+        {project.youtubeVideo && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onOpenProject(project, 'youtube');
+            }}
+            data-cursor-label="Watch Video"
+            className="cursor-target inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-red-600/15 hover:bg-red-600 text-red-400 hover:text-white border border-red-500/30 text-xs font-semibold transition-all duration-300 shadow-sm cursor-pointer"
+            title="Watch YouTube Explanation Video"
           >
-            <i className="fas fa-external-link-alt text-[10px]"></i>
-            <span>Live Demo</span>
-          </a>
+            <i className="fab fa-youtube text-[11px]"></i>
+            <span>Video</span>
+          </button>
+        )}
+        {project.link && (
+          project.video ? (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onOpenProject(project, 'video');
+              }}
+              data-cursor-label="Watch Demo"
+              className="cursor-target inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-accent/20 hover:bg-accent text-accent hover:text-white border border-accent/40 text-xs font-semibold transition-all duration-300 shadow-sm cursor-pointer"
+              title="Watch Live Demo Video"
+            >
+              <i className="fas fa-play text-[10px]"></i>
+              <span>Live Demo</span>
+            </button>
+          ) : project.link === '#' ? (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+              data-cursor-label="Coming Soon"
+              className="cursor-target inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-accent/20 text-accent border border-accent/40 text-xs font-semibold shadow-sm cursor-default"
+              title="Deployment in progress"
+            >
+              <i className="fas fa-play text-[10px]"></i>
+              <span>Live Demo</span>
+            </button>
+          ) : (
+            <a
+              href={project.link}
+              target="_blank"
+              rel="noreferrer"
+              data-cursor-label="Live Demo"
+              className="cursor-target inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-accent/20 hover:bg-accent text-accent hover:text-white border border-accent/40 text-xs font-semibold transition-all duration-300 shadow-sm"
+              title="Open Live Deployment"
+            >
+              <i className="fas fa-external-link-alt text-[10px]"></i>
+              <span>Live Demo</span>
+            </a>
+          )
         )}
         {project.github && (
           <a
@@ -180,9 +231,9 @@ const Projects = ({ onOpenProject }) => {
   };
 
   const containerHeightClass = activeCategory === 'all' 
-    ? 'h-[1550vh]' 
+    ? 'h-[1700vh]' 
     : activeCategory === 'software' 
-    ? 'h-[780vh]' 
+    ? 'h-[925vh]' 
     : 'h-[900vh]';
 
   return (
